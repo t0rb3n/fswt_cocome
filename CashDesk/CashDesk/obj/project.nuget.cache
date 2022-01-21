@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "RYtW10FJREZscBMqA/oXjJhQtVrXT09Xy6MgRafCYDo6qC8gvlAzVKWRanbshONh3jDgukiObgm3TyEPuytpfA==",
+  "success": true,
+  "projectFilePath": "/home/torben/repos/fswt_cocome/CashDesk/CashDesk/CashDesk.csproj",
+  "expectedPackageFiles": [
+    "/home/torben/.nuget/packages/microsoft.aspnetcore.app.ref/6.0.0/microsoft.aspnetcore.app.ref.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
