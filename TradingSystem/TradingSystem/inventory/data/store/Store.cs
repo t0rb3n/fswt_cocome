@@ -29,13 +29,13 @@ public class Store
         set => _location = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    public virtual List<ProductOrder> ProductOrders
+    public List<ProductOrder> ProductOrders
     {
         get => _productOrders;
         set => _productOrders = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    public virtual List<StockItem> StockItems
+    public List<StockItem> StockItems
     {
         get => _stockItems;
         set => _stockItems = value ?? throw new ArgumentNullException(nameof(value));
