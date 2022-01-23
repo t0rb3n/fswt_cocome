@@ -12,7 +12,12 @@ public class StoreQuery : IStoreQuery
     }
     public Store QueryStoreById(long storeId)
     {
-        throw new NotImplementedException();
+        using (_database)
+        {
+            var result = _database.Stores.Find(storeId) 
+                         ?? throw new ArgumentException($"Can't find store by id {storeId}");
+            return result;
+        }
     }
 
     public List<Product> QueryProducts(long storeId)
