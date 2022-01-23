@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+
+  postgres_db:
+    
+    image: 'postgres:latest'
+
+    ports:
+      - 5432:5432
+
+    environment:
+      TZ: 'GMT+1'
+      POSTGRES_USER: dummy
+      POSTGRES_PASSWORD: dummy123
+      POSTGRES_DB: tradingsystem 
+    
+    volumes:
+      - ./data/:/var/lib/postgresql/data/
+      - ./db_init.sql:/docker-entrypoint-initdb.d/01_db_init.sql
+      - ./db_content.sql:/docker-entrypoint-initdb.d/02_db_content.sql
