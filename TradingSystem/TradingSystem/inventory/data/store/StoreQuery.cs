@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TradingSystem.inventory.data.enterprise;
 
 namespace TradingSystem.inventory.data.store;
@@ -12,51 +13,89 @@ public class StoreQuery : IStoreQuery
     }
     public Store QueryStoreById(long storeId)
     {
-        using (_database)
-        {
-            var result = _database.Stores.Find(storeId) 
-                         ?? throw new ArgumentException($"Can't find store by id {storeId}");
-            return result;
-        }
+        var result = _database
+                         .Stores
+                         .Find(storeId) 
+                     ?? throw new ArgumentException($"Can't find store by id {storeId}");
+        return result;
     }
 
     public List<Product> QueryProducts(long storeId)
     {
-        throw new NotImplementedException();
+        var result = _database
+                         .StockItems
+                         .Where(st => st.Store.Id == storeId)
+                         .Select(st => st.Product)
+                         .ToList() 
+                     ?? throw new Exception();
+        return result;
     }
 
     public Product QueryProductById(long productId)
     {
-        throw new NotImplementedException();
+        var result = _database
+                         .Products
+                         .Find(productId)
+                     ?? throw new ArgumentException($"Can't find product by id {productId}");
+        return result;
     }
 
     public List<StockItem> QueryLowStockItems(long storeId)
     {
-        throw new NotImplementedException();
+        var result = _database
+                         .StockItems
+                         .Where(st => (st.Store.Id == storeId) && (st.Amount < st.MinStock))
+                         .ToList()
+                     ?? throw new Exception();
+        return result;
     }
 
     public List<StockItem> QueryAllStockItems(long storeId)
     {
-        throw new NotImplementedException();
+        var result = _database
+                         .StockItems
+                         .Where(st => st.Store.Id == storeId)
+                         .ToList()
+                     ?? throw new Exception();
+        return result;
     }
 
     public ProductOrder QueryOrderById(long orderId)
     {
-        throw new NotImplementedException();
+        var result = _database.ProductOrders
+                         .Find(orderId)
+                     ?? throw new ArgumentException($"Can't find order by id {orderId}");
+        return result;
     }
 
     public StockItem QueryStockItem(long storeId, long barcode)
     {
-        throw new NotImplementedException();
+        var result = _database
+                         .StockItems
+                         .Include(st => st.Product)
+                         .Single(st => (st.Store.Id == storeId) && (st.Product.Barcode == barcode))
+                     ?? throw new Exception();
+        return result;
     }
 
     public List<StockItem> QueryStockItems(long storeId, long[] productIds)
     {
-        throw new NotImplementedException();
+        var result = _database
+                        .StockItems
+                        .Include(st => st.Product)
+                        .Where(st => (st.Store.Id == storeId) && (productIds.Contains(st.Product.Id)))
+                        .ToList() 
+                     ?? throw new Exception();
+        return result;
     }
 
     public StockItem QueryStockItemById(long stockId)
     {
-        throw new NotImplementedException();
+        var result = _database
+                         .StockItems
+                         .Include(st => st.Product)
+                         .Single(st => st.Id == stockId)
+                     ?? throw new Exception();
+        return result;
     }
 }
