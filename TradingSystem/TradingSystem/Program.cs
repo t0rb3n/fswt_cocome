@@ -13,7 +13,7 @@ namespace TradingSystem
 
             IStoreQuery query = IDataFactory.GetInstance().GetStoreQuery();
             
-            Console.WriteLine("QueryStoreById\n");
+            Console.WriteLine("QueryStoreById");
             try
             {
                 var store = query.QueryStoreById(1);
@@ -24,7 +24,7 @@ namespace TradingSystem
                 Console.WriteLine(e);
             }
             
-            /*Console.WriteLine("QueryProducts\n");
+            /*Console.WriteLine("\nQueryProducts");
             try
             {
                 var products = query.QueryProducts(1);
@@ -38,7 +38,7 @@ namespace TradingSystem
                 Console.WriteLine(e);
             }*/
             
-            /*Console.WriteLine("QueryProducts\n");
+            /*Console.WriteLine("\nQueryAllStockItems");
             try
             {
                 var stockItems = query.QueryAllStockItems(1);
@@ -52,12 +52,26 @@ namespace TradingSystem
                 Console.WriteLine(e);
             }*/
             
-            Console.WriteLine("QueryStockItem\n");
+            Console.WriteLine("\nQueryStockItem");
             try
             {
                 var st = query.QueryStockItem(1, 10000125);
                 Console.WriteLine($"{st.Amount}, {st.SalesPrice}€, {st.Product.Name}, {st.Product.Barcode}");
                 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
+            Console.WriteLine("\nQueryLowStockItems");
+            try
+            {
+                var stockItems = query.QueryLowStockItems(1);
+                foreach (var st in stockItems)
+                {
+                    Console.WriteLine($"amount: {st.Amount}, minStock: {st.MinStock}, {st.SalesPrice}€, {st.Product.Name}");
+                }
             }
             catch (Exception e)
             {
