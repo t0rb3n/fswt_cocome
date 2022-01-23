@@ -10,7 +10,11 @@ public class EnterpriceQuery : IEnterpriseQuery
     }
     public Enterprise QueryEnterpriseById(long enterpriseId)
     {
-        throw new NotImplementedException();
+        var result = _database
+                         .Enterprises
+                         .Find(enterpriseId) 
+                     ?? throw new ArgumentException($"Can't find enterprise by id {enterpriseId}");
+        return result;
     }
 
     public long QueryMeanTimeToDelivery(ProductSupplier supplier, Enterprise enterprise)
