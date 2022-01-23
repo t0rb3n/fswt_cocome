@@ -10,7 +10,20 @@ namespace TradingSystem
     {
         static void Main(string[] args)
         {
-            using (var db = new DataContext())
+
+            IStoreQuery query = IDataFactory.GetInstance().GetStoreQuery();
+
+            try
+            {
+                var store = query.QueryStoreById(1);
+                Console.Write(store);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            /*using (var db = new DataContext())
             {
                 var sql = db.Database.GenerateCreateScript();
                 Console.Write(sql);
@@ -48,7 +61,7 @@ namespace TradingSystem
                 {
                     Console.Write(e);
                 }
-            }
+            }*/
         }
     }
 }
