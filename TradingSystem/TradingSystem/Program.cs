@@ -12,11 +12,52 @@ namespace TradingSystem
         {
 
             IStoreQuery query = IDataFactory.GetInstance().GetStoreQuery();
-
+            
+            Console.WriteLine("QueryStoreById\n");
             try
             {
                 var store = query.QueryStoreById(1);
-                Console.Write(store);
+                Console.WriteLine(store);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
+            /*Console.WriteLine("QueryProducts\n");
+            try
+            {
+                var products = query.QueryProducts(1);
+                foreach (var p in products)
+                {
+                    Console.WriteLine($"{p.Id}, {p.Name}");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }*/
+            
+            /*Console.WriteLine("QueryProducts\n");
+            try
+            {
+                var stockItems = query.QueryAllStockItems(1);
+                foreach (var st in stockItems)
+                {
+                    Console.WriteLine($"{st.Amount}, {st.SalesPrice}, {st.Product.Name}, {st.Product.Barcode}");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }*/
+            
+            Console.WriteLine("QueryStockItem\n");
+            try
+            {
+                var st = query.QueryStockItem(1, 10000125);
+                Console.WriteLine($"{st.Amount}, {st.SalesPrice}€, {st.Product.Name}, {st.Product.Barcode}");
+                
             }
             catch (Exception e)
             {
