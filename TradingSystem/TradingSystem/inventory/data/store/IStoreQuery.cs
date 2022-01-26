@@ -3,14 +3,7 @@ using TradingSystem.inventory.data.enterprise;
 namespace TradingSystem.inventory.data.store;
 
 public interface IStoreQuery
-{   
-    /// <summary>
-    /// ddddd
-    /// </summary>
-    /// <param name="storeId">dfsaf</param>
-    /// <param name="dbc">asfdsdfsdf</param>
-    /// <exception cref="Exception">ddd</exception>
-    /// <returns>dfdsfasf</returns>
+{
     public Store QueryStoreById(long storeId, DatabaseContext dbc);
     public List<Product> QueryProducts(long storeId, DatabaseContext dbc);
     public Product QueryProductById(long productId, DatabaseContext dbc);
