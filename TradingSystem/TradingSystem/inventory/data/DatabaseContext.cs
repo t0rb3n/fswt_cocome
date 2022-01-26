@@ -4,7 +4,7 @@ using TradingSystem.inventory.data.store;
 
 namespace TradingSystem.inventory.data;
 
-public class DataContext : DbContext
+public class DatabaseContext : DbContext
 {
     public DbSet<Store> Stores { get; set; }
     public DbSet<StockItem> StockItems { get; set; }
@@ -16,18 +16,8 @@ public class DataContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        //optionsBuilder.UseSqlite("Data Source=tradingsystem.db");
         optionsBuilder
             .UseNpgsql("host=localhost;database=tradingsystem;username=dummy;password=dummy123")
             .UseSnakeCaseNamingConvention();
-    }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        //modelBuilder.Entity<Enterprise>().ToTable("enterprise");
-        //modelBuilder.Entity<Store>().ToTable("store");
-        //modelBuilder.Entity<Enterprise>().Property(e => e.Stores).IsRequired();
-        //modelBuilder.Entity<Store>().Property(s => s.Name).IsRequired();
-        //modelBuilder.Entity<Store>().Property(s => s.Location).IsRequired();
     }
 }
