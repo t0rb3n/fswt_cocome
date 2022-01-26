@@ -106,7 +106,7 @@ namespace TradingSystem.Migrations
                     b.ToTable("product_suppliers", (string)null);
                 });
 
-            modelBuilder.Entity("TradingSystem.inventory.data.store.OrderEntity", b =>
+            modelBuilder.Entity("TradingSystem.inventory.data.store.OrderEntry", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -266,7 +266,7 @@ namespace TradingSystem.Migrations
                         .HasConstraintName("fk_product_suppliers_enterprises_enterprise_id");
                 });
 
-            modelBuilder.Entity("TradingSystem.inventory.data.store.OrderEntity", b =>
+            modelBuilder.Entity("TradingSystem.inventory.data.store.OrderEntry", b =>
                 {
                     b.HasOne("TradingSystem.inventory.data.enterprise.Product", "Product")
                         .WithMany()

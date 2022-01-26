@@ -7,7 +7,7 @@ public class ProductOrder
     private long _id;
     private DateTime _deliveryDate;
     private DateTime _orderingDate;
-    private List<OrderEntity> _orderEntries = new();
+    private List<OrderEntry> _orderEntries = new();
     private Store _store = new();
 
     [Key]
@@ -29,7 +29,7 @@ public class ProductOrder
         set => _orderingDate = value;
     }
 
-    public List<OrderEntity> OrderEntries
+    public List<OrderEntry> OrderEntries
     {
         get => _orderEntries;
         set => _orderEntries = value ?? throw new ArgumentNullException(nameof(value));
