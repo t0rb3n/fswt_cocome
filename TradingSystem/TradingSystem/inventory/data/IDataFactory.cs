@@ -8,7 +8,7 @@ public class IDataFactory
     {
         if (_dataaccess == null)
         {
-            _dataaccess = new Data(new DataContext());
+            _dataaccess = new Data();
         }
 
         return _dataaccess;
