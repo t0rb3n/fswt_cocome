@@ -60,7 +60,7 @@ def insert_products():
             price = round(random.uniform(PRUCHASE_PRICE_MIN, PRUCHASE_PRICE_MAX), 2)
             supplier_id = supplier_names.index(supplier) + 1
 
-            writeline_to_file(f"INSERT INTO products (barcode, pruchase_price, name, product_supplier_id) VALUES ({barcode}, {price}, '{name}', {supplier_id});")
+            writeline_to_file(f"INSERT INTO products (barcode, purchase_price, name, product_supplier_id) VALUES ({barcode}, {price}, '{name}', {supplier_id});")
             
             barcode += 1
             products.append([barcode, price])
