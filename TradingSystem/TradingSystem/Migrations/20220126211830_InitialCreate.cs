@@ -70,7 +70,7 @@ namespace TradingSystem.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     barcode = table.Column<long>(type: "bigint", nullable: false),
-                    pruchase_price = table.Column<double>(type: "double precision", nullable: false),
+                    purchase_price = table.Column<double>(type: "double precision", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
                     product_supplier_id = table.Column<long>(type: "bigint", nullable: false)
                 },
