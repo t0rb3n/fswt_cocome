@@ -64,9 +64,9 @@ namespace TradingSystem.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("product_supplier_id");
 
-                    b.Property<double>("PruchasePrice")
+                    b.Property<double>("PurchasePrice")
                         .HasColumnType("double precision")
-                        .HasColumnName("pruchase_price");
+                        .HasColumnName("purchase_price");
 
                     b.HasKey("Id")
                         .HasName("pk_products");
@@ -104,7 +104,7 @@ namespace TradingSystem.Migrations
                     b.ToTable("product_suppliers", (string)null);
                 });
 
-            modelBuilder.Entity("TradingSystem.inventory.data.store.OrderEntry", b =>
+            modelBuilder.Entity("TradingSystem.inventory.data.store.OrderEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -264,7 +264,7 @@ namespace TradingSystem.Migrations
                         .HasConstraintName("fk_product_suppliers_enterprises_enterprise_id");
                 });
 
-            modelBuilder.Entity("TradingSystem.inventory.data.store.OrderEntry", b =>
+            modelBuilder.Entity("TradingSystem.inventory.data.store.OrderEntity", b =>
                 {
                     b.HasOne("TradingSystem.inventory.data.enterprise.Product", "Product")
                         .WithMany()
