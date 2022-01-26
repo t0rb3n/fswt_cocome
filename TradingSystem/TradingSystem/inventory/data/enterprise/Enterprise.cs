@@ -34,16 +34,4 @@ public class Enterprise
         get => _stores;
         set => _stores = value ?? throw new ArgumentNullException(nameof(value));
     }
-
-    public override string ToString()
-    {
-        var st = "";
-        foreach (var s in _stores)
-        {
-            st += s.ToString();
-            st += "\n";
-        }
-
-        return $"Id: {_id}, Name: {_name}\n Stores: \n{st}";
-    }
 }
