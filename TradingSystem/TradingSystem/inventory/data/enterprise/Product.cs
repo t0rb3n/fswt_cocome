@@ -6,7 +6,7 @@ public class Product
 {
     private long _id;
     private long _barcode;
-    private double _pruchasePrice;
+    private double _purchasePrice;
     private string _name;
     private ProductSupplier _productSupplier;
 
@@ -22,10 +22,10 @@ public class Product
         set => _barcode = value;
     }
 
-    public double PruchasePrice
+    public double PurchasePrice
     {
-        get => _pruchasePrice;
-        set => _pruchasePrice = value;
+        get => _purchasePrice;
+        set => _purchasePrice = value;
     }
 
     public string Name
@@ -38,10 +38,5 @@ public class Product
     {
         get => _productSupplier;
         set => _productSupplier = value ?? throw new ArgumentNullException(nameof(value));
-    }
-
-    public override string ToString()
-    {
-        return $"Id: {_id}, Barcode: {_barcode}, Name: {_name}, purPrice: {_pruchasePrice}, Supplier: {_productSupplier.Name}";
     }
 }
