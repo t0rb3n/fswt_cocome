@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Update;
 using TradingSystem.inventory.data;
 using TradingSystem.inventory.data.enterprise;
 using TradingSystem.inventory.data.store;
@@ -6,52 +8,165 @@ namespace TradingSystem.inventory.application.store;
 
 public class StoreApplication : IStoreApplication, ICashDeskConnector
 {
-    private IStoreQuery _storeOuery = IDataFactory.GetInstance().GetStoreQuery();
-    private long _storeId;
+    private readonly IStoreQuery _storeQuery = IDataFactory.GetInstance().GetStoreQuery();
+    private readonly long _storeId;
 
     public StoreApplication(long storeId)
     {
-        this._storeId = storeId;
+        _storeId = storeId;
     }
 
     public Store GetStore()
     {
-        throw new NotImplementedException();
+        Store result = new();
+
+        using var dbc = new DatabaseContext();
+        using var ctx = dbc.Database.BeginTransaction();
+        
+        try
+        {
+            result = _storeQuery.QueryStoreById(_storeId, dbc);
+            ctx.Commit();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        return result;
     }
 
-    public List<ProductStockItem> GetProductsWithLowStock()
+    public List<StockItem> GetProductsLowStockItems()
     {
-        throw new NotImplementedException();
+        List<StockItem> result = new();
+        using var dbc = new DatabaseContext();
+        using var ctx = dbc.Database.BeginTransaction();
+
+        try
+        {
+            result = _storeQuery.QueryLowStockItems(_storeId, dbc);
+            ctx.Commit();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        return result;
     }
 
-    public List<ProductSupplier> GetAllProducts()
+    public List<Product> GetAllProductSuppliers()
     {
-        throw new NotImplementedException();
+        List<Product> result = new();
+        using var dbc = new DatabaseContext();
+        using var ctx = dbc.Database.BeginTransaction();
+        
+        try
+        {
+            result = _storeQuery.QueryProducts(_storeId, dbc);
+            ctx.Commit();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        return result;
     }
 
-    public List<ProductSupplierStockItem> GetAllProductsSupplierStockItems()
+    public List<StockItem> GetAllProductsSupplierStockItems()
     {
-        throw new NotImplementedException();
+        List<StockItem> result = new();
+        using var dbc = new DatabaseContext();
+        using var ctx = dbc.Database.BeginTransaction();
+
+        try
+        {
+            result = _storeQuery.QueryAllProductStockItems(_storeId, dbc);
+            ctx.Commit();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        
+        return result;
     }
 
     public void OrderProducts(ProductOrder productOrder)
     {
-        throw new NotImplementedException();
+        using var dbc = new DatabaseContext();
+        using var trans = dbc.Database.BeginTransaction();
+        try
+        {
+            dbc.ProductOrders.Attach(productOrder);
+            dbc.SaveChanges();
+            trans.Commit();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
     public ProductOrder GetProductOrder(long productOrderId)
     {
-        throw new NotImplementedException();
+        ProductOrder result = new();
+        using var dbc = new DatabaseContext();
+        using var ctx = dbc.Database.BeginTransaction();
+
+        try
+        {
+            result = _storeQuery.QueryOrderById(productOrderId, dbc);
+            ctx.Commit();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        
+        return result;
     }
 
     public void RollInReceivedProductOrder(long productOrderId)
     {
-        throw new NotImplementedException();
+        using var dbc = new DatabaseContext();
+        using var trans = dbc.Database.BeginTransaction();
+        try
+        {
+            var result = _storeQuery.QueryOrderById(productOrderId, dbc);
+            result.DeliveryDate = DateTime.UtcNow;
+
+            foreach (var oe in result.OrderEntries)
+            {
+                var item = _storeQuery.QueryStockItem(_storeId, oe.Product.Barcode, dbc);
+                item.Amount += oe.Amount;
+            }
+            
+            dbc.SaveChanges();
+            trans.Commit();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
-    public ProductStockItem ChangePrice(StockItem stockItem)
+    public void ChangePrice(StockItem stockItem)
     {
-        throw new NotImplementedException();
+        using var dbc = new DatabaseContext();
+        using var ctx = dbc.Database.BeginTransaction();
+        try
+        {
+            var result = _storeQuery.QueryStockItemById(stockItem.Id, dbc);
+            result.SalesPrice = stockItem.SalesPrice;
+            dbc.SaveChanges();
+            ctx.Commit();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
     public void BookSale(Sale sale)
@@ -59,8 +174,22 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         throw new NotImplementedException();
     }
 
-    public ProductStockItem GetProductStockItem(long productBarcode)
+    public StockItem GetProductStockItem(long productBarcode)
     {
-        throw new NotImplementedException();
+        StockItem result = new();
+        using var dbc = new DatabaseContext();
+        using var ctx = dbc.Database.BeginTransaction();
+
+        try
+        {
+            result = _storeQuery.QueryStockItem(_storeId, productBarcode, dbc);
+            ctx.Commit();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        
+        return result;
     }
 }
