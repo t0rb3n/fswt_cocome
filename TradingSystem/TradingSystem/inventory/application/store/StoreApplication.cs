@@ -16,16 +16,17 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         _storeId = storeId;
     }
 
-    public Store GetStore()
+    public StoreEnterpriseDTO GetStore()
     {
-        Store result = new();
+        StoreEnterpriseDTO result = new();
 
         using var dbc = new DatabaseContext();
         using var ctx = dbc.Database.BeginTransaction();
         
         try
         {
-            result = _storeQuery.QueryStoreById(_storeId, dbc);
+            var query = _storeQuery.QueryStoreById(_storeId, dbc);
+            result = ConvertEntryObject.ToStoreEnterpriseDTO(query);
             ctx.Commit();
         }
         catch (Exception e)
@@ -36,15 +37,16 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         return result;
     }
 
-    public List<StockItem> GetProductsLowStockItems()
+    public List<ProductStockItemDTO> GetProductsLowStockItems()
     {
-        List<StockItem> result = new();
+        List<ProductStockItemDTO> result = new();
         using var dbc = new DatabaseContext();
         using var ctx = dbc.Database.BeginTransaction();
 
         try
         {
-            result = _storeQuery.QueryLowStockItems(_storeId, dbc);
+            var query = _storeQuery.QueryLowStockItems(_storeId, dbc);
+            result.AddRange(query.Select(ConvertEntryObject.ToProductStockItemDTO));
             ctx.Commit();
         }
         catch (Exception e)
@@ -55,15 +57,16 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         return result;
     }
 
-    public List<Product> GetAllProductSuppliers()
+    public List<ProductSupplierDTO> GetAllProductSuppliers()
     {
-        List<Product> result = new();
+        List<ProductSupplierDTO> result = new();
         using var dbc = new DatabaseContext();
         using var ctx = dbc.Database.BeginTransaction();
         
         try
         {
-            result = _storeQuery.QueryProducts(_storeId, dbc);
+            var query = _storeQuery.QueryProducts(_storeId, dbc);
+            result.AddRange(query.Select(ConvertEntryObject.ToProductSupplierDTO));
             ctx.Commit();
         }
         catch (Exception e)
@@ -74,15 +77,16 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         return result;
     }
 
-    public List<StockItem> GetAllProductsSupplierStockItems()
+    public List<ProductSupplierStockItemDTO> GetAllProductSupplierStockItems()
     {
-        List<StockItem> result = new();
+        List<ProductSupplierStockItemDTO> result = new();
         using var dbc = new DatabaseContext();
         using var ctx = dbc.Database.BeginTransaction();
 
         try
         {
-            result = _storeQuery.QueryAllProductStockItems(_storeId, dbc);
+            var query = _storeQuery.QueryAllProductStockItems(_storeId, dbc);
+            result.AddRange(query.Select(ConvertEntryObject.ToProductSupplierStockItemDTO));
             ctx.Commit();
         }
         catch (Exception e)
@@ -93,13 +97,26 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         return result;
     }
 
-    public void OrderProducts(ProductOrder productOrder)
+    //TODO: refactor creation of ProductOrderEntry foreach Supplier
+    public void OrderProducts(ProductOrderDTO productOrderDto)
     {
+        ProductOrder poe = new();
         using var dbc = new DatabaseContext();
         using var trans = dbc.Database.BeginTransaction();
         try
         {
-            dbc.ProductOrders.Attach(productOrder);
+            foreach (var order in productOrderDto.Orders)
+            {
+                var product = _storeQuery.QueryProductById(order.ProductSupplier.ProductId, dbc);
+                var oe = new OrderEntry();
+                oe.Amount = order.Amount;
+                oe.Product = product;
+                poe.OrderEntries.Add(oe);
+            }
+
+            poe.Store = _storeQuery.QueryStoreById(_storeId, dbc);
+            poe.OrderingDate = productOrderDto.OrderingDate;
+            dbc.ProductOrders.Attach(poe);
             dbc.SaveChanges();
             trans.Commit();
         }
@@ -109,15 +126,16 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         }
     }
 
-    public ProductOrder GetProductOrder(long productOrderId)
+    public ProductOrderDTO GetProductOrder(long productOrderId)
     {
-        ProductOrder result = new();
+        ProductOrderDTO result = new();
         using var dbc = new DatabaseContext();
         using var ctx = dbc.Database.BeginTransaction();
 
         try
         {
-            result = _storeQuery.QueryOrderById(productOrderId, dbc);
+            var query = _storeQuery.QueryOrderById(productOrderId, dbc);
+            result = ConvertEntryObject.ToProductOrderDTO(query);
             ctx.Commit();
         }
         catch (Exception e)
@@ -135,6 +153,12 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         try
         {
             var result = _storeQuery.QueryOrderById(productOrderId, dbc);
+
+            if (result.DeliveryDate == null)
+            {
+                throw new Exception("Product order has already been received");
+            }
+            
             result.DeliveryDate = DateTime.UtcNow;
 
             foreach (var oe in result.OrderEntries)
@@ -152,13 +176,13 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         }
     }
 
-    public void ChangePrice(StockItem stockItem)
+    public void ChangePrice(StockItemDTO stockItem)
     {
         using var dbc = new DatabaseContext();
         using var ctx = dbc.Database.BeginTransaction();
         try
         {
-            var result = _storeQuery.QueryStockItemById(stockItem.Id, dbc);
+            var result = _storeQuery.QueryStockItemById(stockItem.ItemId, dbc);
             result.SalesPrice = stockItem.SalesPrice;
             dbc.SaveChanges();
             ctx.Commit();
@@ -169,20 +193,21 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         }
     }
 
-    public void BookSale(Sale sale)
+    public void BookSale(SaleDTO saleDto)
     {
         throw new NotImplementedException();
     }
 
-    public StockItem GetProductStockItem(long productBarcode)
+    public ProductStockItemDTO GetProductStockItem(long productBarcode)
     {
-        StockItem result = new();
+        ProductStockItemDTO result = new();
         using var dbc = new DatabaseContext();
         using var ctx = dbc.Database.BeginTransaction();
 
         try
         {
-            result = _storeQuery.QueryStockItem(_storeId, productBarcode, dbc);
+            var query = _storeQuery.QueryStockItem(_storeId, productBarcode, dbc);
+            result = ConvertEntryObject.ToProductStockItemDTO(query);
             ctx.Commit();
         }
         catch (Exception e)

@@ -4,6 +4,6 @@ namespace TradingSystem.inventory.application.store;
 
 public interface ICashDeskConnector
 {
-    public void BookSale(Sale sale);
-    public StockItem GetProductStockItem(long productBarcode);
+    public void BookSale(SaleDTO saleDto);
+    public ProductStockItemDTO GetProductStockItem(long productBarcode);
 }

@@ -5,7 +5,7 @@ namespace TradingSystem.inventory.application.enterprise;
 
 public interface IEnterpriseApplication
 {
-    public Report GetStockReport(Store store);
-    public Report GetStockReport(Enterprise enterprise);
-    public Report GetMeanTimeToDeliveryReport(Enterprise enterprise);
+    public ReportDTO GetStockReport(Store store);
+    public ReportDTO GetStockReport(Enterprise enterprise);
+    public ReportDTO GetMeanTimeToDeliveryReport(Enterprise enterprise);
 }

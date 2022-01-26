@@ -2,8 +2,8 @@ using TradingSystem.inventory.data.store;
 
 namespace TradingSystem.inventory.application.store;
 
-public class Sale
+public class SaleDTO
 {
     protected DateTime Date { get; set; }
-    protected List<StockItem> Products { get; set; }
+    protected List<ProductStockItemDTO> Products { get; set; }
 }

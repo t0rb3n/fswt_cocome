@@ -9,17 +9,17 @@ public class EnterpriseApplication : IEnterpriseApplication
     private IStoreQuery _storeQuery = IDataFactory.GetInstance().GetStoreQuery();
     private IEnterpriseQuery _enterpriseQuery = IDataFactory.GetInstance().GetEnterpriseQuery();
 
-    public Report GetStockReport(Store store)
+    public ReportDTO GetStockReport(Store store)
     {
         throw new NotImplementedException();
     }
 
-    public Report GetStockReport(Enterprise enterprise)
+    public ReportDTO GetStockReport(Enterprise enterprise)
     {
         throw new NotImplementedException();
     }
 
-    public Report GetMeanTimeToDeliveryReport(Enterprise enterprise)
+    public ReportDTO GetMeanTimeToDeliveryReport(Enterprise enterprise)
     {
         throw new NotImplementedException();
     }
