@@ -8,7 +8,7 @@ public class ProductOrder
     private DateTime _deliveryDate;
     private DateTime _orderingDate;
     private List<OrderEntry> _orderEntries = new();
-    private Store _store;
+    private Store _store = new();
 
     [Key]
     public long Id
@@ -39,5 +39,16 @@ public class ProductOrder
     {
         get => _store;
         set => _store = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    public override string ToString()
+    {
+        string tmp = "";
+        foreach (var oe in _orderEntries)
+        {
+            tmp += $"Amount: {oe.Amount}, Product: {oe.Product.Name}";
+            tmp += "\n";
+        }
+        return $"Id: {_id}, orderDate: {_orderingDate} OrderEntries:\n{tmp}";
     }
 }

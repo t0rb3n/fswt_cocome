@@ -11,13 +11,13 @@ public class StockItem
     private int _amount;
     private int _minStock;
     private int _maxStock;
-    private Store _store;
-    private Product _product;
+    private Store _store = new();
+    private Product _product = new();
 
     [Key]
     public long Id
     {
-        get => _id; 
+        get => _id;
         set => _id = value;
     }
 
@@ -55,5 +55,12 @@ public class StockItem
     {
         get => _product;
         set => _product = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    public override string ToString()
+    {
+        return
+            $"Id: {_id}, Amount: {_amount}, minStock: {_minStock}, maxStock: {_maxStock}, salePrice: {_salesPrice.ToString("F2")} €\n" +
+            $"Name: {_product.Name}, barcode: {_product.Barcode}, pruPrice: {_product.PruchasePrice.ToString("F2")} €";
     }
 }

@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using TradingSystem.inventory.data.store;
+
 namespace TradingSystem.inventory.data.enterprise;
 
 public class Product
@@ -7,7 +7,7 @@ public class Product
     private long _id;
     private long _barcode;
     private double _pruchasePrice;
-    private String _name;
+    private string _name;
     private ProductSupplier _productSupplier;
 
     [Key]
@@ -16,7 +16,6 @@ public class Product
         get => _id;
         set => _id = value;
     }
-
     public long Barcode
     {
         get => _barcode;
@@ -39,5 +38,10 @@ public class Product
     {
         get => _productSupplier;
         set => _productSupplier = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    public override string ToString()
+    {
+        return $"Id: {_id}, Barcode: {_barcode}, Name: {_name}, purPrice: {_pruchasePrice}, Supplier: {_productSupplier.Name}";
     }
 }

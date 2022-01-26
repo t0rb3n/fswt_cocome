@@ -2,5 +2,5 @@ namespace TradingSystem.inventory.application.enterprise;
 
 public class Report
 {
-    protected String reportText { get; set; }
+    protected string reportText { get; set; }
 }

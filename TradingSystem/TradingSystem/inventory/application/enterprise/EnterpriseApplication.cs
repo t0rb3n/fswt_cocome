@@ -8,7 +8,7 @@ public class EnterpriseApplication : IEnterpriseApplication
 {
     private IStoreQuery _storeQuery = IDataFactory.GetInstance().GetStoreQuery();
     private IEnterpriseQuery _enterpriseQuery = IDataFactory.GetInstance().GetEnterpriseQuery();
-    
+
     public Report GetStockReport(Store store)
     {
         throw new NotImplementedException();

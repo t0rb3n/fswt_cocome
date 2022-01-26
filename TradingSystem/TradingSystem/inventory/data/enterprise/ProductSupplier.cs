@@ -5,7 +5,7 @@ namespace TradingSystem.inventory.data.enterprise;
 public class ProductSupplier
 {
     private long _id;
-    private String _name;
+    private string _name;
     private List<Product> _products = new();
 
     [Key]

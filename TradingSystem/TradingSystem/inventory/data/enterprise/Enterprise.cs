@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using TradingSystem.inventory.data.store;
 
 namespace TradingSystem.inventory.data.enterprise;
@@ -24,13 +23,13 @@ public class Enterprise
         set => _name = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    public virtual List<ProductSupplier> ProductSuppliers
+    public List<ProductSupplier> ProductSuppliers
     {
         get => _productSuppliers;
         set => _productSuppliers = value ?? throw new ArgumentNullException(nameof(value));
     }
-    
-    public virtual List<Store> Stores
+
+    public List<Store> Stores
     {
         get => _stores;
         set => _stores = value ?? throw new ArgumentNullException(nameof(value));
@@ -38,14 +37,13 @@ public class Enterprise
 
     public override string ToString()
     {
-
-        string st = "";
+        var st = "";
         foreach (var s in _stores)
         {
             st += s.ToString();
             st += "\n";
         }
-        
-        return $"ID: {_id}, name: {_name}, stores: \n{st}";
+
+        return $"Id: {_id}, Name: {_name}\n Stores: \n{st}";
     }
 }
