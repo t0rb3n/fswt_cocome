@@ -56,11 +56,4 @@ public class StockItem
         get => _product;
         set => _product = value ?? throw new ArgumentNullException(nameof(value));
     }
-
-    public override string ToString()
-    {
-        return
-            $"Id: {_id}, Amount: {_amount}, minStock: {_minStock}, maxStock: {_maxStock}, salePrice: {_salesPrice.ToString("F2")} €\n" +
-            $"Name: {_product.Name}, barcode: {_product.Barcode}, pruPrice: {_product.PruchasePrice.ToString("F2")} €";
-    }
 }

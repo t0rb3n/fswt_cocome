@@ -7,7 +7,7 @@ public class ProductOrder
     private long _id;
     private DateTime _deliveryDate;
     private DateTime _orderingDate;
-    private List<OrderEntry> _orderEntries = new();
+    private List<OrderEntity> _orderEntries = new();
     private Store _store = new();
 
     [Key]
@@ -29,7 +29,7 @@ public class ProductOrder
         set => _orderingDate = value;
     }
 
-    public List<OrderEntry> OrderEntries
+    public List<OrderEntity> OrderEntries
     {
         get => _orderEntries;
         set => _orderEntries = value ?? throw new ArgumentNullException(nameof(value));
@@ -39,16 +39,5 @@ public class ProductOrder
     {
         get => _store;
         set => _store = value ?? throw new ArgumentNullException(nameof(value));
-    }
-
-    public override string ToString()
-    {
-        string tmp = "";
-        foreach (var oe in _orderEntries)
-        {
-            tmp += $"Amount: {oe.Amount}, Product: {oe.Product.Name}";
-            tmp += "\n";
-        }
-        return $"Id: {_id}, orderDate: {_orderingDate} OrderEntries:\n{tmp}";
     }
 }

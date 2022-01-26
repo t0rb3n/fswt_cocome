@@ -48,10 +48,4 @@ public class Store
         get => _stockItems;
         set => _stockItems = value ?? throw new ArgumentNullException(nameof(value));
     }
-
-
-    public override string ToString()
-    {
-        return $"Id: {_id}, Name: {_name}, Loc: {_location}, Enterprise: {_enterprise.Name}";
-    }
 }
