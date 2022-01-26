@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using TradingSystem.inventory.data.enterprise;
 
 namespace TradingSystem.inventory.data.store;
@@ -75,6 +74,7 @@ public class StoreQuery : IStoreQuery
         var result = dbc.ProductOrders
                          .Include(order => order.OrderEntries)
                          .ThenInclude(entry => entry.Product)
+                         .ThenInclude(product => product.ProductSupplier)
                          .Single(order => order.Id == orderId)
                      ?? throw new Exception($"Can't find order by id {orderId}");
         return result;
