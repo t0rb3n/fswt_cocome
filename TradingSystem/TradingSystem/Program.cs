@@ -1,5 +1,8 @@
 ﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using TradingSystem.inventory.application.store;
 using TradingSystem.inventory.data;
 using TradingSystem.inventory.data.enterprise;
@@ -11,21 +14,19 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        StoreApplication sApp = new(2);
+        /*StoreApplication sApp = new(1);
         
         var store = sApp.GetStore();
         Console.WriteLine(store);
 
-        System.Environment.Exit(0);
-
         var item01 = sApp.GetProductStockItem(10000033);
         Console.WriteLine(item01);
 
-        /*item01.SalesPrice += 2;
-        sApp.ChangePrice(item01);
+        item01.StockItem.SalesPrice += 2;
+        sApp.ChangePrice(item01.StockItem);
         
         var item02 = sApp.GetProductStockItem(10000033);
-        Console.WriteLine(item02);*/
+        Console.WriteLine(item02);
 
         var product = sApp.GetAllProductSuppliers();
         foreach (var p in product)
@@ -35,35 +36,66 @@ internal class Program
         
         Console.WriteLine("ProductOrder\n");
         
-        ProductOrder po = new ProductOrder();
-        po.Store = store;
-        po.OrderingDate = DateTime.UtcNow;
+        ProductOrderDTO poDto = new ProductOrderDTO();
 
-        OrderEntry oe1 = new OrderEntry();
+        OrderDTO oe1 = new OrderDTO();
         oe1.Amount = 2;
-        oe1.ProductOrder = po;
-        oe1.Product = product[0];
+        oe1.ProductSupplier = product[0];
         
-        OrderEntry oe2 = new OrderEntry();
+        OrderDTO oe2 = new OrderDTO();
         oe2.Amount = 3;
-        oe2.ProductOrder = po;
-        oe2.Product = product[1];
+        oe2.ProductSupplier = product[1];
         
-        po.OrderEntries.Add(oe1);
-        po.OrderEntries.Add(oe2);
+        poDto.Orders.Add(oe1);
+        poDto.Orders.Add(oe2);
         
-        //sApp.OrderProducts(po);
+        poDto.OrderingDate = DateTime.UtcNow;
+        
+        sApp.OrderProducts(poDto);
 
-        var proOrder = sApp.GetProductOrder(7);
+        var proOrder = sApp.GetProductOrder(1);
         Console.WriteLine(proOrder);
         
-        //sApp.RollInReceivedProductOrder(7);
+        sApp.RollInReceivedProductOrder(1);
 
         var lowstock = sApp.GetProductsLowStockItems();
         foreach (var item in lowstock)
         {
             Console.WriteLine(item);
+        }*/
+
+        
+        
+        var builder = WebApplication.CreateBuilder(args);
+        // Add services to the container.
+
+        builder.Services.AddControllersWithViews();
+        /*builder.Services.AddMvc().AddJsonOptions(opt =>
+        {
+            opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        });*/
+
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (!app.Environment.IsDevelopment())
+        {
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
         }
 
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseRouting();
+
+
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller}/{action=Index}/{id?}");
+
+        app.MapFallbackToFile("index.html");
+        ;
+
+        app.Run();
     }
 }

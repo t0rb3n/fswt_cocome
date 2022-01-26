@@ -1,0 +1,30 @@
+<h1 id="tableLabel">My StockItems</h1>
+
+<p *ngIf="!stockitems"><em>Loading...</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="stockitems">
+  <thead>
+  <tr>
+    <th>ProductName</th>
+    <th>ProductSupplier</th>
+    <th>Barcode</th>
+    <th>Amount</th>
+    <th>MinStock</th>
+    <th>MaxStock</th>
+    <th>PurchasePrice</th>
+    <th>SalePrice</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let item of stockitems">
+    <td>{{ item.productName }}</td>
+    <td>{{ item.supplierName }}</td>
+    <td>{{ item.barcode }}</td>
+    <td>{{ item.stockItem.amount }}</td>
+    <td>{{ item.stockItem.minStock }}</td>
+    <td>{{ item.stockItem.maxStock }}</td>
+    <td>{{ item.purchasePrice }} &euro;</td>
+    <td>{{ item.stockItem.salesPrice }} &euro;</td>
+  </tr>
+  </tbody>
+</table>
