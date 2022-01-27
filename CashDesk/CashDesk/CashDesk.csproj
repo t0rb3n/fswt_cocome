@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Tecan.Sila2" Version="4.0.2" />
+      <PackageReference Include="Tecan.Sila2.Client" Version="4.0.2" />
+    </ItemGroup>
+
 </Project>
