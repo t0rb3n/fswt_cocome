@@ -7,8 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Tecan.Sila2" Version="4.0.2" />
-      <PackageReference Include="Tecan.Sila2.Client" Version="4.0.2" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.42.0" />
+        <PackageReference Include="Tecan.Sila2" Version="4.0.2" />
+        <PackageReference Include="Tecan.Sila2.Client" Version="4.0.2" />
+        <Protobuf Include="Protos\enterprise.proto" GrpcServices="Client" />
+        <Protobuf Include="Protos\store.proto" GrpcServices="Client" />
     </ItemGroup>
 
 </Project>
