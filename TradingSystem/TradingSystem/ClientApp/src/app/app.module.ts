@@ -3,13 +3,12 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
-
 import { AppComponent } from './app.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
-import { StockItemComponent } from "./stockitem/stockitem.component";
+import {getBaseUrl} from "../main";
+import { NavMenuComponent } from './component/nav-menu/nav-menu.component';
+import {HomeComponent} from "./views/home/home.component";
+import {CounterComponent} from "./component/counter/counter.component";
+import {StockItemComponent} from "./component/stockitem/stockitem.component";
 
 @NgModule({
   declarations: [
@@ -17,7 +16,6 @@ import { StockItemComponent } from "./stockitem/stockitem.component";
     NavMenuComponent,
     HomeComponent,
     CounterComponent,
-    FetchDataComponent,
     StockItemComponent
   ],
   imports: [
@@ -27,11 +25,12 @@ import { StockItemComponent } from "./stockitem/stockitem.component";
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
       { path: 'stockitem', component: StockItemComponent },
     ])
   ],
-  providers: [],
+  providers: [
+    { provide: "BASE_API_URL", useFactory: getBaseUrl, deps: [] }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
