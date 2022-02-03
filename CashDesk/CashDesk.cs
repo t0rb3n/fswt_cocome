@@ -28,7 +28,7 @@ public class CashDesk
     private double _currentRunningTotal;
     private CashDeskState _currentState = CashDeskState.ExpectingSale;
     private bool _expressModeEnabled = false;
-    private List<ProductWithStockItemTO> _saleProducts;
+    private List<ProductWithStockItem> _saleProducts; // TODO use TO Objects
     private string _cardInfo;
 
     // New sale can be started anytime and thus aborted expect when we already paid by cash 
@@ -40,6 +40,11 @@ public class CashDesk
         CashDeskState.PayingByCash,
         CashDeskState.ExpectingCardInfo,
         CashDeskState.PayingByCreditCard
+    };
+
+    private static readonly HashSet<CashDeskState> AddItemToSaleStates = new HashSet<CashDeskState>
+    {
+        CashDeskState.ExpectingItems
     };
 
     public CashDesk()
@@ -82,13 +87,13 @@ public class CashDesk
     // if a key is pressed and we are not in the state "ExpectingSale", we throw an IllegalStateException.
     private void StartSale()
     {
-        this.CheckState(StartSaleStates);
+        this.StateIsLegal(StartSaleStates);
         //TODO send SALESTARTEDEVENT ? 
         this._currentState = CashDeskState.ExpectingItems;
         this.ResetSale();
     }
 
-    private void CheckState(IReadOnlySet<CashDeskState> legalStates)
+    private void StateIsLegal(IReadOnlySet<CashDeskState> legalStates)
     {
         if (!legalStates.Contains(this._currentState))
         {
@@ -98,12 +103,60 @@ public class CashDesk
 
     private void ResetSale()
     {
-        this._currentRunningTotal = 0.0;
-        this._saleProducts = new List<ProductWithStockItemTO>();
-        this._cardInfo = InvalidCardInfo;
+        _currentRunningTotal = 0.0;
+        _saleProducts = new List<ProductWithStockItem>();
+        _cardInfo = InvalidCardInfo;
     }
 
-    void listenToSaleStartedEvent()
+    private void AddItemToSale(long barcode)
+    {
+        StateIsLegal(AddItemToSaleStates);
+
+        if (CanAcceptItem())
+        {
+            try
+            {
+                ProductWithStockItem productWithStockItem = getProductWithStockItem(barcode);
+                AddItemToSale(productWithStockItem);
+            } 
+            //TODO noSuchProductException
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+        else
+        {
+            // TODO check/discuss what to do when we try to add more than policy allows
+        }
+    }
+
+    // If we are in express mode, you are only allowed to have a maximum of 8 Items
+    private bool CanAcceptItem()
+    {
+        bool expressModeDisabled = !this._expressModeEnabled;
+        bool itemCountUnderLimit = this._saleProducts.Count < ExpressModePolicy._expressItemsLimit;
+        return expressModeDisabled || itemCountUnderLimit;
+    }
+
+    private void AddItemToSale(ProductWithStockItem product)
+    {
+        _saleProducts.Add(product);
+        double currentTotal = CalculateCurrentTotal(product.Price);
+        DisplayCurrentTotal(currentTotal);
+    }
+
+    private double CalculateCurrentTotal(double price) => _currentRunningTotal += price;
+
+    private void DisplayCurrentTotal(double total)
+    {
+        // TODO send the new total to the Terminal and let it show.
+        throw new NotImplementedException();
+    }
+
+    private
+        void listenToSaleStartedEvent()
     {
         throw new NotImplementedException();
     }
