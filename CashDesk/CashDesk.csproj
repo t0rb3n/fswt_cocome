@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Grpc.AspNetCore" Version="2.42.0" />
+      <PackageReference Include="Tecan.Sila2.Client" Version="4.0.2" />
+      <Protobuf Include="Protos\enterprise.proto" GrpcServices="Client" />
+        
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Interfaces" />
+      <Folder Include="Sila" />
+    </ItemGroup>
+
+</Project>

@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashDesk", "CashDesk\CashDesk.csproj", "{2673E21B-5352-4CEE-9183-E709112E0561}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{AC0F12A4-0B0A-4DB2-BE1D-296EEE8A9A50}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashDesk", "CashDesk.csproj", "{D8C44306-12A1-43B8-9421-8641AED65ACC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,13 +8,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2673E21B-5352-4CEE-9183-E709112E0561}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2673E21B-5352-4CEE-9183-E709112E0561}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2673E21B-5352-4CEE-9183-E709112E0561}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2673E21B-5352-4CEE-9183-E709112E0561}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AC0F12A4-0B0A-4DB2-BE1D-296EEE8A9A50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC0F12A4-0B0A-4DB2-BE1D-296EEE8A9A50}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC0F12A4-0B0A-4DB2-BE1D-296EEE8A9A50}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC0F12A4-0B0A-4DB2-BE1D-296EEE8A9A50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8C44306-12A1-43B8-9421-8641AED65ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8C44306-12A1-43B8-9421-8641AED65ACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8C44306-12A1-43B8-9421-8641AED65ACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8C44306-12A1-43B8-9421-8641AED65ACC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

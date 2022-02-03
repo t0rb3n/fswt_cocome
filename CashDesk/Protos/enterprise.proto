@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+service EnterpriseRpc {
+    rpc GetProductWithStockItem (Barcode) returns (ProductWithStockItem) {}
+}
+message Barcode {
+    int64 code = 1;
+}
+message ProductWithStockItem {
+    string message = 1;
+    int32 id = 2;
+}
