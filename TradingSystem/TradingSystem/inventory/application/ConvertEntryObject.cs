@@ -1,8 +1,9 @@
+
+
 using TradingSystem.inventory.application.enterprise;
 using TradingSystem.inventory.application.store;
 using TradingSystem.inventory.data.enterprise;
 using TradingSystem.inventory.data.store;
-
 namespace TradingSystem.inventory.application;
 
 public static class ConvertEntryObject

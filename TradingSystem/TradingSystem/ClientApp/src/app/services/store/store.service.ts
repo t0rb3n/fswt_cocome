@@ -8,14 +8,12 @@ import {Observable} from "rxjs";
 })
 export class StoreService {
 
-
-
   constructor(
     private http: HttpClient,
   ) {
   }
 
-  getStockItems() : Observable<ProductSupplierStockItemDTO[]>{
+  getStockItems(): Observable<ProductSupplierStockItemDTO[]> {
     return this.http.get<ProductSupplierStockItemDTO[]>('storestockitem');
   }
 }
