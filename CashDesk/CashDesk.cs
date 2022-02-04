@@ -17,6 +17,8 @@ namespace CashDesk;
 public class CashDesk
 {
     private readonly EnterpriseRpc.EnterpriseRpcClient _enterpriseclient;
+    private readonly ILogger<CashDesk> _logger;
+
 
     private static readonly string InvalidCardInfo = "XXXX XXXX XXXX XXXX";
     private CashboxServiceClient _cashboxClient;
@@ -116,19 +118,25 @@ public class CashDesk
         {
             try
             {
-                ProductWithStockItem productWithStockItem = getProductWithStockItem(barcode);
+                ProductWithStockItem productWithStockItem = GetProductWithStockItem(barcode);
                 AddItemToSale(productWithStockItem);
-            } 
-            //TODO noSuchProductException
+            }
+            catch (NoSuchProductException nspe)
+            {
+                _logger.LogError("No product/stock item for barcode ${Barcode}", barcode);
+                //TODO  send this.sendInvalidProductBarcodeEvent(barcode);
+            }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                _logger.LogError("Failed to communicate with store server");
             }
         }
         else
         {
             // TODO check/discuss what to do when we try to add more than policy allows
+            // TODO show message in display
+            _logger.LogError("Cannot process more than ${Number} items in express mode!",
+                ExpressModePolicy._expressItemsLimit);
         }
     }
 
@@ -155,8 +163,7 @@ public class CashDesk
         throw new NotImplementedException();
     }
 
-    private
-        void listenToSaleStartedEvent()
+    private void listenToSaleStartedEvent()
     {
         throw new NotImplementedException();
     }
@@ -171,7 +178,7 @@ public class CashDesk
         throw new NotImplementedException();
     }
 
-    ProductWithStockItem getProductWithStockItem(long barcode)
+    private ProductWithStockItem GetProductWithStockItem(long barcode)
     {
         return _enterpriseclient.GetProductWithStockItem(new Barcode {Code = barcode});
     }
