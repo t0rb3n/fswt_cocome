@@ -1,0 +1,9 @@
+.set-to-top {
+  position: absolute;
+  width: 100%;
+  top: 0;
+}
+
+.empty-box {
+  height: 5em;
+}

@@ -1,0 +1,21 @@
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+.nav-height-fix-1 {
+  padding-top: 5em;
+}
+
+.bs-gray-800 {
+  background-color: #2B3034;
+}
+
