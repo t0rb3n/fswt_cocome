@@ -25,6 +25,11 @@
       <ProjectReference Include="..\Store\Store.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="StoreApp\src\app\component" />
+      <Folder Include="StoreApp\src\app\views" />
+    </ItemGroup>
+
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
         <!-- Ensure Node.js is installed -->
         <Exec Command="node --version" ContinueOnError="true">

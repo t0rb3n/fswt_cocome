@@ -1,6 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {GlobalConfig, StoreConfig} from "./app.config";
-import {HttpClient} from "@angular/common/http";
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -9,8 +7,5 @@ import {HttpClient} from "@angular/common/http";
 })
 
 export class AppComponent {
-  constructor(public config:GlobalConfig, private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
-
-  }
-
+  title = 'app';
 }

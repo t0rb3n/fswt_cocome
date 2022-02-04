@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GlobalConfig } from "../app.config";
+import { GlobalConfig } from "../../app.config";
 
 @Component({
   selector: 'app-header',

@@ -5,10 +5,10 @@ import { HttpClientModule} from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { HeaderComponent } from "./header/header.component";
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
+import { HeaderComponent } from "./component/header/header.component";
+import { NavMenuComponent } from './component/nav-menu/nav-menu.component';
+import { HomeComponent } from './views/home/home.component';
+import { CounterComponent } from './component/counter/counter.component';
 
 @NgModule({
   declarations: [

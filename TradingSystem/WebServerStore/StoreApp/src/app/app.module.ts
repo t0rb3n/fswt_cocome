@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule} from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
+import { getBaseUrl } from "../main";
 import { AppComponent } from './app.component';
-import { HeaderComponent } from "./header/header.component";
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { StockItemComponent } from "./stockitem/stockitem.component";
+import { HeaderComponent } from "./component/header/header.component";
+import { NavMenuComponent } from './component/nav-menu/nav-menu.component';
+import { HomeComponent } from './views/home/home.component';
+import { CounterComponent } from './component/counter/counter.component';
+import { StockItemComponent } from "./component/stockitem/stockitem.component";
 
 @NgModule({
   declarations: [
@@ -29,6 +30,9 @@ import { StockItemComponent } from "./stockitem/stockitem.component";
       { path: 'counter', component: CounterComponent, data: { title: 'Counter' } },
       { path: 'stockitem', component: StockItemComponent, data: { title: 'StockItem' } },
     ])
+  ],
+  providers: [
+    { provide: "BASE_API_URL", useFactory: getBaseUrl, deps: [] }
   ],
   bootstrap: [
     AppComponent
