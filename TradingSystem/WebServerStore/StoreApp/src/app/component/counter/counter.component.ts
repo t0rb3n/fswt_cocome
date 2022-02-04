@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {Title} from "../app.config";
+import {Title} from "../../app.config";
 import {ActivatedRoute} from "@angular/router";
 
 @Component({

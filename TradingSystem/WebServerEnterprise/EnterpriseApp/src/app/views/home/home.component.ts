@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { GlobalConfig, Title } from "../app.config";
+import { GlobalConfig, Title } from "../../app.config";
 
 @Component({
   selector: 'app-home',
