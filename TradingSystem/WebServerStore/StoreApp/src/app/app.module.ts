@@ -20,9 +20,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ProducttableComponent } from './component/producttable/producttable.component';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
-import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { ChangePriceDialogComponent } from './component/change-price-dialog/change-price-dialog.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -31,6 +34,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     CounterComponent,
     NavigationComponent,
     ProducttableComponent,
+    ChangePriceDialogComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -55,7 +59,11 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    MatProgressSpinnerModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatSnackBarModule
   ],
   providers: [
     { provide: "BASE_API_URL", useFactory: getBaseUrl, deps: [] }

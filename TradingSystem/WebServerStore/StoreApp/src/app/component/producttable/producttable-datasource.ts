@@ -42,8 +42,8 @@ export class ProductSupplierStockItemDTODataSource extends DataSource<ProductSup
             ).pipe(catchError(() => observableOf(null)));
           }),
           map(data => {
-            // hacky way to do it but works
-             this.length = data!!.length;
+             // hacky way to do it but works
+              this.length = data!!.length;
               if (data === null) {
                 return [];
               }
