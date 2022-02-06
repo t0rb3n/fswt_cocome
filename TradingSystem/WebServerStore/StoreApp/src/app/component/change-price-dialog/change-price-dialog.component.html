@@ -1,0 +1,71 @@
+<h1 mat-dialog-title>Change product price</h1>
+<div mat-dialog-content>
+
+  <form class="example-form" [formGroup]="changePriceForm" (ngSubmit)="onSubmit()">
+
+    <table class="example-full-width" cellspacing="0">
+      <tr>
+        <td>
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Product name</mat-label>
+            <input matInput disabled value="{{data.productName}}">
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Supplier</mat-label>
+            <input matInput disabled value="{{data.supplierName}}">
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Barcode</mat-label>
+            <input matInput disabled value="{{data.barcode}}">
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Amount</mat-label>
+            <input matInput disabled value="{{data.stockItem.amount}}">
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>MinStock</mat-label>
+            <input matInput disabled value="{{data.stockItem.minStock}}">
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>MaxStock</mat-label>
+            <input matInput disabled value="{{data.stockItem.maxStock}}">
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Purchase price in €</mat-label>
+            <input matInput disabled value="{{data.purchasePrice}}">
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Price in €</mat-label>
+            <input matInput placeholder="Neuer Preis" formControlName="salesPrice" id="salesPrice">
+            <mat-error *ngIf="changePriceForm.get('salesPrice')?.errors?.required"> Please fill in </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button mat-raised-button color="primary" type="submit">Change price</button>
+        </td>
+      </tr>
+    </table>    
+  </form>
+</div>
