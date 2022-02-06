@@ -11,7 +11,6 @@ export class GlobalConfig {
     this.http.get<StoreConfig>(this.baseUrl + 'config').subscribe(
       result => {
         this.server = result;
-        console.log('load', this.server);
       }
     )
   }
