@@ -15,16 +15,11 @@ public class GreeterEnterpriseService : Greeter.GreeterBase
         _enterpriseApplication = eApp;
     }
 
-    public override Task<StockItemReply> ChangePrice(StockItemRequest request, ServerCallContext context)
+    public override Task<StockItemReply> ChangePrice(StockItemIdRequest request, ServerCallContext context)
     {
-        var si = new StockItem {
-            Id = request.ItemId,
-            Amount = request.Amount,
-            SalesPrice = request.SalesPrice,
-            MinStock = request.MinStock,
-            MaxStock = request.MaxStock
-        };
-        var result = _enterpriseApplication.ChangePrice(si);
+        var id = request.ItemId;
+        var price = request.NewPrice;
+        var result = _enterpriseApplication.ChangePrice(id, price);
         _logger.LogInformation("received stockItem: {id}", request.ItemId);
 
         return Task.FromResult(new StockItemReply {Success = result});

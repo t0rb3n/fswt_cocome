@@ -8,5 +8,5 @@ public interface IStoreApplication
     public void OrderProducts(ProductOrderDTO productOrderDto);
     public ProductOrderDTO GetProductOrder(long productOrderId);
     public void RollInReceivedProductOrder(long productOrderId);
-    public void ChangePrice(StockItemDTO stockItem);
+    public void ChangePrice(long stockItemId, double newPrice);
 }

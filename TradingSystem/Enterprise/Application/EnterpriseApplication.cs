@@ -36,19 +36,20 @@ public class EnterpriseApplication : IEnterpriseApplication
         return result;
     }
     
-    public bool ChangePrice(StockItem stockItem)
+    public bool ChangePrice(long id, double newPrice)
     {
         using var dbc = new DatabaseContext();
         using var ctx = dbc.Database.BeginTransaction();
         try
         {
-            var result = _storeQuery.QueryStockItemById(stockItem.Id, dbc);
-            result.SalesPrice = stockItem.SalesPrice;
+            var result = _storeQuery.QueryStockItemById(id, dbc);
+            result.SalesPrice = newPrice;
             dbc.SaveChanges();
             ctx.Commit();
         }
         catch (Exception e)
         {
+            ctx.Rollback();
             Console.WriteLine(e);
             return false;
         }

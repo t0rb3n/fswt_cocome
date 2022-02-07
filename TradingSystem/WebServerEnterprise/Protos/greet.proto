@@ -4,13 +4,10 @@ option csharp_namespace = "WebServerEnterprise";
 
 package greet;
 
-// The greeting service definition.
 service Greeter {
-  // Sends a greeting
-  rpc ChangePrice(StockItemRequest) returns (StockItemReply);
+  rpc ChangePrice(StockItemIdRequest) returns (StockItemReply);
 }
 
-// The request message containing the user's name.
 message StockItemRequest {
   int64 itemId = 1;
   double salesPrice = 2;
@@ -19,7 +16,11 @@ message StockItemRequest {
   int32 maxStock = 5;
 }
 
-// The response message containing the greetings.
+message StockItemIdRequest {
+	int64 itemId = 1;
+	double newPrice = 2;
+}
+
 message StockItemReply {
   bool success = 1;
 }
