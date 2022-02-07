@@ -174,7 +174,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         }
     }
 
-    public void ChangePrice(StockItemDTO stockItem)
+    public void ChangePrice(long stockItemId, double newPrice)
     {
         /*using var dbc = new DatabaseContext();
         using var ctx = dbc.Database.BeginTransaction();
@@ -197,16 +197,12 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         var client = new Greeter.GreeterClient(channel);
         var d = new StockItemRequest();
         
-            var reply = client.ChangePrice(new StockItemRequest
+            var reply = client.ChangePrice(new StockItemIdRequest
         {
-            ItemId = stockItem.ItemId,
-            Amount = stockItem.Amount,
-            MaxStock = stockItem.MaxStock,
-            MinStock = stockItem.MinStock,
-            SalesPrice = stockItem.SalesPrice
+            ItemId = stockItemId,
+            NewPrice = newPrice,
         });
-        Console.WriteLine("ChangePrice success: " + reply.Success);
-        
+        Console.WriteLine("ChangePrice success: " + reply.Success); 
         
     }
 

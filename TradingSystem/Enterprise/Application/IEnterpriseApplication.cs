@@ -8,5 +8,5 @@ public interface IEnterpriseApplication
     public ReportDTO GetStockReport(Data.Store.Store store);
     public ReportDTO GetStockReport(Data.Enterprise.Enterprise enterprise);
     public ReportDTO GetMeanTimeToDeliveryReport(Data.Enterprise.Enterprise enterprise);
-    public bool ChangePrice(StockItem stockItem);
+    public bool ChangePrice(long stockItemId, double newPrice);
 }
