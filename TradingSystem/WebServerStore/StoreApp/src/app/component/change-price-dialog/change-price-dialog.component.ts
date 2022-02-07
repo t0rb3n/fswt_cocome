@@ -32,7 +32,7 @@ export class ChangePriceDialogComponent implements OnInit {
       return;
     }
     this.snackBar.open("Changed price succesfully!", "✖", {panelClass: ['success']})
-    /*this.storeService.changePrice(this.data.stockItem.itemId, this.changePriceForm.value.salesPrice).subscribe(
+    /*this.storeService.changeStockItemPrice(this.data.stockItem.itemId, this.changePriceForm.value.salesPrice).subscribe(
       () => {
         this.snackbar.open("Changed price succesfully!","✖",{panelClass: ['success']})
       });
