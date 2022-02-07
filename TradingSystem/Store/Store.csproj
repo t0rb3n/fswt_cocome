@@ -8,11 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Data\Data.csproj" />
-      <ProjectReference Include="..\Enterprise\Enterprise.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Protobuf Include="Protos\greet.proto">
             <GrpcServices>Client</GrpcServices>
             <Access>Public</Access>
@@ -30,6 +25,14 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Data\Data.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Application" />
     </ItemGroup>
     
 

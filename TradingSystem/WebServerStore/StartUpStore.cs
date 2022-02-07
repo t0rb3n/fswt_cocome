@@ -1,4 +1,4 @@
-using Store.Application;
+using Application.Store;
 
 namespace WebServerStore;
 

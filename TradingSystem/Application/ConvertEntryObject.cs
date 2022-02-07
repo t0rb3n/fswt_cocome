@@ -1,9 +1,9 @@
 using Data.Enterprise;
 using Data.Store;
-using Enterprise.Application;
-using Store.Application;
+using Application.Enterprise;
+using Application.Store;
 
-namespace Store;
+namespace Application.Store;
 
 public static class ConvertEntryObject
 {

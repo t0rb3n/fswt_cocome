@@ -10,17 +10,11 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Data\Data.csproj" />
+        <ProjectReference Include="..\Store\Store.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Protobuf Include="Protos\greet.proto">
-        <GrpcServices>Client</GrpcServices>
-        <Access>Public</Access>
-        <ProtoCompile>True</ProtoCompile>
-        <CompileOutputs>True</CompileOutputs>
-        <OutputDir>obj/Debug/net6.0/</OutputDir>
-        <Generator>MSBuild:Compile</Generator>
-      </Protobuf>
+      <Folder Include="Application" />
     </ItemGroup>
 
 </Project>

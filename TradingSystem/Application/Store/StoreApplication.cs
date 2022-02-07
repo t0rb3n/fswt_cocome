@@ -2,7 +2,7 @@ using Data;
 using Data.Store;
 using Grpc.Net.Client;
 
-namespace Store.Application;
+namespace Application.Store;
 
 public class StoreApplication : IStoreApplication, ICashDeskConnector
 {

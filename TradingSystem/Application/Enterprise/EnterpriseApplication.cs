@@ -1,8 +1,9 @@
+using Application.Store;
 using Data;
 using Data.Enterprise;
 using Data.Store;
 
-namespace Enterprise.Application;
+namespace Application.Enterprise;
 
 public class EnterpriseApplication : IEnterpriseApplication
 {
@@ -56,7 +57,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         return true;
     }
 
-    public ReportDTO GetStockReport(Store store)
+    public ReportDTO GetStockReport(Data.Store.Store store)
     {
         throw new NotImplementedException();
     }

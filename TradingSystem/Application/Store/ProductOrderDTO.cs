@@ -1,4 +1,4 @@
-namespace Store.Application;
+namespace Application.Store;
 
 public class ProductOrderDTO
 {

@@ -1,4 +1,4 @@
-namespace Enterprise.Application;
+namespace Application.Enterprise;
 
 public class StoreDTO
 {

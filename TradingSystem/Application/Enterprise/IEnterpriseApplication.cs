@@ -1,6 +1,6 @@
 using Data.Store;
 
-namespace Enterprise.Application;
+namespace Application.Enterprise;
 
 public interface IEnterpriseApplication
 {

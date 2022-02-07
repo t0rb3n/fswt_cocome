@@ -1,6 +1,6 @@
-using Enterprise.Application;
+using Application.Enterprise;
 
-namespace Store.Application;
+namespace Application.Store;
 
 public class StoreEnterpriseDTO : StoreDTO
 {

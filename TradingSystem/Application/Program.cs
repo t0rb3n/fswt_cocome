@@ -1,12 +1,15 @@
-﻿using System;
-using Application.Store.Application;
+﻿using Application.Enterprise;
+using Application.Store;
 
-namespace Application.Store;
+namespace Application;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
+        EnterpriseApplication eApp = new EnterpriseApplication(1);
+        //eApp.TestGrpc();
+        
         StoreApplication sApp = new(1);
         
         var store = sApp.GetStore();
@@ -59,7 +62,5 @@ internal class Program
 
         //EnterpriseApplication eApp = new EnterpriseApplication(1);
         //eApp.TestGrpc();
-
-
     }
 }
