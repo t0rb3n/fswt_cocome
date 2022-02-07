@@ -1,0 +1,16 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "e59c8b00-99a6-48e1-8438-f9555dbdd2d9": {
+      "ProjectGuid": "e59c8b00-99a6-48e1-8438-f9555dbdd2d9",
+      "DisplayName": "Store",
+      "ColorIndex": 0
+    },
+    "12329d4e-7913-49d3-8efa-cc62bea77b0f": {
+      "ProjectGuid": "12329d4e-7913-49d3-8efa-cc62bea77b0f",
+      "DisplayName": "WebServerStore",
+      "ColorIndex": 1
+    }
+  },
+  "NextColorIndex": 2
+}

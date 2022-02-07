@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Store.Application;
 
@@ -22,6 +23,15 @@ public class StoreStockItemController : ControllerBase
         return _storeApp
             .GetAllProductSupplierStockItems()
             .ToArray();
+    }
+
+    [HttpPatch("{id}")]
+    public IActionResult Patch(
+        int id,
+        [FromBody] JsonPatchDocument<ProductStockItemDTO> patch
+        )
+    {
+        var entity = ProductStockItemDTO.first
     }
 
 }

@@ -21,7 +21,7 @@ public class StartUpStore
         builder.Configuration["ServerInfo:StoreLocation"] = store.Location;
         
         // Add services to the container.
-        builder.Services.AddControllersWithViews();
+        builder.Services.AddControllersWithViews().AddNewtonsoftJson();
         builder.Services.AddSingleton<IStoreApplication>(application);
 
         var app = builder.Build();
