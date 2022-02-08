@@ -10,7 +10,17 @@
       "ProjectGuid": "12329d4e-7913-49d3-8efa-cc62bea77b0f",
       "DisplayName": "WebServerStore",
       "ColorIndex": 1
+    },
+    "a91c0388-850d-423d-a491-3442e2c5413c": {
+      "ProjectGuid": "a91c0388-850d-423d-a491-3442e2c5413c",
+      "DisplayName": "Enterprise",
+      "ColorIndex": 2
+    },
+    "de7881f9-6a45-4d04-9554-d87f9b8e799b": {
+      "ProjectGuid": "de7881f9-6a45-4d04-9554-d87f9b8e799b",
+      "DisplayName": "WebServerEnterprise",
+      "ColorIndex": 3
     }
   },
-  "NextColorIndex": 2
+  "NextColorIndex": 4
 }
