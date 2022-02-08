@@ -16,7 +16,7 @@ internal class Program
         Console.WriteLine(item01);
 
         item01.StockItem.SalesPrice -= 2;
-        sApp.ChangePrice(item01.StockItem);
+        sApp.ChangePrice(item01.StockItem.ItemId,item01.StockItem.SalesPrice);
         
         var item02 = sApp.GetProductStockItem(10000033);
         Console.WriteLine(item02);

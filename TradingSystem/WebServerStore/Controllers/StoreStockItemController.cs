@@ -28,10 +28,14 @@ public class StoreStockItemController : ControllerBase
     [HttpPatch("{id}")]
     public IActionResult Patch(
         int id,
-        [FromBody] JsonPatchDocument<ProductStockItemDTO> patch
+        [FromBody] JsonPatchDocument<StockItemDTO> patch
         )
     {
-        var entity = ProductStockItemDTO.first
+        //var entity = _storeApp.ChangePrice(id, patch.);
+        var item = new StockItemDTO();
+        patch.ApplyTo(item);
+        Console.WriteLine(item.SalesPrice);
+        return Ok();
     }
 
 }
