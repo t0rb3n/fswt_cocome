@@ -31,10 +31,9 @@ public class StoreStockItemController : ControllerBase
         [FromBody] JsonPatchDocument<StockItemDTO> patch
         )
     {
-        //var entity = _storeApp.ChangePrice(id, patch.);
         var item = new StockItemDTO();
         patch.ApplyTo(item);
-        Console.WriteLine(item.SalesPrice);
+        _storeApp.ChangePrice(id, item.SalesPrice);
         return Ok();
     }
 

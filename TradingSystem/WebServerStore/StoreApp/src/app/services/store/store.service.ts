@@ -18,8 +18,13 @@ export class StoreService {
     return this.http.get<ProductSupplierStockItemDTO[]>('storestockitem');
   }
 
-  changeStockItemPrice(stockItemId: number, newPrice: number): void {
-    this.http.patch(`storestockitem/${stockItemId}/price`, new StockItemPrice(newPrice));
+  changeStockItemPrice(stockItemId: number, newPrice: number): Observable<any> {
+    return this.http.patch(`storestockitem/${stockItemId}`,
+      [{
+      "op": "replace",
+      "path": "/salesPrice",
+      "value": newPrice
+      }]);
   }
 }
 
