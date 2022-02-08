@@ -21,14 +21,10 @@ export class StoreService {
   changeStockItemPrice(stockItemId: number, newPrice: number): Observable<any> {
     return this.http.patch(`storestockitem/${stockItemId}`,
       [{
-      "op": "replace",
-      "path": "/salesPrice",
-      "value": newPrice
+        "op": "replace",
+        "path": "/salesPrice",
+        "value": newPrice
       }]);
   }
 }
 
-class StockItemPrice {
-  constructor(public price: number) {
-  }
-}
