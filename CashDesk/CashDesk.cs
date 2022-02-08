@@ -1,16 +1,10 @@
-﻿using System.Net.NetworkInformation;
-using CashDesk.BankServer;
+﻿using CashDesk.BankServer;
 using CashDesk.BarcodeScannerService;
 using CashDesk.CardReaderService;
 using CashDesk.CashboxService;
 using CashDesk.DisplayController;
 using CashDesk.Exceptions;
 using CashDesk.PrintingService;
-using CashDesk.TransferObjects;
-using Tecan.Sila2;
-using Tecan.Sila2.Client;
-using Tecan.Sila2.Client.ExecutionManagement;
-using Tecan.Sila2.Discovery;
 
 namespace CashDesk;
 
@@ -51,55 +45,74 @@ public class CashDesk
 
     public CashDesk()
     {
-        var connector = new ServerConnector(new DiscoveryExecutionManager());
-        var discovery = new ServerDiscovery(connector);
-        var servers = discovery.GetServers(TimeSpan.FromSeconds(10),
-            n => n.NetworkInterfaceType == NetworkInterfaceType.Loopback);
-        var terminalServer = servers.First(s => s.Info.Type == "Terminal");
-        var bankServer = servers.FirstOrDefault(s => s.Info.Type == "BankServer");
-        var executionManagerFactory = new ExecutionManagerFactory(Enumerable.Empty<IClientRequestInterceptor>());
-        var terminalServerExecutionManager = executionManagerFactory.CreateExecutionManager(terminalServer);
-
-        _cashboxClient = new CashboxServiceClient(terminalServer.Channel, terminalServerExecutionManager);
-        _displayClient = new DisplayControllerClient(terminalServer.Channel, terminalServerExecutionManager);
-        _printerClient = new PrintingServiceClient(terminalServer.Channel, terminalServerExecutionManager);
-        _barcodeClient = new BarcodeScannerServiceClient(terminalServer.Channel, terminalServerExecutionManager);
-        _cardReaderClient = new CardReaderServiceClient(terminalServer.Channel, terminalServerExecutionManager);
-        _bankClient =
-            new BankServerClient(bankServer?.Channel, executionManagerFactory.CreateExecutionManager(bankServer));
         _currentRunningTotal = 0;
     }
 
-    async void WaitForSaleStarted(
-        IIntermediateObservableCommand<CashboxButton> cashboxButtons
-    )
-    {
-        while (await cashboxButtons.IntermediateValues.WaitToReadAsync())
-        {
-            if (!cashboxButtons.IntermediateValues.TryRead(out
-                    var button)) continue;
-            if (button == CashboxButton.StartNewSale)
-            {
-                StartSale();
-            }
-        }
-    }
 
-    // upon starting we shall listen to the keys pressed. 
-    // if a key is pressed and we are not in the state "ExpectingSale", we throw an IllegalStateException.
-    private void StartSale()
+    /*
+     
+     Methods used by the CashDeskHandler
+     
+     */
+    public void StartSale()
     {
         this.StateIsLegal(StartSaleStates);
-        //TODO send SALESTARTEDEVENT ? 
+
         this._currentState = CashDeskState.ExpectingItems;
         this.ResetSale();
     }
 
+    /*
+     *
+     *
+     * TODO
+     * Implement the logic for the sales
+     *
+     * Upon expecting items we start a new listener
+     * for items scanned that publishes different events
+     *
+     * 
+     *      
+     */
+    public void FinishSale()
+    {
+    }
+
+    public void DisableExpressModeHandler()
+    {
+    }
+
+    public void PayWithCard()
+    {
+    }
+
+    public void PayWithCash()
+    {
+    }
+
+    public void AddItemToSale(string barcode)
+    {
+        StateIsLegal(AddItemToSaleStates);
+
+        if (CanAcceptItem())
+        {
+            // get ProductWithStockItem(barcode)
+            
+            //addItemToSale(productStockItem);
+            
+            
+        }
+    }
+
+    /*
+     * Helper methods 
+     * 
+     */
     private void StateIsLegal(IReadOnlySet<CashDeskState> legalStates)
     {
-        if (!legalStates.Contains(this._currentState))
+        if (!legalStates.Contains(_currentState))
         {
-            throw new IllegalCashDeskStateException(this._currentState, legalStates);
+            throw new IllegalCashDeskStateException(_currentState, legalStates);
         }
     }
 
