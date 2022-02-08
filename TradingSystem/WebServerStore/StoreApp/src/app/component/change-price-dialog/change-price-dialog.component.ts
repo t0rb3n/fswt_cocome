@@ -31,18 +31,16 @@ export class ChangePriceDialogComponent implements OnInit {
     if (!this.changePriceForm.valid) {
       return;
     }
-    this.snackBar.open("Changed price succesfully!", "✖", {panelClass: ['success']})
-    /*this.storeService.changeStockItemPrice(this.data.stockItem.itemId, this.changePriceForm.value.salesPrice).subscribe(
+    this.storeService.changeStockItemPrice(this.data.stockItem.itemId, this.changePriceForm.value.salesPrice).subscribe(
       () => {
-        this.snackbar.open("Changed price succesfully!","✖",{panelClass: ['success']})
-      });
-    },
+        this.snackBar.open("Changed price succesfully!", "✖", { panelClass: ['success'] });
+      },
       error => {
-        this.snackbar.open("Could not change price!","✖",{panelClass: ['failure']})
+        this.snackBar.open("Could not change price!","✖",{panelClass: ['failure']})
       }
-    );*/
+    );
 
-    this.dialogRef.close()
+    this.dialogRef.close();
   }
 
 }

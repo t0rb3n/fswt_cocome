@@ -56,7 +56,7 @@
         <td>
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>Price in €</mat-label>
-            <input matInput placeholder="Neuer Preis" formControlName="salesPrice" id="salesPrice">
+            <input matInput type="number" placeholder="Neuer Preis" formControlName="salesPrice" id="salesPrice">
             <mat-error *ngIf="changePriceForm.get('salesPrice')?.errors?.required"> Please fill in </mat-error>
           </mat-form-field>
         </td>
