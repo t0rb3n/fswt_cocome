@@ -45,7 +45,7 @@ public class StartUpStore
 
         // Add services to the container.
         builder.Services.AddGrpc();
-        builder.Services.AddControllersWithViews();
+        builder.Services.AddControllersWithViews().AddNewtonsoftJson();
         builder.Services.AddSingleton<IStoreApplication>(application);
         builder.Services.AddSingleton<ICashDeskConnector>(application);
 
