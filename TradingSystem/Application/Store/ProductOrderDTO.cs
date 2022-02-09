@@ -2,15 +2,15 @@ namespace Application.Store;
 
 public class ProductOrderDTO
 {
-    protected long productOderId;
+    protected long productOrderId;
     protected DateTime deliveryDate;
     protected DateTime orderingDate;
     protected List<OrderDTO> orders = new();
 
-    public long ProductOderId
+    public long ProductOrderId
     {
-        get => productOderId;
-        set => productOderId = value;
+        get => productOrderId;
+        set => productOrderId = value;
     }
 
     public DateTime DeliveryDate
@@ -33,6 +33,6 @@ public class ProductOrderDTO
 
     public override string ToString()
     {
-        return $"Id: {productOderId}, orderDate: {orderingDate}, delivDate: {deliveryDate}";
+        return $"Id: {productOrderId}, orderDate: {orderingDate}, delivDate: {deliveryDate}";
     }
 }
