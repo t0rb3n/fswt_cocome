@@ -46,7 +46,11 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns;"
+        (click)="openChangePriceModal(row)"
+    ></tr>
 
     <tr class="mat-row" *matNoDataRow>
       <td class="mat-cell" colspan="9999">
@@ -58,7 +62,7 @@
   <mat-paginator #paginator
       [length]="this.dataSource.length"
       [pageIndex]="0"
-      [pageSize]="10"
+      [pageSize]="20"
       [pageSizeOptions]="[5, 10, 20, 50, 100]"
       aria-label="Select page">
   </mat-paginator>

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Application.Store;
 
@@ -22,6 +23,18 @@ public class StoreStockItemController : ControllerBase
         return _storeApp
             .GetAllProductSupplierStockItems()
             .ToArray();
+    }
+
+    [HttpPatch("{id}")]
+    public IActionResult Patch(
+        int id,
+        [FromBody] JsonPatchDocument<StockItemDTO> patch
+        )
+    {
+        var item = new StockItemDTO();
+        patch.ApplyTo(item);
+        _storeApp.ChangePrice(id, item.SalesPrice);
+        return Ok();
     }
 
 }
