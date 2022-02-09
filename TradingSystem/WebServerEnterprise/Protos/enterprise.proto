@@ -17,7 +17,7 @@ service EnterpriseService {
   rpc OrderProducts(stream ProductOrderRequest) returns (google.protobuf.Empty) {};
   rpc GetProductOrder(ProductOrderRequest) returns (ProductOrderReply) {};
   rpc RollInReceivedProductOrder(ProductOrderRequest) returns (google.protobuf.Empty) {};
-  rpc ChangePrice(StockItemReply) returns (google.protobuf.Empty) {};
+  rpc ChangePrice(StockItemIdRequest) returns (google.protobuf.Empty) {};
   rpc makeBookSales(SaleRequest) returns (google.protobuf.Empty) {};
   rpc GetProductStockItem(ProductStockItemRequest) returns (ProductStockItemReply) {};
 }
@@ -37,6 +37,11 @@ message ProductOrderRequest {
   google.protobuf.Timestamp delivery_date = 3;
   google.protobuf.Timestamp ordering_date = 4;
   repeated OrderReply orders = 5;
+}
+
+message StockItemIdRequest {
+  int64 item_id = 1;
+  double new_price = 2;
 }
 
 message StoreEnterpriseReply {
