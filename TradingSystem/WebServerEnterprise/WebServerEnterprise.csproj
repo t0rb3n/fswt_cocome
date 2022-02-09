@@ -28,21 +28,31 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Application\Application.csproj" />
-      <ProjectReference Include="..\Enterprise\Enterprise.csproj" />
+      <Folder Include="EnterpriseApp\src\app\classes" />
+      <Folder Include="EnterpriseApp\src\app\component" />
+      <Folder Include="EnterpriseApp\src\app\services" />
+      <Folder Include="EnterpriseApp\src\app\views" />
     </ItemGroup>
 
     <ItemGroup>
-      <Protobuf Include="Protos\greet.proto">
+      <Protobuf Include="Protos\enterprise.proto">
+        <GrpcServices>Both</GrpcServices>
+        <Access>Public</Access>
+        <ProtoCompile>True</ProtoCompile>
+        <CompileOutputs>True</CompileOutputs>
+        <OutputDir>obj/Debug/net6.0/</OutputDir>
         <Generator>MSBuild:Compile</Generator>
       </Protobuf>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="EnterpriseApp\src\app\classes" />
-      <Folder Include="EnterpriseApp\src\app\component" />
-      <Folder Include="EnterpriseApp\src\app\services" />
-      <Folder Include="EnterpriseApp\src\app\views" />
+      <ProjectReference Include="..\Application\Application.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="..\Application\GrpcMapperObject.cs">
+        <Link>GrpcMapperObject.cs</Link>
+      </Compile>
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

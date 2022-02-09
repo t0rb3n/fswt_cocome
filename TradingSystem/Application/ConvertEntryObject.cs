@@ -3,7 +3,7 @@ using Data.Store;
 using Application.Enterprise;
 using Application.Store;
 
-namespace Application.Store;
+namespace Application;
 
 public static class ConvertEntryObject
 {
@@ -77,20 +77,14 @@ public static class ConvertEntryObject
         OrderDTO result = new();
         result.OrderId = orderEntry.Id;
         result.Amount = orderEntry.Amount;
-        result.ProductSupplier.Barcode = orderEntry.Product.Barcode;
-        result.ProductSupplier.ProductId = orderEntry.Product.Id;
-        result.ProductSupplier.ProductName = orderEntry.Product.Name;
-        result.ProductSupplier.Barcode = orderEntry.Product.Barcode;
-        result.ProductSupplier.PurchasePrice = orderEntry.Product.PurchasePrice;
-        result.ProductSupplier.SupplierId = orderEntry.Product.ProductSupplier.Id;
-        result.ProductSupplier.SupplierName = orderEntry.Product.ProductSupplier.Name;
+        result.ProductSupplier = ToProductSupplierDTO(orderEntry.Product);
         return result;
     }
     
     public static ProductOrderDTO ToProductOrderDTO(ProductOrder productOrder)
     {
         ProductOrderDTO result = new();
-        result.ProductOderId = productOrder.Id;
+        result.ProductOrderId = productOrder.Id;
         result.OrderingDate = productOrder.OrderingDate;
         result.DeliveryDate = productOrder.DeliveryDate;
         foreach (var oe in productOrder.OrderEntries)

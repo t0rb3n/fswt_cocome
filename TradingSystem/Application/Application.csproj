@@ -4,18 +4,8 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <OutputType>Exe</OutputType>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Protobuf Include="Protos\greet.proto">
-            <GrpcServices>Client</GrpcServices>
-            <Access>Public</Access>
-            <ProtoCompile>True</ProtoCompile>
-            <CompileOutputs>True</CompileOutputs>
-            <OutputDir>obj/Debug/net6.0/</OutputDir>
-            <Generator>MSBuild:Compile</Generator>
-        </Protobuf>
-    </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Data\Data.csproj" />
@@ -30,4 +20,14 @@
       </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+        <Protobuf Include="..\WebServerEnterprise\Protos\enterprise.proto"
+                  GrpcServices="client"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Include="..\WebServerEnterprise\Services\DtoMapperObject.cs">
+        <Link>DtoMapperObject.cs</Link>
+      </Compile>
+    </ItemGroup>
 </Project>

@@ -1,8 +1,8 @@
-using Enterprise.Application;
-using WebServerEnterprise.Services;
+using Application.Enterprise;
+using GrpcService.Services;
 
 namespace WebServerEnterprise;
-
+//TODO clean up
 public class StartUpEnterprise
 {
     public static void Main(string[] args)
@@ -13,9 +13,9 @@ public class StartUpEnterprise
             Console.WriteLine($"\t{arg}");
         }
         
-        var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder(args); 
         var application = new EnterpriseApplication(Convert.ToInt64(args[0]));
-
+        
         var enterprise = application.GetEnterprise();
         builder.Configuration["ServerInfo:EnterpriseName"] = enterprise.EnterpriseName;
         
@@ -43,7 +43,7 @@ public class StartUpEnterprise
             pattern: "{controller}/{action=Index}/{id?}");
 
         app.MapFallbackToFile("index.html");
-        app.MapGrpcService<GreeterEnterpriseService>();
+        app.MapGrpcService<EnterpriseGrpcService>();
         app.MapGet(
             "/grpc",
             () => "Communication with gRPC endpoints must be made through a gRPC client."

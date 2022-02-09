@@ -1,237 +1,160 @@
+using System.Data;
 using Data;
 using Data.Store;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
+using Grpc.Enterprise.V1;
 using Grpc.Net.Client;
+using GrpcService;
 
 namespace Application.Store;
 
 public class StoreApplication : IStoreApplication, ICashDeskConnector
 {
-    private readonly IStoreQuery _storeQuery = IDataFactory.GetInstance().GetStoreQuery();
     private readonly long _storeId;
+    private readonly EnterpriseService.EnterpriseServiceClient _client;
 
-    public StoreApplication(long storeId)
+    public StoreApplication(long storeId, EnterpriseService.EnterpriseServiceClient client)
     {
         _storeId = storeId;
+        _client = client;
     }
 
     public StoreEnterpriseDTO GetStore()
     {
-        StoreEnterpriseDTO result = new();
-
-        using var dbc = new DatabaseContext();
-        using var ctx = dbc.Database.BeginTransaction();
-        
-        try
-        {
-            var query = _storeQuery.QueryStoreById(_storeId, dbc);
-            result = ConvertEntryObject.ToStoreEnterpriseDTO(query);
-            ctx.Commit();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-
+        var reply = _client.GetStore(new StoreRequest {StoreId = _storeId});
+        var result = GrpcMapperObject.ToStoreEnterpriseDTO(reply);
         return result;
     }
-
+    
     public List<ProductStockItemDTO> GetProductsLowStockItems()
     {
-        List<ProductStockItemDTO> result = new();
-        using var dbc = new DatabaseContext();
-        using var ctx = dbc.Database.BeginTransaction();
-
-        try
+        return Task.Run(async () =>
         {
-            var query = _storeQuery.QueryLowStockItems(_storeId, dbc);
-            result.AddRange(query.Select(ConvertEntryObject.ToProductStockItemDTO));
-            ctx.Commit();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
+            using var call = _client.GetProductsLowStockItems(new StoreRequest {StoreId = _storeId});
+            var result = new List<ProductStockItemDTO>();
 
-        return result;
+            await foreach(var productStockItem in call.ResponseStream.ReadAllAsync())
+            {
+                result.Add(GrpcMapperObject.ToProductStockItemDTO(productStockItem));
+            }
+
+            Console.WriteLine("List<ProductStockItemDTO> size: " + result.Count);
+            return result;
+        }).Result;
     }
 
     public List<ProductSupplierDTO> GetAllProductSuppliers()
     {
-        List<ProductSupplierDTO> result = new();
-        using var dbc = new DatabaseContext();
-        using var ctx = dbc.Database.BeginTransaction();
-        
-        try
+        return Task.Run(async () =>
         {
-            var query = _storeQuery.QueryProducts(_storeId, dbc);
-            result.AddRange(query.Select(ConvertEntryObject.ToProductSupplierDTO));
-            ctx.Commit();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-
-        return result;
+            using var call = _client.GetAllProductSuppliers(new StoreRequest {StoreId = _storeId});
+            var result = new List<ProductSupplierDTO>();
+            
+            await foreach (var productSupplier in call.ResponseStream.ReadAllAsync())
+            {
+                result.Add(GrpcMapperObject.ToProductSupplierDTO(productSupplier));
+            }
+            Console.WriteLine("List<ProductSupplierDTO> size: " + result.Count);
+            return result;
+        }).Result;
     }
 
     public List<ProductSupplierStockItemDTO> GetAllProductSupplierStockItems()
     {
-        List<ProductSupplierStockItemDTO> result = new();
-        using var dbc = new DatabaseContext();
-        using var ctx = dbc.Database.BeginTransaction();
-
-        try
+        return Task.Run(async () =>
         {
-            var query = _storeQuery.QueryAllProductStockItems(_storeId, dbc);
-            result.AddRange(query.Select(ConvertEntryObject.ToProductSupplierStockItemDTO));
-            ctx.Commit();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-        
-        return result;
-    }
-
-    //TODO: refactor creation of ProductOrderEntry foreach Supplier
-    public void OrderProducts(ProductOrderDTO productOrderDto)
-    {
-        ProductOrder poe = new();
-        using var dbc = new DatabaseContext();
-        using var trans = dbc.Database.BeginTransaction();
-        try
-        {
-            foreach (var order in productOrderDto.Orders)
+            using var call = _client.GetAllProductSupplierStockItems(new StoreRequest {StoreId = _storeId});
+            var result = new List<ProductSupplierStockItemDTO>();
+            
+            await foreach (var productSupplierStockItem in call.ResponseStream.ReadAllAsync())
             {
-                var product = _storeQuery.QueryProductById(order.ProductSupplier.ProductId, dbc);
-                var oe = new OrderEntry();
-                oe.Amount = order.Amount;
-                oe.Product = product;
-                poe.OrderEntries.Add(oe);
+                result.Add(GrpcMapperObject.ToProductSupplierStockItemDTO(productSupplierStockItem));
+            }
+            Console.WriteLine("List<ProductSupplierStockItemDTO> size: " + result.Count);
+            return result;
+        }).Result;
+    }
+    
+    public void OrderProducts(ProductOrderDTO productOrder)
+    {
+        Task.Run(async () =>
+        {
+            var supplierOrders = new Dictionary<long, List<OrderDTO>>();
+
+            foreach (var order in productOrder.Orders)
+            {
+                var supplierId = order.ProductSupplier.SupplierId;
+                if (!supplierOrders.ContainsKey(supplierId))
+                {
+                    supplierOrders.Add(supplierId, new List<OrderDTO>());
+                }
+                supplierOrders[supplierId].Add(order);
             }
 
-            poe.Store = _storeQuery.QueryStoreById(_storeId, dbc);
-            poe.OrderingDate = productOrderDto.OrderingDate;
-            dbc.ProductOrders.Attach(poe);
-            dbc.SaveChanges();
-            trans.Commit();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
+            var productOrders = new List<ProductOrderDTO>();
+            foreach (var orderList in supplierOrders.Values)
+            {
+                productOrders.Add(new ProductOrderDTO
+                {
+                    OrderingDate = DateTime.UtcNow,
+                    Orders = orderList
+                });
+            }
+            
+            using var call = _client.OrderProducts();
+
+            foreach (var makeOrder in productOrders)
+            {
+               await call.RequestStream.WriteAsync(
+                    DtoMapperObject.ToProductOrderRequest(makeOrder, _storeId));
+                Console.WriteLine($"Send order with a size from: {makeOrder.Orders.Count}");
+            }
+
+            await call.RequestStream.CompleteAsync();
+            var response = await call;
+            Console.WriteLine($"response: {response}");
+        });
     }
 
     public ProductOrderDTO GetProductOrder(long productOrderId)
     {
-        ProductOrderDTO result = new();
-        using var dbc = new DatabaseContext();
-        using var ctx = dbc.Database.BeginTransaction();
+        var reply = _client.GetProductOrder(new ProductOrderRequest
+        {
+            ProductOrderId = productOrderId
+        });
 
-        try
-        {
-            var query = _storeQuery.QueryOrderById(productOrderId, dbc);
-            result = ConvertEntryObject.ToProductOrderDTO(query);
-            ctx.Commit();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-        
+        var result = GrpcMapperObject.ToProductOrderDTO(reply);
         return result;
     }
 
     public void RollInReceivedProductOrder(long productOrderId)
     {
-        using var dbc = new DatabaseContext();
-        using var trans = dbc.Database.BeginTransaction();
-        try
+        var call = _client.RollInReceivedProductOrder(new ProductOrderRequest
         {
-            var result = _storeQuery.QueryOrderById(productOrderId, dbc);
-
-            if (result.DeliveryDate == null)
-            {
-                throw new Exception("Product order has already been received");
-            }
-            
-            result.DeliveryDate = DateTime.UtcNow;
-
-            foreach (var oe in result.OrderEntries)
-            {
-                var item = _storeQuery.QueryStockItem(_storeId, oe.Product.Barcode, dbc);
-                item.Amount += oe.Amount;
-            }
-            
-            dbc.SaveChanges();
-            trans.Commit();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
+            ProductOrderId = productOrderId,
+            StoreId = _storeId,
+            DeliveryDate = Timestamp.FromDateTime(DateTime.UtcNow)
+        });
     }
 
     public void ChangePrice(StockItemDTO stockItem)
     {
-        /*using var dbc = new DatabaseContext();
-        using var ctx = dbc.Database.BeginTransaction();
-        try
-        {
-            var result = _storeQuery.QueryStockItemById(stockItem.ItemId, dbc);
-            result.SalesPrice = stockItem.SalesPrice;
-            dbc.SaveChanges();
-            ctx.Commit();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }*/
-        var httpHandler = new HttpClientHandler();
-        httpHandler.ServerCertificateCustomValidationCallback =
-            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-        
-        using var channel = GrpcChannel.ForAddress("https://localhost:7046/grpc", new GrpcChannelOptions{HttpHandler = httpHandler});
-        var client = new Greeter.GreeterClient(channel);
-        var d = new StockItemRequest();
-        
-            var reply = client.ChangePrice(new StockItemRequest
-        {
-            ItemId = stockItem.ItemId,
-            Amount = stockItem.Amount,
-            MaxStock = stockItem.MaxStock,
-            MinStock = stockItem.MinStock,
-            SalesPrice = stockItem.SalesPrice
-        });
-        Console.WriteLine("ChangePrice success: " + reply.Success);
-        
-        
+        var call = _client.ChangePrice(DtoMapperObject.ToStockItemReply(stockItem));
     }
 
     public void BookSale(SaleDTO saleDto)
     {
-        throw new NotImplementedException();
+        var call = _client.makeBookSales(DtoMapperObject.ToSaleRequest(saleDto));
     }
 
     public ProductStockItemDTO GetProductStockItem(long productBarcode)
     {
-        ProductStockItemDTO result = new();
-        using var dbc = new DatabaseContext();
-        using var ctx = dbc.Database.BeginTransaction();
-
-        try
+        var reply = _client.GetProductStockItem(new ProductStockItemRequest
         {
-            var query = _storeQuery.QueryStockItem(_storeId, productBarcode, dbc);
-            result = ConvertEntryObject.ToProductStockItemDTO(query);
-            ctx.Commit();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-        
-        return result;
+            Barcode = productBarcode,
+            StoreId = _storeId
+        });
+        return GrpcMapperObject.ToProductStockItemDTO(reply);
     }
 }
