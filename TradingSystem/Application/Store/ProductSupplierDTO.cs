@@ -3,7 +3,7 @@ namespace Application.Store;
 public class  ProductSupplierDTO : ProductDTO
 {
     protected long supplierId;
-    protected string supplierName;
+    protected string supplierName = "";
 
     public long SupplierId
     {
