@@ -141,10 +141,10 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
     public void ChangePrice(long stockItemId, double newPrice)
     {
         
-        var call = _client.ChangePrice(new StockItemReply
+        var call = _client.ChangePrice(new StockItemIdRequest()
         {
             ItemId = stockItemId,
-            SalesPrice = newPrice
+            NewPrice = newPrice
         });
     }
 

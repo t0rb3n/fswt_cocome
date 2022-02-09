@@ -108,9 +108,9 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         return Task.FromResult(new Empty());
     }
 
-    public override Task<Empty> ChangePrice(StockItemReply request, ServerCallContext context)
+    public override Task<Empty> ChangePrice(StockItemIdRequest request, ServerCallContext context)
     {
-        _enterpriseApplication.ChangePrice(request.ItemId, request.SalesPrice);
+        _enterpriseApplication.ChangePrice(request.ItemId, request.NewPrice);
         _logger.LogInformation("changed price from stockItem: {id}", request.ItemId);
         return Task.FromResult(new Empty());
     }
