@@ -23,4 +23,9 @@ public class OrderDTO
         get => productSupplier;
         set => productSupplier = value ?? throw new ArgumentNullException(nameof(value));
     }
+
+    public override string ToString()
+    {
+        return $"Id: {orderId}, amount: {amount}, \n\tproductSupplier: {productSupplier}";
+    }
 }
