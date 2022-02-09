@@ -110,7 +110,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
     public override Task<Empty> ChangePrice(StockItemReply request, ServerCallContext context)
     {
-        _enterpriseApplication.ChangePrice(GrpcMapperObject.ToStockItemDTO(request));
+        _enterpriseApplication.ChangePrice(request.ItemId, request.SalesPrice);
         _logger.LogInformation("changed price from stockItem: {id}", request.ItemId);
         return Task.FromResult(new Empty());
     }

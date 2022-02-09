@@ -215,14 +215,14 @@ public class EnterpriseApplication : IEnterpriseApplication
         }
     }
 
-    public void ChangePrice(StockItemDTO stockItem)
+    public bool ChangePrice(long stockItemId, double newPrice)
     {
         using var dbc = new DatabaseContext();
         using var ctx = dbc.Database.BeginTransaction();
         try
         {
-            var result = _storeQuery.QueryStockItemById(stockItem.ItemId, dbc);
-            result.SalesPrice = stockItem.SalesPrice;
+            var result = _storeQuery.QueryStockItemById(stockItemId, dbc);
+            result.SalesPrice = newPrice;
             dbc.SaveChanges();
             ctx.Commit();
         }
@@ -230,6 +230,8 @@ public class EnterpriseApplication : IEnterpriseApplication
         {
             Console.WriteLine(e);
         }
+
+        return true;
     }
 
     public void MakeBookSale(SaleDTO saleDto)

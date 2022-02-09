@@ -15,7 +15,7 @@ public interface IEnterpriseApplication
     public void OrderProducts(ProductOrderDTO productOrder, long storeId);
     public ProductOrderDTO GetProductOrder(long productOrderId);
     public void RollInReceivedProductOrder(ProductOrderDTO productOrder, long storeId);
-    public void ChangePrice(StockItemDTO stockItem);
+    public bool ChangePrice(long stockItemId, double newPrice);
     public void MakeBookSale(SaleDTO saleDto);
     public ProductStockItemDTO GetProductStockItem(long productBarcode, long storeId);
     

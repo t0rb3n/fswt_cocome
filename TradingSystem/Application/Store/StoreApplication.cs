@@ -138,9 +138,14 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         });
     }
 
-    public void ChangePrice(StockItemDTO stockItem)
+    public void ChangePrice(long stockItemId, double newPrice)
     {
-        var call = _client.ChangePrice(DtoMapperObject.ToStockItemReply(stockItem));
+        
+        var call = _client.ChangePrice(new StockItemReply
+        {
+            ItemId = stockItemId,
+            SalesPrice = newPrice
+        });
     }
 
     public void BookSale(SaleDTO saleDto)
