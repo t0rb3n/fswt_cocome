@@ -14,7 +14,7 @@ services:
       POSTGRES_USER: dummy
       POSTGRES_PASSWORD: dummy123
       POSTGRES_DB: tradingsystem 
-    
+    command: ["postgres", "-c", "log_statement=all"]
     volumes:
       - ./data/:/var/lib/postgresql/data/
       - ./db_init.sql:/docker-entrypoint-initdb.d/01_db_init.sql
