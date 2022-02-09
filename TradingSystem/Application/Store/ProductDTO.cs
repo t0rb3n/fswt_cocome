@@ -33,6 +33,6 @@ public class ProductDTO
     
     public override string ToString()
     {
-        return $"Id: {productId}, Barcode: {barcode}, Name: {productName}, purPrice: {purchasePrice}";
+        return $"Id: {productId}, Barcode: {barcode}, Name: {productName}, purPrice: {purchasePrice.ToString("F2")} €";
     }
 }
