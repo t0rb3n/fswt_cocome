@@ -9,6 +9,11 @@ message MessageReply {
   string msg = 2;
 }
 
+message ProductStockItemRequest {
+  int64 barcode = 1;
+  int64 store_id = 2;
+}
+
 message StoreRequest {
   int64 store_id = 1;
 }
@@ -84,11 +89,6 @@ message ProductSupplierStockItemReply {
   double purchase_price = 5;
   string product_name = 6;
   repeated StockItemReply stock_item = 7;
-}
-
-message ProductStockItemRequest {
-  int64 barcode = 1;
-  int64 store_id = 2;
 }
 
 message ProductStockItemReply {

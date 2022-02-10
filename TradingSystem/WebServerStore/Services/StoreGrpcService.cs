@@ -1,11 +1,10 @@
-using Application;
+using Application.Mappers;
 using Application.Store;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Grpc.Store.V1;
-using Microsoft.Extensions.Logging;
+using GrpcModule.Messages;
+using GrpcModule.Services.Store;
 
-namespace GrpcService.Services;
+namespace WebServerStore.Services;
 
 public class StoreGrpcService : StoreService.StoreServiceBase
 {
@@ -16,5 +15,23 @@ public class StoreGrpcService : StoreService.StoreServiceBase
     {
         _logger = logger;
         _storeApplication = storeApplication;
+    }
+
+    public override Task<ProductStockItemReply> GetProductStockItem(ProductStockItemRequest request, ServerCallContext context)
+    {
+        var product = _storeApplication.GetProductStockItem(request.Barcode);
+        _logger.LogInformation("Get product {id}", product.ProductId);
+        return Task.FromResult(DtoObject.ToProductStockItemReply(product));
+    }
+
+    public override Task<MessageReply> BookSales(SaleRequest request, ServerCallContext context)
+    {
+        _storeApplication.BookSale(GrpcObject.ToSaleDTO(request));
+        _logger.LogInformation("book {date} sale", request.Date);
+        return Task.FromResult(new MessageReply
+        {
+            Success = true,
+            Msg = "All fine!"
+        });
     }
 }
