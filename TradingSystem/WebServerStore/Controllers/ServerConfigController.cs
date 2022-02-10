@@ -5,9 +5,9 @@ namespace WebServerStore.Controllers;
 public class StoreServerConfig
 {
     public const string KeyValue = "ServerInfo";
-    public string EnterpriseName { get; set; }
-    public string StoreName { get; set; }
-    public string StoreLocation { get; set; }
+    public string EnterpriseName { get; set; } = null!;
+    public string StoreName { get; set; } = null!;
+    public string StoreLocation { get; set; } = null!;
 }
 
 [ApiController]

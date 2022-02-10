@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace TradingSystemService.Controllers;
+namespace WebServerEnterprise.Controllers;
 
 public class EnterpriseServerConfig
 {
     public const string KeyValue = "ServerInfo";
-    public string EnterpriseName { get; set; }
+    public string EnterpriseName { get; set; } = null!;
 }
 
 [ApiController]

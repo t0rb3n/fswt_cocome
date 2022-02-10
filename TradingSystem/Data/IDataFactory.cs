@@ -2,7 +2,7 @@ namespace Data;
 
 public class IDataFactory
 {
-    private static IData _dataaccess;
+    private static IData _dataaccess = null!;
 
     public static IData GetInstance()
     {

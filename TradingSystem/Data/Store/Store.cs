@@ -5,8 +5,8 @@ namespace Data.Store;
 public class Store
 {
     private long _id;
-    private string _name;
-    private string _location;
+    private string _name = null!;
+    private string _location = null!;
     private Enterprise.Enterprise _enterprise = new();
     private List<ProductOrder> _productOrders = new();
     private List<StockItem> _stockItems = new();

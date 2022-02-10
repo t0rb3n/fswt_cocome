@@ -7,8 +7,8 @@ public class Product
     private long _id;
     private long _barcode;
     private double _purchasePrice;
-    private string _name;
-    private ProductSupplier _productSupplier;
+    private string _name = null!;
+    private ProductSupplier _productSupplier = null!;
 
     [Key]
     public long Id
