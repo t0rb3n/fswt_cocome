@@ -1,10 +1,11 @@
 using Application.Enterprise;
 using Application.Store;
-using Grpc.Enterprise.V1;
+using GrpcModule.Messages;
 
-namespace Application;
 
-public static class GrpcMapperObject
+namespace Application.Mappers;
+
+public static class GrpcObject
 {
     public static StoreEnterpriseDTO ToStoreEnterpriseDTO(StoreEnterpriseReply storeEnterpriseReply)
     {
@@ -100,7 +101,7 @@ public static class GrpcMapperObject
         return result;
     }
     
-    public static ProductOrderDTO ToProductOrderDTO(Grpc.Enterprise.V1.ProductOrderRequest productOrderRequest)
+    public static ProductOrderDTO ToProductOrderDTO(ProductOrderRequest productOrderRequest)
     {
         var result = new ProductOrderDTO
         {

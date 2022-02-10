@@ -1,25 +1,12 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/empty.proto";
 
-option csharp_namespace = "Grpc.Enterprise.V1";
+option csharp_namespace = "GrpcModule.Messages";
 
-package enterprise;
-
-// The greeting service definition.
-service EnterpriseService {
-  // enterprise calls
-  rpc GetStore(StoreRequest) returns (StoreEnterpriseReply) {};
-  rpc GetProductsLowStockItems(StoreRequest) returns (stream ProductStockItemReply) {};
-  rpc GetAllProductSuppliers(StoreRequest) returns (stream ProductSupplierReply) {};
-  rpc GetAllProductSupplierStockItems(StoreRequest) returns (stream ProductSupplierStockItemReply) {};
-  rpc OrderProducts(stream ProductOrderRequest) returns (google.protobuf.Empty) {};
-  rpc GetProductOrder(ProductOrderRequest) returns (ProductOrderReply) {};
-  rpc RollInReceivedProductOrder(ProductOrderRequest) returns (google.protobuf.Empty) {};
-  rpc ChangePrice(StockItemIdRequest) returns (google.protobuf.Empty) {};
-  rpc makeBookSales(SaleRequest) returns (google.protobuf.Empty) {};
-  rpc GetProductStockItem(ProductStockItemRequest) returns (ProductStockItemReply) {};
+message MessageReply {
+  bool success = 1;
+  string msg = 2;
 }
 
 message StoreRequest {

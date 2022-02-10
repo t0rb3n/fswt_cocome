@@ -1,8 +1,8 @@
 using Application.Store;
-using Grpc.AspNetCore.ClientFactory;
-using Grpc.Enterprise.V1;
 using Grpc.Net.Client;
-using GrpcService.Services;
+using GrpcModule.Services.Enterprise;
+using WebServerStore.Services;
+
 
 namespace WebServerStore;
 

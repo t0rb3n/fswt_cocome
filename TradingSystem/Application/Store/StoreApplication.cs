@@ -1,11 +1,8 @@
-using System.Data;
-using Data;
-using Data.Store;
+using Application.Mappers;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Grpc.Enterprise.V1;
-using Grpc.Net.Client;
-using GrpcService;
+using GrpcModule.Messages;
+using GrpcModule.Services.Enterprise;
 
 namespace Application.Store;
 
@@ -23,7 +20,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
     public StoreEnterpriseDTO GetStore()
     {
         var reply = _client.GetStore(new StoreRequest {StoreId = _storeId});
-        var result = GrpcMapperObject.ToStoreEnterpriseDTO(reply);
+        var result = GrpcObject.ToStoreEnterpriseDTO(reply);
         return result;
     }
     
@@ -36,7 +33,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
             await foreach(var productStockItem in call.ResponseStream.ReadAllAsync())
             {
-                result.Add(GrpcMapperObject.ToProductStockItemDTO(productStockItem));
+                result.Add(GrpcObject.ToProductStockItemDTO(productStockItem));
             }
 
             Console.WriteLine("List<ProductStockItemDTO> size: " + result.Count);
@@ -53,7 +50,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
             
             await foreach (var productSupplier in call.ResponseStream.ReadAllAsync())
             {
-                result.Add(GrpcMapperObject.ToProductSupplierDTO(productSupplier));
+                result.Add(GrpcObject.ToProductSupplierDTO(productSupplier));
             }
             Console.WriteLine("List<ProductSupplierDTO> size: " + result.Count);
             return result;
@@ -69,7 +66,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
             
             await foreach (var productSupplierStockItem in call.ResponseStream.ReadAllAsync())
             {
-                result.Add(GrpcMapperObject.ToProductSupplierStockItemDTO(productSupplierStockItem));
+                result.Add(GrpcObject.ToProductSupplierStockItemDTO(productSupplierStockItem));
             }
             Console.WriteLine("List<ProductSupplierStockItemDTO> size: " + result.Count);
             return result;
@@ -107,7 +104,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
             foreach (var makeOrder in productOrders)
             {
                await call.RequestStream.WriteAsync(
-                    DtoMapperObject.ToProductOrderRequest(makeOrder, _storeId));
+                    DtoObject.ToProductOrderRequest(makeOrder, _storeId));
                 Console.WriteLine($"Send order with a size from: {makeOrder.Orders.Count}");
             }
 
@@ -124,7 +121,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
             ProductOrderId = productOrderId
         });
 
-        var result = GrpcMapperObject.ToProductOrderDTO(reply);
+        var result = GrpcObject.ToProductOrderDTO(reply);
         return result;
     }
 
@@ -150,7 +147,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
     public void BookSale(SaleDTO saleDto)
     {
-        var call = _client.makeBookSales(DtoMapperObject.ToSaleRequest(saleDto));
+        var call = _client.makeBookSales(DtoObject.ToSaleRequest(saleDto));
     }
 
     public ProductStockItemDTO GetProductStockItem(long productBarcode)
@@ -160,6 +157,6 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
             Barcode = productBarcode,
             StoreId = _storeId
         });
-        return GrpcMapperObject.ToProductStockItemDTO(reply);
+        return GrpcObject.ToProductStockItemDTO(reply);
     }
 }

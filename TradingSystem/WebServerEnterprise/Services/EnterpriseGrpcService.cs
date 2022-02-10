@@ -1,11 +1,10 @@
-using Application;
 using Application.Enterprise;
-using Google.Protobuf.WellKnownTypes;
+using Application.Mappers;
 using Grpc.Core;
-using Grpc.Enterprise.V1;
-using Microsoft.Extensions.Logging;
+using GrpcModule.Messages;
+using GrpcModule.Services.Enterprise;
 
-namespace GrpcService.Services;
+namespace WebServerEnterprise.Services;
 
 public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 {
@@ -21,7 +20,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
     public override Task<StoreEnterpriseReply> GetStore(StoreRequest request, ServerCallContext context)
     {
         var result = _enterpriseApplication.GetStore(request.StoreId);
-        var reply = DtoMapperObject.ToStoreEnterpriseReply(result);
+        var reply = DtoObject.ToStoreEnterpriseReply(result);
         _logger.LogInformation("get Store : {id}", result.StoreId);
         return Task.FromResult(reply);
     }
@@ -36,7 +35,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         foreach (var productStockItemDto in result)
         {
-            responseStream.WriteAsync(DtoMapperObject.ToProductStockItemReply(productStockItemDto));
+            responseStream.WriteAsync(DtoObject.ToProductStockItemReply(productStockItemDto));
         }
 
         return Task.CompletedTask;
@@ -51,7 +50,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         foreach (var productSupplierDto in result)
         {
-            responseStream.WriteAsync(DtoMapperObject.ToProductSupplierReply(productSupplierDto));
+            responseStream.WriteAsync(DtoObject.ToProductSupplierReply(productSupplierDto));
         }
 
         return Task.CompletedTask;
@@ -67,7 +66,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         foreach (var productSupplierStockItemDto in result)
         {
-            responseStream.WriteAsync(DtoMapperObject.ToProductSupplierStockItemReply(productSupplierStockItemDto));
+            responseStream.WriteAsync(DtoObject.ToProductSupplierStockItemReply(productSupplierStockItemDto));
         }
 
         return Task.CompletedTask;
@@ -77,55 +76,74 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
     {
         var result = _enterpriseApplication.GetProductOrder(request.ProductOrderId);
         _logger.LogInformation("Get ProductOrder: {id}", result.ProductOrderId);
-        return Task.FromResult(DtoMapperObject.ToProductOrderReply(result));
+        return Task.FromResult(DtoObject.ToProductOrderReply(result));
     }
 
-    public override async Task<Empty> OrderProducts(IAsyncStreamReader<ProductOrderRequest> requestStream, ServerCallContext context)
+    public override async Task<MessageReply> OrderProducts(IAsyncStreamReader<ProductOrderRequest> requestStream, ServerCallContext context)
     {
         var requests = new List<ProductOrderRequest>();
-        
-        await foreach (var productOrder in requestStream.ReadAllAsync())
+
+        try
         {
-            requests.Add(productOrder);
-            _logger.LogInformation("Received order with {size} products", productOrder.Orders.Count);
+            await foreach (var productOrder in requestStream.ReadAllAsync())
+            {
+                requests.Add(productOrder);
+                _logger.LogInformation("Received order with {size} products", productOrder.Orders.Count);
+            }
+        
+            foreach (var order in requests)
+            {
+                var orderRequest = GrpcObject.ToProductOrderDTO(order);
+                _enterpriseApplication.OrderProducts(orderRequest, order.StoreId);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
         }
         
-        foreach (var order in requests)
+        return new MessageReply
         {
-            var orderRequest = GrpcMapperObject.ToProductOrderDTO(order);
-            _enterpriseApplication.OrderProducts(orderRequest, order.StoreId);
-        }
-        
-        return new Empty();
+            Success = true,
+            Msg = "All fine!"
+        };
     }
 
-    public override Task<Empty> RollInReceivedProductOrder(ProductOrderRequest request, ServerCallContext context)
+    public override Task<MessageReply> RollInReceivedProductOrder(ProductOrderRequest request, ServerCallContext context)
     {
         var result = _enterpriseApplication.GetProductOrder(request.ProductOrderId);
         result.DeliveryDate = request.DeliveryDate.ToDateTime();
         _enterpriseApplication.RollInReceivedProductOrder(result, request.StoreId);
         _logger.LogInformation("Received ProductOrder: {id}", request.ProductOrderId);
-        return Task.FromResult(new Empty());
+        return Task.FromResult(new MessageReply
+        {
+            Success = true,
+            Msg = "All fine!"
+        });
     }
 
-    public override Task<Empty> ChangePrice(StockItemIdRequest request, ServerCallContext context)
+    public override Task<MessageReply> ChangePrice(StockItemIdRequest request, ServerCallContext context)
     {
         _enterpriseApplication.ChangePrice(request.ItemId, request.NewPrice);
         _logger.LogInformation("changed price from stockItem: {id}", request.ItemId);
-        return Task.FromResult(new Empty());
+        return Task.FromResult(new MessageReply());
     }
 
-    public override Task<Empty> makeBookSales(SaleRequest request, ServerCallContext context)
+    public override Task<MessageReply> makeBookSales(SaleRequest request, ServerCallContext context)
     {
-        _enterpriseApplication.MakeBookSale(GrpcMapperObject.ToSaleDTO(request));
+        _enterpriseApplication.MakeBookSale(GrpcObject.ToSaleDTO(request));
         _logger.LogInformation("Received sale request");
-        return Task.FromResult(new Empty());
+        return Task.FromResult(new MessageReply
+        {
+            Success = true,
+            Msg = "All fine!"
+        });
     }
 
     public override Task<ProductStockItemReply> GetProductStockItem(ProductStockItemRequest request, ServerCallContext context)
     {
         var result = _enterpriseApplication.GetProductStockItem(request.Barcode, request.StoreId);
         _logger.LogInformation("Get ProductStockItem {id}", result.ProductId);
-        return Task.FromResult(DtoMapperObject.ToProductStockItemReply(result));
+        return Task.FromResult(DtoObject.ToProductStockItemReply(result));
     }
 }

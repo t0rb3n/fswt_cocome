@@ -13,10 +13,6 @@
     <ItemGroup>
         <PackageReference Include="Google.Protobuf" Version="3.19.4" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.43.0-pre1" />
-        <PackageReference Include="Grpc.Tools" Version="2.44.0-pre2">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="6.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.0" />
@@ -32,17 +28,6 @@
     <ItemGroup>
       <Folder Include="StoreApp\src\app\component" />
       <Folder Include="StoreApp\src\app\views" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Protobuf Include="Protos\store.proto">
-        <GrpcServices>Both</GrpcServices>
-        <Access>Public</Access>
-        <ProtoCompile>True</ProtoCompile>
-        <CompileOutputs>True</CompileOutputs>
-        <OutputDir>obj/Debug/net6.0/</OutputDir>
-        <Generator>MSBuild:Compile</Generator>
-      </Protobuf>
     </ItemGroup>
     
     <ItemGroup>

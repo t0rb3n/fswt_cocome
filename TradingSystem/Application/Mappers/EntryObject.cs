@@ -5,7 +5,7 @@ using Application.Store;
 
 namespace Application;
 
-public static class ConvertEntryObject
+public static class EntryObject
 {
     public static EnterpriseDTO ToEnterpriseDTO(Data.Enterprise.Enterprise enterprise)
     {

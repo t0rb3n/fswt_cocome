@@ -26,7 +26,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             var query = _enterpriseQuery.QueryEnterpriseById(_enterpriseId, dbc);
-            result = ConvertEntryObject.ToEnterpriseDTO(query);
+            result = EntryObject.ToEnterpriseDTO(query);
             ctx.Commit();
         }
         catch (Exception e)
@@ -62,7 +62,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             var query = _storeQuery.QueryStoreById(storeId, dbc);
-            result = ConvertEntryObject.ToStoreEnterpriseDTO(query);
+            result = EntryObject.ToStoreEnterpriseDTO(query);
             ctx.Commit();
         }
         catch (Exception e)
@@ -82,7 +82,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             var query = _storeQuery.QueryLowStockItems(storeId, dbc);
-            result.AddRange(query.Select(ConvertEntryObject.ToProductStockItemDTO));
+            result.AddRange(query.Select(EntryObject.ToProductStockItemDTO));
             ctx.Commit();
         }
         catch (Exception e)
@@ -102,7 +102,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             var query = _storeQuery.QueryProducts(storeId, dbc);
-            result.AddRange(query.Select(ConvertEntryObject.ToProductSupplierDTO));
+            result.AddRange(query.Select(EntryObject.ToProductSupplierDTO));
             ctx.Commit();
         }
         catch (Exception e)
@@ -122,7 +122,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             var query = _storeQuery.QueryAllProductStockItems(storeId, dbc);
-            result.AddRange(query.Select(ConvertEntryObject.ToProductSupplierStockItemDTO));
+            result.AddRange(query.Select(EntryObject.ToProductSupplierStockItemDTO));
             ctx.Commit();
         }
         catch (Exception e)
@@ -174,7 +174,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             var query = _storeQuery.QueryOrderById(productOrderId, dbc);
-            result = ConvertEntryObject.ToProductOrderDTO(query);
+            result = EntryObject.ToProductOrderDTO(query);
             ctx.Commit();
         }
         catch (Exception e)
@@ -264,7 +264,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             var query = _storeQuery.QueryStockItem(storeId, productBarcode, dbc);
-            result = ConvertEntryObject.ToProductStockItemDTO(query);
+            result = EntryObject.ToProductStockItemDTO(query);
             ctx.Commit();
         }
         catch (Exception e)

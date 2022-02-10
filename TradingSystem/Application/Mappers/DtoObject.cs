@@ -1,10 +1,10 @@
 using Application.Store;
 using Google.Protobuf.WellKnownTypes;
-using Grpc.Enterprise.V1;
+using GrpcModule.Messages;
 
-namespace GrpcService;
+namespace Application.Mappers;
 
-public static class DtoMapperObject
+public static class DtoObject
 { 
     public static StoreEnterpriseReply ToStoreEnterpriseReply(StoreEnterpriseDTO storeEnterpriseDto)
     {

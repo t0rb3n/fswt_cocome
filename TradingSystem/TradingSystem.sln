@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServerEnterprise", "WebS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{9E1EECF2-91DF-4536-B5F1-2E1CE6EAACE7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcModule", "GrpcModule\GrpcModule.csproj", "{BEB269E3-B0E2-47ED-AB9C-0EB0D00B0306}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{9E1EECF2-91DF-4536-B5F1-2E1CE6EAACE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E1EECF2-91DF-4536-B5F1-2E1CE6EAACE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E1EECF2-91DF-4536-B5F1-2E1CE6EAACE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEB269E3-B0E2-47ED-AB9C-0EB0D00B0306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEB269E3-B0E2-47ED-AB9C-0EB0D00B0306}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEB269E3-B0E2-47ED-AB9C-0EB0D00B0306}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEB269E3-B0E2-47ED-AB9C-0EB0D00B0306}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

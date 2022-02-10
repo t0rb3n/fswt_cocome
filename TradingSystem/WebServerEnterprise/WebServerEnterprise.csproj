@@ -13,10 +13,6 @@
     <ItemGroup>
         <PackageReference Include="Google.Protobuf" Version="3.19.4" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.43.0-pre1" />
-        <PackageReference Include="Grpc.Tools" Version="2.44.0-pre2">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.0" />
     </ItemGroup>
 
@@ -35,24 +31,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Protobuf Include="Protos\enterprise.proto">
-        <GrpcServices>Both</GrpcServices>
-        <Access>Public</Access>
-        <ProtoCompile>True</ProtoCompile>
-        <CompileOutputs>True</CompileOutputs>
-        <OutputDir>obj/Debug/net6.0/</OutputDir>
-        <Generator>MSBuild:Compile</Generator>
-      </Protobuf>
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Application\Application.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Include="..\Application\GrpcMapperObject.cs">
-        <Link>GrpcMapperObject.cs</Link>
-      </Compile>
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
