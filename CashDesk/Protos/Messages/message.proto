@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "GrpcModule.Messages";
+
+message MessageReply {
+    bool success = 1;
+    string msg = 2;
+}
+
+message ProductStockItemRequest {
+    int64 barcode = 1;
+    int64 store_id = 2;
+}
+
+message StoreRequest {
+    int64 store_id = 1;
+}
+
+message SaleRequest {
+    google.protobuf.Timestamp date = 1;
+    repeated ProductStockItemReply products = 2;
+}
+
+message ProductOrderRequest {
+    int64 product_order_id = 1;
+    int64 store_id = 2;
+    google.protobuf.Timestamp delivery_date = 3;
+    google.protobuf.Timestamp ordering_date = 4;
+    repeated OrderReply orders = 5;
+}
+
+message StockItemIdRequest {
+    int64 item_id = 1;
+    double new_price = 2;
+}
+
+message StoreEnterpriseReply {
+    int64 store_id = 1;
+    string store_name = 2;
+    string location = 3;
+    int64 enterprise_id = 4;
+    string enterprise_name = 5;
+}
+
+message ProductReply {
+    int64 product_id = 1;
+    int64 barcode = 2;
+    double purchase_price = 3;
+    string product_name = 4;
+}
+
+message ProductSupplierReply {
+    int64 supplier_id = 1;
+    string supplier_name = 2;
+    int64 product_id = 3;
+    int64 barcode = 4;
+    double purchase_price = 5;
+    string product_name = 6;
+}
+
+message OrderReply {
+    int64 order_id = 1;
+    int32 amount = 2;
+    repeated ProductSupplierReply product_supplier = 3;
+}
+
+message ProductOrderReply {
+    int64 product_order_id = 1;
+    google.protobuf.Timestamp delivery_date = 2;
+    google.protobuf.Timestamp ordering_date = 3;
+    repeated OrderReply orders = 4;
+}
+
+message StockItemReply {
+    int64 item_id = 1;
+    double sales_price = 2;
+    int32 amount = 3;
+    int32 min_stock = 4;
+    int32 max_stock = 5;
+}
+
+message ProductSupplierStockItemReply {
+    int64 supplier_id = 1;
+    string supplier_name = 2;
+    int64 product_id = 3;
+    int64 barcode = 4;
+    double purchase_price = 5;
+    string product_name = 6;
+    repeated StockItemReply stock_item = 7;
+}
+
+message ProductStockItemReply {
+    int64 product_id = 1;
+    int64 barcode = 2;
+    double purchase_price = 3;
+    string product_name = 4;
+    repeated StockItemReply stock_item = 5;
+}

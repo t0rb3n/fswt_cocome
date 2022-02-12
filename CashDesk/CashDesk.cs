@@ -5,12 +5,15 @@ using CashDesk.CashboxService;
 using CashDesk.DisplayController;
 using CashDesk.Exceptions;
 using CashDesk.PrintingService;
+using CashDesk.TransferObjects;
+using GrpcModule.Messages;
+using GrpcModule.Services.Enterprise;
 
 namespace CashDesk;
 
 public class CashDesk
 {
-    private readonly EnterpriseRpc.EnterpriseRpcClient _enterpriseclient;
+    private readonly EnterpriseService.EnterpriseServiceClient _enterpriseclient;
     private readonly ILogger<CashDesk> _logger;
 
 
@@ -24,7 +27,7 @@ public class CashDesk
     private double _currentRunningTotal;
     private CashDeskState _currentState = CashDeskState.ExpectingSale;
     private bool _expressModeEnabled = false;
-    private List<ProductWithStockItem> _saleProducts; // TODO use TO Objects
+    private List<ProductStockItemReply> _saleProducts; // TODO use TO Objects
     private string _cardInfo;
 
     // New sale can be started anytime and thus aborted expect when we already paid by cash 
@@ -43,8 +46,24 @@ public class CashDesk
         CashDeskState.ExpectingItems
     };
 
-    public CashDesk()
+    private static readonly HashSet<CashDeskState> FinishSaleStates = new HashSet<CashDeskState>
     {
+        CashDeskState.ExpectingItems
+    };
+
+    private static readonly HashSet<CashDeskState> SelectPayingMode = new HashSet<CashDeskState>
+    {
+        CashDeskState.ExpectingPayment,
+        CashDeskState.ExpectingCardInfo,
+        CashDeskState.PayingByCash
+    };
+
+    public CashDesk(ILogger<CashDesk> logger, EnterpriseService.EnterpriseServiceClient esc,
+        DisplayControllerClient displayClient)
+    {
+        _enterpriseclient = esc;
+        _logger = logger;
+        _displayClient = displayClient;
         _currentRunningTotal = 0;
     }
 
@@ -62,32 +81,16 @@ public class CashDesk
         this.ResetSale();
     }
 
-    /*
-     *
-     *
-     * TODO
-     * Implement the logic for the sales
-     *
-     * Upon expecting items we start a new listener
-     * for items scanned that publishes different events
-     *
-     * 
-     *      
-     */
     public void FinishSale()
     {
-    }
+        StateIsLegal(FinishSaleStates);
 
-    public void DisableExpressModeHandler()
-    {
-    }
+        if (_saleProducts.Count > 0)
+        {
+            // TODO Send SaleFinished Event
 
-    public void PayWithCard()
-    {
-    }
-
-    public void PayWithCash()
-    {
+            _currentState = CashDeskState.ExpectingPayment;
+        }
     }
 
     public void AddItemToSale(string barcode)
@@ -96,11 +99,72 @@ public class CashDesk
 
         if (CanAcceptItem())
         {
-            // get ProductWithStockItem(barcode)
-            
-            //addItemToSale(productStockItem);
-            
-            
+            long parsedBarcode;
+            try
+            {
+                parsedBarcode = long.Parse(barcode);
+            }
+            catch (FormatException)
+            {
+                _logger.LogError("The barcode has to be a number");
+                throw;
+            }
+
+            try
+            {
+                ProductStockItemReply productWithStockItem = GetProductWithStockItem(parsedBarcode);
+                AddItemToSale(productWithStockItem);
+            }
+            catch (NoSuchProductException nspe)
+            {
+                _logger.LogError("No product/stock item for barcode ${Barcode}", barcode);
+                //TODO  send this.sendInvalidProductBarcodeEvent(barcode);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError("Failed to communicate with store server with reason: \n {exception}", exception);
+            }
+        }
+        else
+        {
+            // TODO check/discuss what to do when we try to add more than policy allows
+            // TODO show message in display
+            _logger.LogError("Cannot process more than ${Number} items in express mode!",
+                ExpressModePolicy._expressItemsLimit);
+        }
+    }
+
+    public void DisableExpressMode()
+    {
+        if (_expressModeEnabled)
+        {
+            _expressModeEnabled = false;
+            // TODO send ExpressModeDisabledEvent
+        }
+    }
+
+    public void PayWithCard()
+    {
+        StateIsLegal(SelectPayingMode);
+
+        // send PaymentModeSelectedEvent
+        _currentState = CashDeskState.PayingByCash;
+    }
+
+    public void PayWithCash()
+    {
+        StateIsLegal(SelectPayingMode);
+
+        // Card payment is disallowed in express mode
+        if (!_expressModeEnabled)
+        {
+            // send PaymentModeSelectedEvent
+            _currentState = CashDeskState.ExpectingCardInfo;
+        }
+        else
+        {
+            _logger.LogInformation("Credit cards are not accepted in express mode");
+            // TODO send PaymentModeRejectedEvent
         }
     }
 
@@ -119,39 +183,10 @@ public class CashDesk
     private void ResetSale()
     {
         _currentRunningTotal = 0.0;
-        _saleProducts = new List<ProductWithStockItem>();
+        _saleProducts = new List<ProductStockItemReply>();
         _cardInfo = InvalidCardInfo;
     }
 
-    private void AddItemToSale(long barcode)
-    {
-        StateIsLegal(AddItemToSaleStates);
-
-        if (CanAcceptItem())
-        {
-            try
-            {
-                ProductWithStockItem productWithStockItem = GetProductWithStockItem(barcode);
-                AddItemToSale(productWithStockItem);
-            }
-            catch (NoSuchProductException nspe)
-            {
-                _logger.LogError("No product/stock item for barcode ${Barcode}", barcode);
-                //TODO  send this.sendInvalidProductBarcodeEvent(barcode);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError("Failed to communicate with store server");
-            }
-        }
-        else
-        {
-            // TODO check/discuss what to do when we try to add more than policy allows
-            // TODO show message in display
-            _logger.LogError("Cannot process more than ${Number} items in express mode!",
-                ExpressModePolicy._expressItemsLimit);
-        }
-    }
 
     // If we are in express mode, you are only allowed to have a maximum of 8 Items
     private bool CanAcceptItem()
@@ -161,10 +196,11 @@ public class CashDesk
         return expressModeDisabled || itemCountUnderLimit;
     }
 
-    private void AddItemToSale(ProductWithStockItem product)
+    private void AddItemToSale(ProductStockItemReply product)
     {
         _saleProducts.Add(product);
-        double currentTotal = CalculateCurrentTotal(product.Price);
+        // TODO change this protoshit
+        double currentTotal = CalculateCurrentTotal(product.StockItem[0].SalesPrice);
         DisplayCurrentTotal(currentTotal);
     }
 
@@ -173,7 +209,8 @@ public class CashDesk
     private void DisplayCurrentTotal(double total)
     {
         // TODO send the new total to the Terminal and let it show.
-        throw new NotImplementedException();
+        _displayClient.SetDisplayText(total.ToString());
+        //throw new NotImplementedException();
     }
 
     private void listenToSaleStartedEvent()
@@ -191,8 +228,11 @@ public class CashDesk
         throw new NotImplementedException();
     }
 
-    private ProductWithStockItem GetProductWithStockItem(long barcode)
+    private ProductStockItemReply GetProductWithStockItem(long barcode)
     {
-        return _enterpriseclient.GetProductWithStockItem(new Barcode {Code = barcode});
+        return _enterpriseclient.GetProductStockItem(new ProductStockItemRequest
+        {
+            Barcode = barcode, StoreId = 1
+        });
     }
 }

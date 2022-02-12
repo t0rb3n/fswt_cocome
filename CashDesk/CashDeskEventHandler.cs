@@ -2,23 +2,77 @@
 
 namespace CashDesk;
 
-public class CashDeskEventHandler
+public class CashDeskEventHandler : IHostedService
 {
-    private CashDeskEventPublisher cdep;
-    private readonly CashDesk _cashDesk = new CashDesk();
-    public CashDeskEventHandler()
-    {
-        cdep = new CashDeskEventPublisher();
-        cdep.StartSale += StartSaleHandler;
-        cdep.FinishSale += FinishSaleHandler;
-        cdep.DisableExpressMode += DisableExpressModeHandler;
-        cdep.PayWithCard += PayWithCardHandler;
-        cdep.PayWithCash += PayWithCashHandler;
+    private CashDeskEventPublisher _cdep;
+    private readonly CashDesk _cashDesk;
 
-        cdep.AddItemToSale += AddItemToSaleHandler;
-        
-        cdep.StartListeningToTerminal();
+    private readonly ILogger _logger;
+    private readonly IHostApplicationLifetime _appLifetime;
+
+    public CashDeskEventHandler(
+        ILogger<CashDeskEventHandler> logger,
+        IHostApplicationLifetime appLifetime,
+        CashDesk cashDesk,
+        CashDeskEventPublisher cdep)
+    {
+        _logger = logger;
+        _appLifetime = appLifetime;
+        _cashDesk = cashDesk;
+        _cdep = cdep;
+
+        RegisterHandler();
     }
+
+    private void RegisterHandler()
+    {
+        _cdep.StartSale += StartSaleHandler;
+        _cdep.FinishSale += FinishSaleHandler;
+        _cdep.DisableExpressMode += DisableExpressModeHandler;
+        _cdep.PayWithCard += PayWithCardHandler;
+        _cdep.PayWithCash += PayWithCashHandler;
+
+        _cdep.AddItemToSale += AddItemToSaleHandler;
+    }
+
+    /*
+     * Hosted Service Methods
+     */
+
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        _appLifetime.ApplicationStarted.Register(() =>
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await _cdep.StartListeningToTerminal();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unhandled exception!");
+                }
+                finally
+                {
+                    {
+                        _appLifetime.StopApplication();
+                    }
+                }
+            });
+        });
+
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+    
+    /*
+     *  Handler Methods
+     */
 
     private void StartSaleHandler(object sender, EventArgs e)
     {
@@ -29,24 +83,24 @@ public class CashDeskEventHandler
     {
         _cashDesk.AddItemToSale(barcode);
     }
-    
+
     private void FinishSaleHandler(object sender, EventArgs e)
     {
-        //_cashDesk.FinishSale();
+        _cashDesk.FinishSale();
     }
-    
+
     private void DisableExpressModeHandler(object sender, EventArgs e)
     {
-        //_cashDesk.DisableExpressMode();
+        _cashDesk.DisableExpressMode();
     }
+
     private void PayWithCardHandler(object sender, EventArgs e)
     {
-        //_cashDesk.PayWithCard();
+        _cashDesk.PayWithCard();
     }
+
     private void PayWithCashHandler(object sender, EventArgs e)
     {
-        //_cashDesk.PayWithCash();
+        _cashDesk.PayWithCash();
     }
-    
-
 }

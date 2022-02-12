@@ -14,16 +14,15 @@ namespace CashDesk;
 public sealed class CashDeskEventPublisher
 {
     // Cash Box Button Events
-    public event EventHandler? StartSale;
-    public event EventHandler? FinishSale;
-    public event EventHandler? PayWithCard;
-    public event EventHandler? PayWithCash;
-    public event EventHandler? DisableExpressMode;
+    public event EventHandler StartSale;
+    public event EventHandler FinishSale;
+    public event EventHandler PayWithCard;
+    public event EventHandler PayWithCash;
+    public event EventHandler DisableExpressMode;
 
     // Item Events
     public event EventHandler<string> AddItemToSale;
-    
-
+    private readonly ILogger<CashDeskEventPublisher> _logger;
 
     private CashboxServiceClient _cashboxClient;
     private DisplayControllerClient _displayClient;
@@ -32,33 +31,24 @@ public sealed class CashDeskEventPublisher
     private CardReaderServiceClient _cardReaderClient;
     private BankServerClient _bankClient;
 
-    public CashDeskEventPublisher()
+    public CashDeskEventPublisher(
+        ILogger<CashDeskEventPublisher> logger,
+        CashboxServiceClient cashboxClient,
+        BarcodeScannerServiceClient barcodeClient)
     {
-        var connector = new ServerConnector(new DiscoveryExecutionManager());
-        var discovery = new ServerDiscovery(connector);
-        var servers = discovery.GetServers(TimeSpan.FromSeconds(10),
-            n => n.NetworkInterfaceType == NetworkInterfaceType.Loopback);
-        var terminalServer = servers.First(s => s.Info.Type == "Terminal");
-        var bankServer = servers.FirstOrDefault(s => s.Info.Type == "BankServer");
-        var executionManagerFactory = new ExecutionManagerFactory(Enumerable.Empty<IClientRequestInterceptor>());
-        var terminalServerExecutionManager = executionManagerFactory.CreateExecutionManager(terminalServer);
-
-        _cashboxClient = new CashboxServiceClient(terminalServer.Channel, terminalServerExecutionManager);
-        _displayClient = new DisplayControllerClient(terminalServer.Channel, terminalServerExecutionManager);
-        _printerClient = new PrintingServiceClient(terminalServer.Channel, terminalServerExecutionManager);
-        _barcodeClient = new BarcodeScannerServiceClient(terminalServer.Channel, terminalServerExecutionManager);
-        _cardReaderClient = new CardReaderServiceClient(terminalServer.Channel, terminalServerExecutionManager);
-        _bankClient =
-            new BankServerClient(bankServer?.Channel, executionManagerFactory.CreateExecutionManager(bankServer));
+        _logger = logger;
+        _cashboxClient = cashboxClient;
+        _barcodeClient = barcodeClient;
     }
 
-    public async void StartListeningToTerminal()
+    public async Task StartListeningToTerminal()
     {
         var cashboxButtons = _cashboxClient.ListenToCashdeskButtons();
         while (await cashboxButtons.IntermediateValues.WaitToReadAsync())
         {
             if (!cashboxButtons.IntermediateValues.TryRead(out
                     var button)) continue;
+            _logger.LogInformation("Got button {Btn}", button);
             switch (button)
             {
                 case CashboxButton.StartNewSale:
@@ -66,30 +56,27 @@ public sealed class CashDeskEventPublisher
                     StartListeningToBarcodes();
                     break;
                 case CashboxButton.FinishSale:
-                    Console.WriteLine("FinishSale");
-                    throw new NotImplementedException();
-
+                    OnFinishSale(EventArgs.Empty);
+                    break;
                 case CashboxButton.DisableExpressMode:
-                    Console.WriteLine("DisableExpressMode");
-                    throw new NotImplementedException();
-
+                    OnDisableExpressMode(EventArgs.Empty);
+                    break;
                 case CashboxButton.PayWithCard:
-                    Console.WriteLine("PayWithCard");
-                    throw new NotImplementedException();
-
+                    OnPayWithCard(EventArgs.Empty);
+                    break;
                 case CashboxButton.PayWithCash:
-                    Console.WriteLine("PayWithCash");
-                    throw new NotImplementedException();
-
+                    OnPayWithCash(EventArgs.Empty);
+                    break;
                 default:
-                    Console.WriteLine("Default");
                     throw new NotImplementedException();
+                // TODO throw new NoSuchEventException();
             }
         }
     }
 
     private async void StartListeningToBarcodes()
     {
+        _logger.LogInformation("Start listening to barcodes");
         var barcodes = _barcodeClient.ListenToBarcodes();
 
         while (await barcodes.IntermediateValues.WaitToReadAsync())
@@ -102,7 +89,7 @@ public sealed class CashDeskEventPublisher
 
     private void OnStartSaleEvent(EventArgs e)
     {
-        StartSale?.Invoke(this, e);
+        StartSale.Invoke(this, e);
     }
 
     private void OnAddItemToSaleEvent(string barcode)
@@ -112,21 +99,21 @@ public sealed class CashDeskEventPublisher
 
     private void OnFinishSale(EventArgs e)
     {
-        FinishSale?.Invoke(this, e);
+        FinishSale.Invoke(this, e);
     }
 
     private void OnDisableExpressMode(EventArgs e)
     {
-        DisableExpressMode?.Invoke(this, e);
+        DisableExpressMode.Invoke(this, e);
     }
 
     private void OnPayWithCard(EventArgs e)
     {
-        PayWithCard?.Invoke(this, e);
+        PayWithCard.Invoke(this, e);
     }
 
     private void OnPayWithCash(EventArgs e)
     {
-        PayWithCash?.Invoke(this, e);
+        PayWithCash.Invoke(this, e);
     }
 }

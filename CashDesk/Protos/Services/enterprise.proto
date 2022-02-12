@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "Messages/message.proto";
+
+option csharp_namespace = "GrpcModule.Services.Enterprise";
+
+// The greeting service definition.
+service EnterpriseService {
+    // enterprise calls
+    rpc GetStore(StoreRequest) returns (StoreEnterpriseReply) {};
+    rpc GetProductsLowStockItems(StoreRequest) returns (stream ProductStockItemReply) {};
+    rpc GetAllProductSuppliers(StoreRequest) returns (stream ProductSupplierReply) {};
+    rpc GetAllProductSupplierStockItems(StoreRequest) returns (stream ProductSupplierStockItemReply) {};
+    rpc OrderProducts(stream ProductOrderRequest) returns (MessageReply) {};
+    rpc GetProductOrder(ProductOrderRequest) returns (ProductOrderReply) {};
+    rpc RollInReceivedProductOrder(ProductOrderRequest) returns (MessageReply) {};
+    rpc ChangePrice(StockItemIdRequest) returns (MessageReply) {};
+    rpc makeBookSales(SaleRequest) returns (MessageReply) {};
+    rpc GetProductStockItem(ProductStockItemRequest) returns (ProductStockItemReply) {};
+}
+
