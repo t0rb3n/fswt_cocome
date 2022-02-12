@@ -1,20 +1,20 @@
-import {DataSource} from '@angular/cdk/collections';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatSort} from '@angular/material/sort';
-import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';
-import {Observable, of as observableOf, merge} from 'rxjs';
-import {StoreService} from "../../services/store/store.service";
-import {ProductSupplierStockItemDTO} from "../../classes/ProductSupplierStockItemDTO";
-import {Injectable} from "@angular/core";
+import { DataSource } from '@angular/cdk/collections';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { catchError, map, startWith, switchMap, tap } from 'rxjs/operators';
+import { Observable, of as observableOf, merge } from 'rxjs';
+import { StoreService } from "../../services/store/store.service";
+import { ProductSupplierStockItemDTO } from "../../classes/ProductSupplierStockItemDTO";
+import { Injectable } from "@angular/core";
 
 
 /**
- * Data source for the Producttable view. This class should
+ * Data source for the lowStockTable view. This class should
  * encapsulate all logic for fetching and manipulating the displayed data
  * (including sorting, pagination, and filtering).
  */
 @Injectable()
-export class ProductSupplierStockItemDTODataSource extends DataSource<ProductSupplierStockItemDTO> {
+export class LowStockItemDTODataSource extends DataSource<ProductSupplierStockItemDTO> {
   data: ProductSupplierStockItemDTO[] = [];
   paginator: MatPaginator | undefined;
   sort: MatSort | undefined;
@@ -41,15 +41,15 @@ export class ProductSupplierStockItemDTODataSource extends DataSource<ProductSup
             ).pipe(catchError(() => observableOf(null)));
           }),
           map(data => {
-             // hacky way to do it but works
-              this.length = data!!.length;
-              if (data === null) {
-                return [];
-              }
-              this.data = this.getPagedData(this.getSortedData([...data]));
-
-              return this.data;
+            // hacky way to do it but works
+            this.length = data!!.length;
+            if (data === null) {
+              return [];
             }
+            this.data = this.getPagedData(this.getSortedData([...data]));
+
+            return this.data;
+          }
           ),
         )
     } else {
@@ -88,24 +88,21 @@ export class ProductSupplierStockItemDTODataSource extends DataSource<ProductSup
 
     return data.sort((a, b) => {
       const isAsc = this.sort?.direction === 'asc';
-      console.log(this.sort?.active)
       switch (this.sort?.active) {
         case 'ProductName':
           return compare(a.productName, b.productName, isAsc);
-        case 'ProductId':
-          return compare(+a.productId, +b.productId, isAsc);
         case 'Supplier':
           return compare(a.supplierName, b.supplierName, isAsc);
+        case 'PurchasePrice':
+          return compare(+a.purchasePrice, +b.purchasePrice, isAsc);
         case 'MinStock':
           return compare(+a.stockItem.minStock, +b.stockItem.minStock, isAsc);
         case 'MaxStock':
           return compare(+a.stockItem.maxStock, +b.stockItem.maxStock, isAsc);
         case 'Amount':
           return compare(+a.stockItem.amount, +b.stockItem.amount, isAsc);
-        case 'PurchasePrice':
-          return compare(+a.purchasePrice, +b.purchasePrice, isAsc);
-        case 'SalePrice':
-          return compare(+a.stockItem.salesPrice, +b.stockItem.salesPrice, isAsc);
+        //case 'OrderAmount':
+          //return compare(+a.orderAmount, +b.orderAmount, isAsc);
         default:
           return 0;
       }
