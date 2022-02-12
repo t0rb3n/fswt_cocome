@@ -33,6 +33,7 @@
       <td mat-cell *matCellDef="let row">{{row.stockItem.amount}}</td>
     </ng-container>
 
+
     <ng-container matColumnDef="OrderedAmount">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Ordered amount</th>
       <td mat-cell *matCellDef="let row">{{row.orderAmount}}</td>
@@ -43,6 +44,7 @@
         *matRowDef="let row; columns: displayedColumns;"
         (click)="openOrderProductDialog(row)"
         >
+
     </tr>
 
     <tr class="mat-row" *matNoDataRow>
@@ -60,7 +62,6 @@
                  aria-label="Select page">
   </mat-paginator>
 </div>
-
 
 <button mat-flat-button (click)="onOrderProductClick()">
   Order products
