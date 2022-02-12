@@ -3,7 +3,12 @@ namespace Application.Store;
 public class SaleDTO
 {
     protected DateTime date;
-    protected List<ProductStockItemDTO> products = new();
+    protected List<ProductStockItemDTO> products;
+
+    public SaleDTO()
+    {
+        products = new List<ProductStockItemDTO>();
+    }
 
     public DateTime Date
     {

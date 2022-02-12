@@ -3,8 +3,15 @@ namespace Application.Enterprise;
 public class StoreDTO
 {
     protected long storeId;
-    protected string storeName = "";
-    protected string location = "";
+    protected string storeName;
+    protected string location;
+
+    public StoreDTO()
+    {
+        storeId = -1;
+        storeName = "";
+        location = "";
+    }
 
     public long StoreId
     {

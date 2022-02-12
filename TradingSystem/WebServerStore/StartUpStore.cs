@@ -20,11 +20,12 @@ public class StartUpStore
         var httpHandler = new HttpClientHandler();
         httpHandler.ServerCertificateCustomValidationCallback =
             HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-        var channel = GrpcChannel.ForAddress("https://localhost:7046/grpc",
-            new GrpcChannelOptions {HttpHandler = httpHandler});
-        var client = new EnterpriseService.EnterpriseServiceClient(channel);
+        
+        var client = new EnterpriseService.EnterpriseServiceClient(
+            GrpcChannel.ForAddress("https://localhost:7046/grpc",
+            new GrpcChannelOptions {HttpHandler = httpHandler}));
 
-        var application = new StoreApplication(Convert.ToInt64(args[0]), client);
+        var application = new StoreApplication(client, Convert.ToInt64(args[0]));
         var builder = WebApplication.CreateBuilder(args);
 
         var store = new StoreEnterpriseDTO();

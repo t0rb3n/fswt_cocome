@@ -11,9 +11,20 @@ public class StockItem
     private int _amount;
     private int _minStock;
     private int _maxStock;
-    private Store _store = new();
-    private Product _product = new();
+    private Store _store;
+    private Product _product;
 
+    public StockItem()
+    {
+        _id = -1;
+        _salesPrice = 0;
+        _amount = 0;
+        _minStock = 0;
+        _maxStock = 0;
+        _store = new Store();
+        _product = new Product();
+    }
+    
     [Key]
     public long Id
     {

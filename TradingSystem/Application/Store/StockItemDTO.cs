@@ -8,6 +8,15 @@ public class StockItemDTO
     protected int minStock;
     protected int maxStock;
 
+    public StockItemDTO()
+    {
+        itemId = -1;
+        salesPrice = 0;
+        amount = 0;
+        minStock = 0;
+        maxStock = 0;
+    }
+
     public long ItemId
     {
         get => itemId;

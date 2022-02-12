@@ -2,7 +2,12 @@ namespace Application.Enterprise;
 
 public class ReportDTO
 {
-    protected string reportText = "";
+    protected string reportText;
+
+    public ReportDTO()
+    {
+        reportText = "";
+    }
 
     public string ReportText
     {

@@ -4,7 +4,12 @@ namespace Application.Store;
 
 public class StoreEnterpriseDTO : StoreDTO
 {
-    protected EnterpriseDTO enterprise = new();
+    protected EnterpriseDTO enterprise;
+
+    public StoreEnterpriseDTO()
+    {
+        enterprise = new EnterpriseDTO();
+    }
 
     public EnterpriseDTO Enterprise
     {

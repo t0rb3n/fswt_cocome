@@ -5,9 +5,16 @@ namespace Data.Enterprise;
 public class ProductSupplier
 {
     private long _id;
-    private string _name = null!;
-    private List<Product> _products = new();
+    private string _name;
+    private List<Product> _products;
 
+    public ProductSupplier() 
+    {
+        _id = -1;
+        _name = "";
+        _products = new List<Product>();
+    }
+    
     [Key]
     public long Id
     {

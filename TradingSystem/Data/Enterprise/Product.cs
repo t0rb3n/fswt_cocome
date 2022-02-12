@@ -7,9 +7,18 @@ public class Product
     private long _id;
     private long _barcode;
     private double _purchasePrice;
-    private string _name = null!;
-    private ProductSupplier _productSupplier = null!;
+    private string _name;
+    private ProductSupplier _productSupplier;
 
+    public Product()
+    {
+        _id = -1;
+        _barcode = 0;
+        _purchasePrice = 0;
+        _name = "";
+        _productSupplier = new ProductSupplier();
+    }
+    
     [Key]
     public long Id
     {

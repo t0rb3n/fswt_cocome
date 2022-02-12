@@ -5,9 +5,17 @@ namespace Data.Enterprise;
 public class Enterprise
 {
     private long _id;
-    private string _name = null!;
-    private List<ProductSupplier> _productSuppliers = null!;
-    private List<Store.Store> _stores = null!;
+    private string _name;
+    private List<ProductSupplier> _productSuppliers;
+    private List<Store.Store> _stores;
+
+    public Enterprise()
+    {
+        _id = -1;
+        _name = "";
+        _productSuppliers = new List<ProductSupplier>();
+        _stores = new List<Store.Store>();
+    }
 
     [Key]
     public long Id
