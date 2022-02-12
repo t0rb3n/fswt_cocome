@@ -7,15 +7,24 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Grpc.AspNetCore" Version="2.42.0" />
-      <PackageReference Include="Tecan.Sila2.Client" Version="4.0.2" />
-      <Protobuf Include="Protos\enterprise.proto" GrpcServices="Client" />
-        
+        <PackageReference Include="Google.Protobuf" Version="3.19.4" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.42.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.43.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Tecan.Sila2.Client" Version="4.0.2" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Interfaces" />
-      <Folder Include="Sila" />
+        <Protobuf Include="Protos/Messages/message.proto" ProtoRoot="Protos/" />
+        <Protobuf Include="Protos/Services/enterprise.proto" ProtoRoot="Protos/" />
+        <Protobuf Include="Protos/Services/store.proto" ProtoRoot="Protos/" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Folder Include="Interfaces" />
+        <Folder Include="Sila" />
     </ItemGroup>
 
 </Project>
