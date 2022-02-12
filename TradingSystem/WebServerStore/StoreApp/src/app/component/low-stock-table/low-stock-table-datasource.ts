@@ -4,9 +4,9 @@ import { MatSort } from '@angular/material/sort';
 import { catchError, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { Observable, of as observableOf, merge } from 'rxjs';
 import { StoreService } from "../../services/store/store.service";
-import { ProductSupplierStockItemDTO } from "../../classes/ProductSupplierStockItemDTO";
 import { Injectable } from "@angular/core";
 import { OrderProductDTO } from 'src/app/classes/OrderProductDTO';
+
 
 
 /**
@@ -15,6 +15,7 @@ import { OrderProductDTO } from 'src/app/classes/OrderProductDTO';
  * (including sorting, pagination, and filtering).
  */
 @Injectable()
+
 export class LowStockItemDTODataSource extends DataSource<OrderProductDTO> {
   data: OrderProductDTO[] = [];
   paginator: MatPaginator | undefined;
