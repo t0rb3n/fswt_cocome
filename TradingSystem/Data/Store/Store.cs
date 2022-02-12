@@ -5,11 +5,21 @@ namespace Data.Store;
 public class Store
 {
     private long _id;
-    private string _name = null!;
-    private string _location = null!;
-    private Enterprise.Enterprise _enterprise = new();
-    private List<ProductOrder> _productOrders = new();
-    private List<StockItem> _stockItems = new();
+    private string _name;
+    private string _location;
+    private Enterprise.Enterprise _enterprise;
+    private List<ProductOrder> _productOrders;
+    private List<StockItem> _stockItems;
+
+    public Store()
+    {
+        _id = -1;
+        _name = "";
+        _location = "";
+        _enterprise = new Enterprise.Enterprise();
+        _productOrders = new List<ProductOrder>();
+        _stockItems = new List<StockItem>();
+    }
 
     [Key]
     public long Id

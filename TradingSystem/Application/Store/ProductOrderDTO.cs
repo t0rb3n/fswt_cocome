@@ -5,8 +5,14 @@ public class ProductOrderDTO
     protected long productOrderId;
     protected DateTime deliveryDate;
     protected DateTime orderingDate;
-    protected List<OrderDTO> orders = new();
+    protected List<OrderDTO> orders;
 
+    public ProductOrderDTO()
+    {
+        productOrderId = -1;
+        orders = new List<OrderDTO>();
+    }
+    
     public long ProductOrderId
     {
         get => productOrderId;

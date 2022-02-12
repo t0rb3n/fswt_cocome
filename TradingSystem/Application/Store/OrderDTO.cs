@@ -4,8 +4,15 @@ public class OrderDTO
 {
     protected long orderId;
     protected int amount;
-    protected ProductSupplierDTO productSupplier = new();
+    protected ProductSupplierDTO productSupplier;
 
+    public OrderDTO()
+    {
+        orderId = -1;
+        amount = 0;
+        productSupplier = new ProductSupplierDTO();
+    }
+    
     public long OrderId
     {
         get => orderId;

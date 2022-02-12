@@ -5,7 +5,15 @@ public class ProductDTO
     protected long productId;
     protected long barcode;
     protected double purchasePrice;
-    protected string productName = "";
+    protected string productName;
+    
+    public ProductDTO()
+    {
+        productId = -1;
+        barcode = 0;
+        purchasePrice = 0;
+        productName = "";
+    }
 
     public long ProductId
     {

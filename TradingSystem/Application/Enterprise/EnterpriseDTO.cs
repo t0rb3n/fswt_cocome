@@ -3,8 +3,14 @@ namespace Application.Enterprise;
 public class EnterpriseDTO
 {
     protected long enterpriseId;
-    protected string enterpriseName = "";
+    protected string enterpriseName;
 
+    public EnterpriseDTO()
+    {
+        enterpriseId = -1;
+        enterpriseName = "";
+    }
+    
     public long EnterpriseId
     {
         get => enterpriseId;

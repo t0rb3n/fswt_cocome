@@ -7,8 +7,16 @@ public class OrderEntry
 {
     private long _id;
     private int _amount;
-    private Product _product = new();
-    private ProductOrder _productOrder = new();
+    private Product _product;
+    private ProductOrder _productOrder;
+
+    public OrderEntry()
+    {
+        _id = -1;
+        _amount = 0;
+        _product = new Product();
+        _productOrder = new ProductOrder();
+    }
 
     [Key]
     public long Id

@@ -2,7 +2,12 @@ namespace Application.Store;
 
 public class ProductStockItemDTO : ProductDTO
 {
-    protected StockItemDTO stockItem = new();
+    protected StockItemDTO stockItem;
+
+    public ProductStockItemDTO()
+    {
+        stockItem = new StockItemDTO();
+    }
 
     public StockItemDTO StockItem
     {
