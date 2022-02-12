@@ -26,6 +26,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { LowStockTableComponent } from './component/low-stock-table/low-stock-table.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     NavigationComponent,
     ProducttableComponent,
     ChangePriceDialogComponent,
+    LowStockTableComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -43,7 +45,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     RouterModule.forRoot([
       {path: '', component: HomeComponent, data: {title: 'Home'}, pathMatch: 'full'},
       {path: 'counter', component: CounterComponent, data: {title: 'Counter'}},
-      {path: 'products', component: ProducttableComponent, data: {title: 'Products in stock'}},
+      { path: 'products', component: ProducttableComponent, data: { title: 'Products in stock' } },
+      { path: 'low-stock-items', component: LowStockTableComponent, data: { title: 'Products running out of stock' } },
     ]),
     NgbModule,
     BrowserAnimationsModule,
