@@ -1,4 +1,7 @@
 ﻿using System.Security.Cryptography;
+using CashDesk.DisplayController;
+using CashDesk.Sila.DisplayController;
+using CashDesk.Sila.PrintingService;
 
 namespace CashDesk;
 
@@ -14,13 +17,15 @@ public class CashDeskEventHandler : IHostedService
         ILogger<CashDeskEventHandler> logger,
         IHostApplicationLifetime appLifetime,
         CashDesk cashDesk,
-        CashDeskEventPublisher cdep)
+        CashDeskEventPublisher cdep,
+        
+        DisplayControllerEventHandler dceh,
+        PrinterControllerEventHandler pceh)
     {
         _logger = logger;
         _appLifetime = appLifetime;
         _cashDesk = cashDesk;
         _cdep = cdep;
-
         RegisterHandler();
     }
 
@@ -103,4 +108,5 @@ public class CashDeskEventHandler : IHostedService
     {
         _cashDesk.PayWithCash();
     }
+    
 }

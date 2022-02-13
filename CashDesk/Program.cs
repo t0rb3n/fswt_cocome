@@ -6,6 +6,8 @@ using CashDesk.CardReaderService;
 using CashDesk.CashboxService;
 using CashDesk.DisplayController;
 using CashDesk.PrintingService;
+using CashDesk.Sila.DisplayController;
+using CashDesk.Sila.PrintingService;
 using Grpc.Core;
 using GrpcModule.Services.Enterprise;
 using Tecan.Sila2;
@@ -27,6 +29,10 @@ var terminalServerExecutionManager = executionManagerFactory.CreateExecutionMana
 var builder = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
+       
+        /*
+         * Sila Services
+         */
         services.AddSingleton<IClientChannel>(terminalServer.Channel);
         services.AddSingleton<IClientExecutionManager>(terminalServerExecutionManager);
         services.AddSingleton<CashboxServiceClient>();
@@ -36,9 +42,18 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddSingleton<CardReaderServiceClient>();
         services.AddSingleton<IBankServer>(new BankServerClient(bankServer?.Channel, executionManagerFactory.CreateExecutionManager(bankServer)));
         
-        services.AddSingleton<CashDeskEventPublisher>();
+        
         services.AddSingleton<CashDesk.CashDesk>();
+
+        /*
+         * Event Listener
+         */
+        
+        services.AddSingleton<CashDeskEventPublisher>();
         services.AddHostedService<CashDeskEventHandler>();
+        
+        services.AddSingleton<DisplayControllerEventHandler>();
+        services.AddSingleton<PrinterControllerEventHandler>();
         
         services.AddGrpcClient<EnterpriseService.EnterpriseServiceClient>(options =>
         {
