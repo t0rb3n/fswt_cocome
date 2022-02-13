@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {DataSource} from '@angular/cdk/collections';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
@@ -6,6 +7,14 @@ import {Observable, of as observableOf, merge} from 'rxjs';
 import {StoreService} from "../../services/store/store.service";
 import {Injectable} from "@angular/core";
 import {OrderProductDTO} from 'src/app/classes/OrderProductDTO';
+=======
+import { DataSource } from '@angular/cdk/collections';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { catchError, map, startWith, switchMap} from 'rxjs/operators';
+import { Observable, of as observableOf, merge } from 'rxjs';
+import { StoreService } from "../../services/store/store.service";
+import { Injectable } from "@angular/core";
 
 
 /**
@@ -31,7 +40,9 @@ export class LowStockItemDTODataSource extends DataSource<OrderProductDTO> {
    * the returned stream emits new items.
    * @returns A stream of the items to be rendered.
    */
+
   connect(): Observable<OrderProductDTO[]> {
+
     if (this.paginator && this.sort) {
       // Combine everything that affects the rendered data into one update
       // stream for the data-table to consume.
@@ -70,6 +81,7 @@ export class LowStockItemDTODataSource extends DataSource<OrderProductDTO> {
    * Paginate the data (client-side). If you're using server-side pagination,
    * this would be replaced by requesting the appropriate data from the server.
    */
+
   private getPagedData(data: OrderProductDTO[]): OrderProductDTO[] {
     if (this.paginator) {
       const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
@@ -93,6 +105,8 @@ export class LowStockItemDTODataSource extends DataSource<OrderProductDTO> {
       switch (this.sort?.active) {
         case 'ProductName':
           return compare(a.productName, b.productName, isAsc);
+        case 'Supplier':
+          return compare(a.supplierName, b.supplierName, isAsc);
         case 'PurchasePrice':
           return compare(+a.purchasePrice, +b.purchasePrice, isAsc);
         case 'MinStock':
