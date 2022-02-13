@@ -6,6 +6,7 @@ import { Observable, of as observableOf, merge } from 'rxjs';
 import { StoreService } from "../../services/store/store.service";
 import { ProductSupplierStockItemDTO } from "../../classes/ProductSupplierStockItemDTO";
 import { Injectable } from "@angular/core";
+import { ProductStockItemDTO } from '../../classes/ProductStockItemDTO';
 
 
 /**
@@ -14,8 +15,8 @@ import { Injectable } from "@angular/core";
  * (including sorting, pagination, and filtering).
  */
 @Injectable()
-export class LowStockItemDTODataSource extends DataSource<ProductSupplierStockItemDTO> {
-  data: ProductSupplierStockItemDTO[] = [];
+export class LowStockItemDTODataSource extends DataSource<ProductStockItemDTO> {
+  data: ProductStockItemDTO[] = [];
   paginator: MatPaginator | undefined;
   sort: MatSort | undefined;
   length: number = 0;
@@ -29,7 +30,7 @@ export class LowStockItemDTODataSource extends DataSource<ProductSupplierStockIt
    * the returned stream emits new items.
    * @returns A stream of the items to be rendered.
    */
-  connect(): Observable<ProductSupplierStockItemDTO[]> {
+  connect(): Observable<ProductStockItemDTO[]> {
     if (this.paginator && this.sort) {
       // Combine everything that affects the rendered data into one update
       // stream for the data-table to consume.
@@ -37,7 +38,7 @@ export class LowStockItemDTODataSource extends DataSource<ProductSupplierStockIt
         .pipe(
           startWith({}),
           switchMap(() => {
-            return this.storeService.getStockItems(
+            return this.storeService.getLowStockItems(
             ).pipe(catchError(() => observableOf(null)));
           }),
           map(data => {
@@ -68,7 +69,7 @@ export class LowStockItemDTODataSource extends DataSource<ProductSupplierStockIt
    * Paginate the data (client-side). If you're using server-side pagination,
    * this would be replaced by requesting the appropriate data from the server.
    */
-  private getPagedData(data: ProductSupplierStockItemDTO[]): ProductSupplierStockItemDTO[] {
+  private getPagedData(data: ProductStockItemDTO[]): ProductStockItemDTO[] {
     if (this.paginator) {
       const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
       return data.splice(startIndex, this.paginator.pageSize);
@@ -81,7 +82,7 @@ export class LowStockItemDTODataSource extends DataSource<ProductSupplierStockIt
    * Sort the data (client-side). If you're using server-side sorting,
    * this would be replaced by requesting the appropriate data from the server.
    */
-  private getSortedData(data: ProductSupplierStockItemDTO[]): ProductSupplierStockItemDTO[] {
+  private getSortedData(data: ProductStockItemDTO[]): ProductStockItemDTO[] {
     if (!this.sort || !this.sort.active || this.sort.direction === '') {
       return data;
     }
@@ -91,8 +92,6 @@ export class LowStockItemDTODataSource extends DataSource<ProductSupplierStockIt
       switch (this.sort?.active) {
         case 'ProductName':
           return compare(a.productName, b.productName, isAsc);
-        case 'Supplier':
-          return compare(a.supplierName, b.supplierName, isAsc);
         case 'PurchasePrice':
           return compare(+a.purchasePrice, +b.purchasePrice, isAsc);
         case 'MinStock':
