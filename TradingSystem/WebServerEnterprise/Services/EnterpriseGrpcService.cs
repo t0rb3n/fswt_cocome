@@ -85,7 +85,6 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         foreach (var productSupplierStockItemDto in result)
         {
-
             responseStream.WriteAsync(DtoObject.ToProductSupplierStockItemReply(productSupplierStockItemDto));
         }
 
