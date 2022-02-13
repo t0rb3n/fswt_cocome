@@ -44,11 +44,11 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         return GrpcObject.ToStoreEnterpriseDTO(reply);
     }
     
-    public IList<ProductStockItemDTO> GetProductsLowStockItems()
+    public IList<ProductSupplierStockItemDTO> GetProductsLowStockItems()
     {
         return Task.Run(async () =>
         {
-            List<ProductStockItemDTO> result = new();
+            List<ProductSupplierStockItemDTO> result = new();
             
             try
             {
@@ -59,7 +59,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                 await foreach(var productStockItem in call.ResponseStream.ReadAllAsync())
                 {
                     // Converts reply object to DTO object and adds to result list.
-                    result.Add(GrpcObject.ToProductStockItemDTO(productStockItem));
+                    result.Add(GrpcObject.ToProductSupplierStockItemDTO(productStockItem));
                 }
             }
             catch (RpcException e)

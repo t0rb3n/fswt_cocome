@@ -158,9 +158,9 @@ public class EnterpriseApplication : IEnterpriseApplication
         return result;
     }
 
-    public IList<ProductStockItemDTO> GetProductsLowStockItems(long storeId)
+    public IList<ProductSupplierStockItemDTO> GetProductsLowStockItems(long storeId)
     {
-        List<ProductStockItemDTO> result = new();
+        List<ProductSupplierStockItemDTO> result = new();
         using var dbc = new DatabaseContext();
         using var transaction = dbc.Database.BeginTransaction();
 
@@ -169,7 +169,7 @@ public class EnterpriseApplication : IEnterpriseApplication
             // Makes the query to the database.
             var query = _storeQuery.QueryLowStockItems(storeId, dbc);
             // Converts Entity object to DTO object and adds to the result list.
-            result.AddRange(query.Select(EntryObject.ToProductStockItemDTO));
+            result.AddRange(query.Select(EntryObject.ToProductSupplierStockItemDTO));
             transaction.Commit();
         }
         catch (ItemNotFoundException e)

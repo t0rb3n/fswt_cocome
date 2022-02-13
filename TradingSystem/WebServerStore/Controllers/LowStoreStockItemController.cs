@@ -18,7 +18,7 @@ namespace WebServerStore.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<ProductStockItemDTO> Get()
+        public IEnumerable<ProductSupplierStockItemDTO> Get()
         {
             return _storeApp.GetProductsLowStockItems().ToArray();
         }

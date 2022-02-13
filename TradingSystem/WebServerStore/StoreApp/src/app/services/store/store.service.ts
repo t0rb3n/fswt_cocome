@@ -19,8 +19,8 @@ export class StoreService {
     return this.http.get<ProductSupplierStockItemDTO[]>('storestockitem');
   }
 
-  getLowStockItems(): Observable<ProductStockItemDTO[]> {
-    return this.http.get<ProductStockItemDTO[]>('lowstorestockitem');
+  getLowStockItems(): Observable<ProductSupplierStockItemDTO[]> {
+    return this.http.get<ProductSupplierStockItemDTO[]>('lowstorestockitem');
   }
 
   changeStockItemPrice(stockItemId: number, newPrice: number): Observable<any> {
