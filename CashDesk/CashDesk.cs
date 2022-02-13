@@ -5,80 +5,54 @@ using CashDesk.CashboxService;
 using CashDesk.DisplayController;
 using CashDesk.Exceptions;
 using CashDesk.PrintingService;
+using CashDesk.Sila.DisplayController;
 using CashDesk.TransferObjects;
 using GrpcModule.Messages;
 using GrpcModule.Services.Enterprise;
+using static CashDesk.CashDeskStates;
 
 namespace CashDesk;
 
 public class CashDesk
 {
     private readonly EnterpriseService.EnterpriseServiceClient _enterpriseclient;
+    private CardReaderServiceClient _cardReaderClient;
+    private IBankServer _bankClient;
     private readonly ILogger<CashDesk> _logger;
 
 
     private static readonly string InvalidCardInfo = "XXXX XXXX XXXX XXXX";
-    private CashboxServiceClient _cashboxClient;
-    private DisplayControllerClient _displayClient;
-    private PrintingServiceClient _printerClient;
-    private BarcodeScannerServiceClient _barcodeClient;
-    private CardReaderServiceClient _cardReaderClient;
-    private BankServerClient _bankClient;
+
     private double _currentRunningTotal;
     private CashDeskState _currentState = CashDeskState.ExpectingSale;
     private bool _expressModeEnabled = false;
     private List<ProductStockItemReply> _saleProducts; // TODO use TO Objects
     private string _cardInfo;
+    public event EventHandler<string> UpdateDisplay;
+    public event EventHandler<ChangeRunningTotalArgs> ChangeRunningTotal;
 
-    // New sale can be started anytime and thus aborted expect when we already paid by cash 
-    private static readonly HashSet<CashDeskState> StartSaleStates = new HashSet<CashDeskState>
-    {
-        CashDeskState.ExpectingSale,
-        CashDeskState.ExpectingItems,
-        CashDeskState.ExpectingPayment,
-        CashDeskState.PayingByCash,
-        CashDeskState.ExpectingCardInfo,
-        CashDeskState.PayingByCreditCard
-    };
-
-    private static readonly HashSet<CashDeskState> AddItemToSaleStates = new HashSet<CashDeskState>
-    {
-        CashDeskState.ExpectingItems
-    };
-
-    private static readonly HashSet<CashDeskState> FinishSaleStates = new HashSet<CashDeskState>
-    {
-        CashDeskState.ExpectingItems
-    };
-
-    private static readonly HashSet<CashDeskState> SelectPayingMode = new HashSet<CashDeskState>
-    {
-        CashDeskState.ExpectingPayment,
-        CashDeskState.ExpectingCardInfo,
-        CashDeskState.PayingByCash
-    };
 
     public CashDesk(ILogger<CashDesk> logger, EnterpriseService.EnterpriseServiceClient esc,
-        DisplayControllerClient displayClient)
+        IBankServer bankServerClient, CardReaderServiceClient cardReaderClient)
     {
         _enterpriseclient = esc;
         _logger = logger;
-        _displayClient = displayClient;
+        _bankClient = bankServerClient;
+        _cardReaderClient = cardReaderClient;
         _currentRunningTotal = 0;
     }
 
-
     /*
-     
+    
      Methods used by the CashDeskHandler
-     
+    
      */
     public void StartSale()
     {
-        this.StateIsLegal(StartSaleStates);
+        StateIsLegal(StartSaleStates);
 
-        this._currentState = CashDeskState.ExpectingItems;
-        this.ResetSale();
+        _currentState = CashDeskState.ExpectingItems;
+        ResetSale();
     }
 
     public void FinishSale()
@@ -87,8 +61,6 @@ public class CashDesk
 
         if (_saleProducts.Count > 0)
         {
-            // TODO Send SaleFinished Event
-
             _currentState = CashDeskState.ExpectingPayment;
         }
     }
@@ -119,10 +91,11 @@ public class CashDesk
             {
                 _logger.LogError("No product/stock item for barcode ${Barcode}", barcode);
                 //TODO  send this.sendInvalidProductBarcodeEvent(barcode);
+                // TODO throw this correctly
             }
             catch (Exception exception)
             {
-                _logger.LogError("Failed to communicate with store server with reason: \n {exception}", exception);
+                _logger.LogError("Failed to communicate with store server with reason: \n {Exception}", exception);
             }
         }
         else
@@ -143,23 +116,29 @@ public class CashDesk
         }
     }
 
-    public void PayWithCard()
+    public void PayWithCash()
     {
-        StateIsLegal(SelectPayingMode);
+        StateIsLegal(SelectPayingModeStates);
 
         // send PaymentModeSelectedEvent
         _currentState = CashDeskState.PayingByCash;
     }
 
-    public void PayWithCash()
+    public void PayWithCard()
     {
-        StateIsLegal(SelectPayingMode);
+        StateIsLegal(SelectPayingModeStates);
 
         // Card payment is disallowed in express mode
         if (!_expressModeEnabled)
         {
             // send PaymentModeSelectedEvent
             _currentState = CashDeskState.ExpectingCardInfo;
+            
+            TryPayingByCard(Convert.ToInt64(_currentRunningTotal));
+            //TODO handle case when insufficient balance or card rejected
+            
+            // send salesuccess event
+
         }
         else
         {
@@ -199,35 +178,24 @@ public class CashDesk
     private void AddItemToSale(ProductStockItemReply product)
     {
         _saleProducts.Add(product);
-        // TODO change this protoshit
-        double currentTotal = CalculateCurrentTotal(product.StockItem[0].SalesPrice);
-        DisplayCurrentTotal(currentTotal);
+
+        var stockitem = product.StockItem[0];
+        var currentTotal = CalculateCurrentTotal(stockitem.SalesPrice);
+
+        OnChangeRunningTotal(new ChangeRunningTotalArgs
+        {
+            Price = stockitem.SalesPrice,
+            ProductName = product.ProductName,
+            Total = currentTotal
+        });
     }
 
     private double CalculateCurrentTotal(double price) => _currentRunningTotal += price;
 
-    private void DisplayCurrentTotal(double total)
-    {
-        // TODO send the new total to the Terminal and let it show.
-        _displayClient.SetDisplayText(total.ToString());
-        //throw new NotImplementedException();
-    }
 
-    private void listenToSaleStartedEvent()
-    {
-        throw new NotImplementedException();
-    }
-
-    void listenToSaleFinishedEvent()
-    {
-        throw new NotImplementedException();
-    }
-
-    void listenToProductBarCodeScannedEvent()
-    {
-        throw new NotImplementedException();
-    }
-
+    /*
+     * GRPC Calls
+     */
     private ProductStockItemReply GetProductWithStockItem(long barcode)
     {
         return _enterpriseclient.GetProductStockItem(new ProductStockItemRequest
@@ -235,4 +203,34 @@ public class CashDesk
             Barcode = barcode, StoreId = 1
         });
     }
+
+
+    /*
+     * Event Methods
+     */
+
+    private void OnChangeRunningTotal(ChangeRunningTotalArgs args)
+    {
+        ChangeRunningTotal?.Invoke(this, args);
+    }
+
+
+   /*
+    * Bank Methods
+    */
+   private async void TryPayingByCard(long amount)
+   {
+       var context = _bankClient.CreateContext(amount);
+       var authorizeCommand = _cardReaderClient.Authorize(amount, context.Challenge);
+       var token = await authorizeCommand.Response;
+       try
+       {
+           _bankClient.AuthorizePayment(context.ContextId, token.Account, token.AuthorizationToken);
+           _cardReaderClient.Confirm();
+       }
+       catch (Exception ex)
+       {
+           _cardReaderClient.Abort(ex.Message);
+       }
+   }
 }

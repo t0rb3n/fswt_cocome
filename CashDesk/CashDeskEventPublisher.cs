@@ -22,6 +22,9 @@ public sealed class CashDeskEventPublisher
 
     // Item Events
     public event EventHandler<string> AddItemToSale;
+    
+    
+    
     private readonly ILogger<CashDeskEventPublisher> _logger;
 
     private CashboxServiceClient _cashboxClient;
@@ -39,6 +42,7 @@ public sealed class CashDeskEventPublisher
         _logger = logger;
         _cashboxClient = cashboxClient;
         _barcodeClient = barcodeClient;
+        
     }
 
     public async Task StartListeningToTerminal()
@@ -76,7 +80,7 @@ public sealed class CashDeskEventPublisher
 
     private async void StartListeningToBarcodes()
     {
-        _logger.LogInformation("Start listening to barcodes");
+        _logger.LogInformation("Start listening to barcode reader ...");
         var barcodes = _barcodeClient.ListenToBarcodes();
 
         while (await barcodes.IntermediateValues.WaitToReadAsync())
@@ -85,7 +89,10 @@ public sealed class CashDeskEventPublisher
 
             OnAddItemToSaleEvent(barcode);
         }
+        
     }
+
+
 
     private void OnStartSaleEvent(EventArgs e)
     {
@@ -116,4 +123,6 @@ public sealed class CashDeskEventPublisher
     {
         PayWithCash.Invoke(this, e);
     }
+
+
 }
