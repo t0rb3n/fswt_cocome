@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Application.Mappers;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -8,66 +9,103 @@ namespace Application.Store;
 
 public class StoreApplication : IStoreApplication, ICashDeskConnector
 {
-    private readonly long _storeId;
     private readonly EnterpriseService.EnterpriseServiceClient _client;
+    private readonly long _storeId;
 
-    public StoreApplication(long storeId, EnterpriseService.EnterpriseServiceClient client)
+    public StoreApplication(EnterpriseService.EnterpriseServiceClient client, long storeId)
     {
-        _storeId = storeId;
         _client = client;
+        _storeId = storeId;
     }
 
     public StoreEnterpriseDTO GetStore()
     {
-        var reply = _client.GetStore(new StoreRequest {StoreId = _storeId});
+        StoreEnterpriseReply reply;
+        
+        try
+        {
+            reply = _client.GetStore(new StoreRequest {StoreId = _storeId});
+        }
+        catch (RpcException e)
+        {
+            throw new StoreException(e.Message);
+        }
+
         var result = GrpcObject.ToStoreEnterpriseDTO(reply);
         return result;
     }
     
-    public List<ProductStockItemDTO> GetProductsLowStockItems()
+    public IList<ProductStockItemDTO> GetProductsLowStockItems()
     {
         return Task.Run(async () =>
         {
-            using var call = _client.GetProductsLowStockItems(new StoreRequest {StoreId = _storeId});
-            var result = new List<ProductStockItemDTO>();
-
-            await foreach(var productStockItem in call.ResponseStream.ReadAllAsync())
+            List<ProductStockItemDTO> result = new();
+            
+            try
             {
-                result.Add(GrpcObject.ToProductStockItemDTO(productStockItem));
-            }
+                using var call = _client.GetProductsLowStockItems(new StoreRequest {StoreId = _storeId});
+                
 
+                await foreach(var productStockItem in call.ResponseStream.ReadAllAsync())
+                {
+                    result.Add(GrpcObject.ToProductStockItemDTO(productStockItem));
+                }
+            }
+            catch (RpcException e)
+            {
+                throw new StoreException(e.Message);
+            }
+            
             Console.WriteLine("List<ProductStockItemDTO> size: " + result.Count);
             return result;
         }).Result;
     }
 
-    public List<ProductSupplierDTO> GetAllProductSuppliers()
+    public IList<ProductSupplierDTO> GetAllProductSuppliers()
     {
         return Task.Run(async () =>
         {
-            using var call = _client.GetAllProductSuppliers(new StoreRequest {StoreId = _storeId});
-            var result = new List<ProductSupplierDTO>();
-            
-            await foreach (var productSupplier in call.ResponseStream.ReadAllAsync())
+            List<ProductSupplierDTO> result = new();
+
+            try
             {
-                result.Add(GrpcObject.ToProductSupplierDTO(productSupplier));
+                using var call = _client.GetAllProductSuppliers(new StoreRequest {StoreId = _storeId});
+
+                await foreach (var productSupplier in call.ResponseStream.ReadAllAsync())
+                {
+                    result.Add(GrpcObject.ToProductSupplierDTO(productSupplier));
+                }
             }
+            catch (RpcException e)
+            {
+                throw new StoreException(e.Message);
+            }
+            
             Console.WriteLine("List<ProductSupplierDTO> size: " + result.Count);
             return result;
         }).Result;
     }
 
-    public List<ProductSupplierStockItemDTO> GetAllProductSupplierStockItems()
+    public IList<ProductSupplierStockItemDTO> GetAllProductSupplierStockItems()
     {
         return Task.Run(async () =>
         {
-            using var call = _client.GetAllProductSupplierStockItems(new StoreRequest {StoreId = _storeId});
-            var result = new List<ProductSupplierStockItemDTO>();
+            List<ProductSupplierStockItemDTO> result = new();
             
-            await foreach (var productSupplierStockItem in call.ResponseStream.ReadAllAsync())
+            try
             {
-                result.Add(GrpcObject.ToProductSupplierStockItemDTO(productSupplierStockItem));
+                using var call = _client.GetAllProductSupplierStockItems(new StoreRequest {StoreId = _storeId});
+
+                await foreach (var productSupplierStockItem in call.ResponseStream.ReadAllAsync())
+                {
+                    result.Add(GrpcObject.ToProductSupplierStockItemDTO(productSupplierStockItem));
+                }
             }
+            catch (RpcException e)
+            {
+                throw new StoreException(e.Message);
+            }
+            
             Console.WriteLine("List<ProductSupplierStockItemDTO> size: " + result.Count);
             return result;
         }).Result;
@@ -98,65 +136,114 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                     Orders = orderList
                 });
             }
-            
-            using var call = _client.OrderProducts();
 
-            foreach (var makeOrder in productOrders)
+            try
             {
-               await call.RequestStream.WriteAsync(
-                    DtoObject.ToProductOrderRequest(makeOrder, _storeId));
-                Console.WriteLine($"Send order with a size from: {makeOrder.Orders.Count}");
-            }
+                using var call = _client.OrderProducts();
 
-            await call.RequestStream.CompleteAsync();
-            var response = await call;
-            Console.WriteLine($"response: {response}");
+                foreach (var makeOrder in productOrders)
+                {
+                    await call.RequestStream.WriteAsync(
+                        DtoObject.ToProductOrderRequest(makeOrder, _storeId));
+                    Console.WriteLine($"Send order with a size from: {makeOrder.Orders.Count}");
+                }
+
+                await call.RequestStream.CompleteAsync();
+                var response = await call;
+                Console.WriteLine($"response: {response.Success} {response.Msg}");
+            }
+            catch (RpcException e)
+            {
+                throw new StoreException(e.Message);
+            }
         });
     }
 
     public ProductOrderDTO GetProductOrder(long productOrderId)
     {
-        var reply = _client.GetProductOrder(new ProductOrderRequest
+        ProductOrderReply reply;
+        
+        try
         {
-            ProductOrderId = productOrderId
-        });
-
+            reply = _client.GetProductOrder(new ProductOrderRequest
+            {
+                ProductOrderId = productOrderId
+            });
+        }
+        catch (RpcException e)
+        {
+            throw new StoreException(e.Message);
+        }
+        
         var result = GrpcObject.ToProductOrderDTO(reply);
         return result;
     }
 
     public void RollInReceivedProductOrder(long productOrderId)
     {
-        var call = _client.RollInReceivedProductOrder(new ProductOrderRequest
+        try
         {
-            ProductOrderId = productOrderId,
-            StoreId = _storeId,
-            DeliveryDate = Timestamp.FromDateTime(DateTime.UtcNow)
-        });
+            var response = _client.RollInReceivedProductOrder(new ProductOrderRequest
+            {
+                ProductOrderId = productOrderId,
+                StoreId = _storeId,
+                DeliveryDate = Timestamp.FromDateTime(DateTime.UtcNow)
+            });
+            Console.WriteLine($"response: {response.Success} {response.Msg}");
+        }
+        catch (RpcException e)
+        {
+            throw new StoreException(e.Message);
+        }
     }
 
     public void ChangePrice(long stockItemId, double newPrice)
     {
-        
-        var call = _client.ChangePrice(new StockItemIdRequest()
+        try
         {
-            ItemId = stockItemId,
-            NewPrice = newPrice
-        });
+            var response = _client.ChangePrice(new StockItemIdRequest()
+            {
+                ItemId = stockItemId,
+                NewPrice = newPrice
+            });
+            Console.WriteLine($"response: {response.Success} {response.Msg}");
+        }
+        catch (RpcException e)
+        {
+            throw new StoreException(e.Message);
+        }
     }
 
     public void BookSale(SaleDTO saleDto)
     {
-        var call = _client.makeBookSales(DtoObject.ToSaleRequest(saleDto));
+        try
+        {
+            var response = _client.makeBookSales(DtoObject.ToSaleRequest(saleDto));
+            Console.WriteLine($"response: {response.Success} {response.Msg}");
+        }
+        catch (RpcException e)
+        {
+            throw new StoreException(e.Message);
+        }
     }
 
     public ProductStockItemDTO GetProductStockItem(long productBarcode)
     {
-        var reply = _client.GetProductStockItem(new ProductStockItemRequest
+        ProductStockItemReply reply;
+        
+        try
         {
-            Barcode = productBarcode,
-            StoreId = _storeId
-        });
+            reply = _client.GetProductStockItem(new ProductStockItemRequest
+            {
+                Barcode = productBarcode,
+                StoreId = _storeId
+            });
+        }
+        catch (RpcException e)
+        {
+            throw new StoreException(e.Message);
+        }
+        
         return GrpcObject.ToProductStockItemDTO(reply);
     }
 }
