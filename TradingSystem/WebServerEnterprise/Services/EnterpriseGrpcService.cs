@@ -66,9 +66,9 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
     /// <returns>The successfully completed task.</returns>
     /// <exception cref="RpcException">If enterprise interface failed.</exception>
     public override Task GetProductsLowStockItems(StoreRequest request,
-        IServerStreamWriter<ProductStockItemReply> responseStream, ServerCallContext context)
+        IServerStreamWriter<ProductSupplierStockItemReply> responseStream, ServerCallContext context)
     {
-        IList<ProductStockItemDTO> result;
+        IList<ProductSupplierStockItemDTO> result;
 
         try
         {
@@ -83,10 +83,10 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         _logger.LogInformation("List<ProductStockItemDTO> size: {size}", result.Count);
 
-        foreach (var productStockItemDto in result)
+        foreach (var productSupplierStockItemDto in result)
         {
-            // Converts DTO object to reply object and sends to the client.
-            responseStream.WriteAsync(DtoObject.ToProductStockItemReply(productStockItemDto));
+
+            responseStream.WriteAsync(DtoObject.ToProductSupplierStockItemReply(productSupplierStockItemDto));
         }
 
         return Task.CompletedTask;

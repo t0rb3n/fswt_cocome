@@ -20,7 +20,7 @@ public interface IStoreApplication
     /// </summary>
     /// <returns>A list of products and their stock item.</returns>
     /// <exception cref="StoreException">If the rpc call failed.</exception>
-    public IList<ProductStockItemDTO> GetProductsLowStockItems();
+    public IList<ProductSupplierStockItemDTO> GetProductsLowStockItems();
     
     /// <summary>
     /// Determines all products of the portfolio of a given store and the supplier for each of them.
