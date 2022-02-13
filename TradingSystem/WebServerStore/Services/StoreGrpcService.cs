@@ -19,14 +19,36 @@ public class StoreGrpcService : StoreService.StoreServiceBase
 
     public override Task<ProductStockItemReply> GetProductStockItem(ProductStockItemRequest request, ServerCallContext context)
     {
-        var product = _storeApplication.GetProductStockItem(request.Barcode);
+        ProductStockItemDTO product;
+
+        try
+        {
+            product = _storeApplication.GetProductStockItem(request.Barcode);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, "Grpc call GetProductStockItem failed!"));
+        }
+        
         _logger.LogInformation("Get product {id}", product.ProductId);
         return Task.FromResult(DtoObject.ToProductStockItemReply(product));
     }
 
     public override Task<MessageReply> BookSales(SaleRequest request, ServerCallContext context)
     {
-        _storeApplication.BookSale(GrpcObject.ToSaleDTO(request));
+        try
+        {
+            _storeApplication.BookSale(GrpcObject.ToSaleDTO(request));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new RpcException(
+                new Status(StatusCode.Internal, "Grpc call BookSales failed!"));
+        }
+        
         _logger.LogInformation("book {date} sale", request.Date);
         return Task.FromResult(new MessageReply
         {
