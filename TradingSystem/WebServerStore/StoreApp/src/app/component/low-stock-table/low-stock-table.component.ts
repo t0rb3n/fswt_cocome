@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
-import { ProductSupplierStockItemDTO } from '../../classes/ProductSupplierStockItemDTO';
+import { ProductStockItemDTO } from '../../classes/ProductStockItemDTO';
 import { StoreService } from '../../services/store/store.service';
 import { LowStockItemDTODataSource } from './low-stock-table-datasource';
 import { OrderAmountDialogComponent } from '../order-amount-dialog/order-amount-dialog.component';
