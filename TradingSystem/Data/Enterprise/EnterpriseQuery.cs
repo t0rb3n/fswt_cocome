@@ -1,3 +1,5 @@
+using Data.Exceptions;
+using Data.Store;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Enterprise;
@@ -6,56 +8,86 @@ public class EnterpriseQuery : IEnterpriseQuery
 {
     public Enterprise QueryEnterpriseById(long enterpriseId, DatabaseContext dbc)
     {
-        var result = dbc
-                         .Enterprises
-                         .Find(enterpriseId)
-                     ?? throw new Exception($"Can't find enterprise by id {enterpriseId}");
+        Enterprise result;
+        
+        try
+        {
+            result = dbc
+                .Enterprises
+                .Find(enterpriseId)!;
+        }
+        catch (ArgumentNullException)
+        {
+            throw new ItemNotFoundException($"Enterprise with the id '{enterpriseId}' could not be found!");
+        }
+      
         return result;
     }
 
     public IList<Store.Store> QueryStores(long enterpriseId, DatabaseContext dbc)
     {
-        var result = dbc
+        List<Store.Store> result;
+        try
+        {
+            result = dbc
                 .Stores
                 .Where(store => store.Enterprise.Id == enterpriseId)
-                .ToList() 
-                     ?? throw new Exception($"Can't find stores from enterprise id {enterpriseId}");
+                .ToList();
+        }
+        catch (ArgumentNullException)
+        {
+            throw new ItemNotFoundException($"Stores from enterprise id '{enterpriseId}' could not be found!");
+        }
+        
         return result;
     }
 
     public IList<ProductSupplier> QueryProductSuppliers(long enterpriseId, DatabaseContext dbc)
     {
-        var result = dbc
-                         .Enterprises
-                         .Find(enterpriseId)
-                         
-                     ?? throw new Exception($"Can't find product supplier from enterprise id {enterpriseId}");
+        Enterprise result;
+        try
+        {
+            result = dbc
+                .Enterprises
+                .Find(enterpriseId)!;
+            
+            dbc.Entry(result)
+                .Collection(enterprise => enterprise.ProductSuppliers)
+                .Load();
+        }
+        catch (ArgumentNullException)
+        {
+            throw new ItemNotFoundException($"Product suppliers from enterprise id '{enterpriseId}' could not be found!");
+        }
 
-        dbc.Entry(result).Collection(enterprise => enterprise.ProductSuppliers).Load();
-        
         return result.ProductSuppliers;
     }
     
     public long QueryMeanTimeToDelivery(ProductSupplier productSupplier, Enterprise enterprise, DatabaseContext dbc)
     {
-        var result = dbc
-            .ProductOrders
-            .Where(order => 
-                order.DeliveryDate != DateTime.MinValue 
-                && order.OrderEntries.Any(e => 
-                    e.Product.ProductSupplier.Id == productSupplier.Id)
-                && order.Store.Enterprise.Id == enterprise.Id)
-            .ToList();
-
         long meanTime = 0;
-        
-        foreach (var order in result)
+
+        try
         {
-            meanTime += order.DeliveryDate.Ticks - order.OrderingDate.Ticks;
+            var result = dbc
+                .ProductOrders
+                .Where(order => 
+                    order.DeliveryDate != DateTime.MinValue 
+                    && order.OrderEntries.Any(e => 
+                        e.Product.ProductSupplier.Id == productSupplier.Id)
+                    && order.Store.Enterprise.Id == enterprise.Id)
+                .ToList();
+            
+            foreach (var order in result) meanTime += order.DeliveryDate.Ticks - order.OrderingDate.Ticks;
+            
+            if (meanTime != 0) meanTime /= result.Count;
+            
         }
-        if (meanTime != 0) meanTime /= result.Count;
+        catch (ArgumentNullException)
+        {
+            throw new ItemNotFoundException($"The average time could not be calculated because an item was not found by the query!");
+        }
 
         return meanTime;
-
     }
 }
