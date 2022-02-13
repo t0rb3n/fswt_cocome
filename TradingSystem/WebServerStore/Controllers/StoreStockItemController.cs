@@ -20,9 +20,22 @@ public class StoreStockItemController : ControllerBase
     [HttpGet]
     public IEnumerable<ProductSupplierStockItemDTO> Get()
     {
-        return _storeApp
-            .GetAllProductSupplierStockItems()
-            .ToArray();
+        IEnumerable<ProductSupplierStockItemDTO> items;
+
+        try
+        {
+            items = _storeApp
+                .GetAllProductSupplierStockItems()
+                .ToArray();
+        }
+        catch(Exception e)
+        {
+            //TODO: handle exception
+            Console.WriteLine(e);
+            throw;
+        }
+
+        return items;
     }
 
     [HttpPatch("{id}")]
@@ -33,7 +46,18 @@ public class StoreStockItemController : ControllerBase
     {
         var item = new StockItemDTO();
         patch.ApplyTo(item);
-        _storeApp.ChangePrice(id, item.SalesPrice);
+        
+        try
+        {
+            _storeApp.ChangePrice(id, item.SalesPrice);
+        }
+        catch(Exception e)
+        {
+            //TODO: handle exception
+            Console.WriteLine(e);
+            throw;
+        }
+        
         return Ok();
     }
 
