@@ -3,90 +3,118 @@ using Data.Store;
 using Application.Enterprise;
 using Application.Store;
 
-namespace Application;
+namespace Application.Mappers;
 
 public static class EntryObject
 {
     public static EnterpriseDTO ToEnterpriseDTO(Data.Enterprise.Enterprise enterprise)
     {
-        EnterpriseDTO result = new();
-        result.EnterpriseId = enterprise.Id;
-        result.EnterpriseName = enterprise.Name;
-        return result;
+        return new EnterpriseDTO
+        {
+            EnterpriseId = enterprise.Id,
+            EnterpriseName = enterprise.Name
+        };
+    }
+
+    public static StoreDTO ToStoreDTO(Data.Store.Store store)
+    {
+        return new StoreDTO
+        {
+            StoreId = store.Id,
+            StoreName = store.Name,
+            Location = store.Location
+        };
     }
 
     public static StoreEnterpriseDTO ToStoreEnterpriseDTO(Data.Store.Store store)
     {
-        StoreEnterpriseDTO result = new();
-        result.StoreId = store.Id;
-        result.StoreName = store.Name;
-        result.Location = store.Location;
-        result.Enterprise = ToEnterpriseDTO(store.Enterprise);
-        return result;
+        return new StoreEnterpriseDTO
+        {
+            StoreId = store.Id,
+            StoreName = store.Name,
+            Location = store.Location,
+            Enterprise = ToEnterpriseDTO(store.Enterprise)
+        };
     }
 
     public static StockItemDTO ToStockItemDTO(StockItem stockItem)
     {
-        StockItemDTO result = new();
-        result.ItemId = stockItem.Id;
-        result.Amount = stockItem.Amount;
-        result.MinStock = stockItem.MinStock;
-        result.MinStock = stockItem.MaxStock;
-        result.SalesPrice = stockItem.SalesPrice;
-        return result;
+        return new StockItemDTO
+        {
+            ItemId = stockItem.Id,
+            Amount = stockItem.Amount,
+            MinStock = stockItem.MinStock,
+            MaxStock = stockItem.MaxStock,
+            SalesPrice = stockItem.SalesPrice
+        };
     }
 
     public static ProductStockItemDTO ToProductStockItemDTO(StockItem stockItem)
     {
-        ProductStockItemDTO result = new();
-        result.ProductId = stockItem.Product.Id;
-        result.ProductName = stockItem.Product.Name;
-        result.Barcode = stockItem.Product.Barcode;
-        result.PurchasePrice = stockItem.Product.PurchasePrice;
-        result.StockItem = ToStockItemDTO(stockItem);
-        return result;
+        return new ProductStockItemDTO
+        {
+            ProductId = stockItem.Product.Id,
+            ProductName = stockItem.Product.Name,
+            Barcode = stockItem.Product.Barcode,
+            PurchasePrice = stockItem.Product.PurchasePrice,
+            StockItem = ToStockItemDTO(stockItem)
+        };
+    }
+    
+    public static ProductSupplierDTO ToProductSupplierDTO(ProductSupplier productSupplier)
+    {
+        return new ProductSupplierDTO
+        {
+            SupplierId = productSupplier.Id,
+            SupplierName = productSupplier.Name
+        };
     }
 
     public static ProductSupplierDTO ToProductSupplierDTO(Product product)
     {
-        ProductSupplierDTO result = new();
-        result.ProductId = product.Id;
-        result.ProductName = product.Name;
-        result.Barcode = product.Barcode;
-        result.PurchasePrice = product.PurchasePrice;
-        result.SupplierId = product.ProductSupplier.Id;
-        result.SupplierName = product.ProductSupplier.Name;
-        return result;
+        return new ProductSupplierDTO
+        {
+            ProductId = product.Id,
+            ProductName = product.Name,
+            Barcode = product.Barcode,
+            PurchasePrice = product.PurchasePrice,
+            SupplierId = product.ProductSupplier.Id,
+            SupplierName = product.ProductSupplier.Name
+        };
     }
 
     public static ProductSupplierStockItemDTO ToProductSupplierStockItemDTO(StockItem stockItem)
     {
-        ProductSupplierStockItemDTO result = new();
-        result.ProductId = stockItem.Product.Id;
-        result.ProductName = stockItem.Product.Name;
-        result.Barcode = stockItem.Product.Barcode;
-        result.PurchasePrice = stockItem.Product.PurchasePrice;
-        result.SupplierId = stockItem.Product.ProductSupplier.Id;
-        result.SupplierName = stockItem.Product.ProductSupplier.Name;
-        result.StockItem = ToStockItemDTO(stockItem);
-        return result;
+        return new ProductSupplierStockItemDTO
+        {
+            ProductId = stockItem.Product.Id,
+            ProductName = stockItem.Product.Name,
+            Barcode = stockItem.Product.Barcode,
+            PurchasePrice = stockItem.Product.PurchasePrice,
+            SupplierId = stockItem.Product.ProductSupplier.Id,
+            SupplierName = stockItem.Product.ProductSupplier.Name,
+            StockItem = ToStockItemDTO(stockItem)
+        };
     }
 
     public static OrderDTO ToOrderDTO(OrderEntry orderEntry)
     {
-        OrderDTO result = new();
-        result.OrderId = orderEntry.Id;
-        result.Amount = orderEntry.Amount;
-        result.ProductSupplier = ToProductSupplierDTO(orderEntry.Product);
-        return result;
+        return new OrderDTO
+        {
+            OrderId = orderEntry.Id,
+            Amount = orderEntry.Amount,
+            ProductSupplier = ToProductSupplierDTO(orderEntry.Product)
+        };
     }
     
     public static ProductOrderDTO ToProductOrderDTO(ProductOrder productOrder)
     {
-        ProductOrderDTO result = new();
-        result.ProductOrderId = productOrder.Id;
-        result.OrderingDate = productOrder.OrderingDate;
-        result.DeliveryDate = productOrder.DeliveryDate;
+        ProductOrderDTO result = new()
+        {
+            ProductOrderId = productOrder.Id,
+            OrderingDate = productOrder.OrderingDate,
+            DeliveryDate = productOrder.DeliveryDate
+        };
         foreach (var oe in productOrder.OrderEntries)
         {
             result.Orders.Add(ToOrderDTO(oe));
