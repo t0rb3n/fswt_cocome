@@ -1,12 +1,11 @@
-import { DataSource } from '@angular/cdk/collections';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { catchError, map, startWith, switchMap, tap } from 'rxjs/operators';
-import { Observable, of as observableOf, merge } from 'rxjs';
-import { StoreService } from "../../services/store/store.service";
-import { Injectable } from "@angular/core";
-import { OrderProductDTO } from 'src/app/classes/OrderProductDTO';
-
+import {DataSource} from '@angular/cdk/collections';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import {catchError, map, startWith, switchMap} from 'rxjs/operators';
+import {Observable, of as observableOf, merge} from 'rxjs';
+import {StoreService} from "../../services/store/store.service";
+import {Injectable} from "@angular/core";
+import {OrderProductDTO} from 'src/app/classes/OrderProductDTO';
 
 
 /**
@@ -18,6 +17,7 @@ import { OrderProductDTO } from 'src/app/classes/OrderProductDTO';
 
 export class LowStockItemDTODataSource extends DataSource<OrderProductDTO> {
   data: OrderProductDTO[] = [];
+
   paginator: MatPaginator | undefined;
   sort: MatSort | undefined;
   length: number = 0;
@@ -43,15 +43,15 @@ export class LowStockItemDTODataSource extends DataSource<OrderProductDTO> {
             ).pipe(catchError(() => observableOf(null)));
           }),
           map(data => {
-            // hacky way to do it but works
-            this.length = data!!.length;
-            if (data === null) {
-              return [];
-            }
-            this.data = this.getPagedData(this.getSortedData([...data]));
+              // hacky way to do it but works
+              this.length = data!!.length;
+              if (data === null) {
+                return [];
+              }
+              this.data = this.getPagedData(this.getSortedData([...data]));
 
-            return this.data;
-          }
+              return this.data;
+            }
           ),
         )
     } else {
@@ -93,8 +93,6 @@ export class LowStockItemDTODataSource extends DataSource<OrderProductDTO> {
       switch (this.sort?.active) {
         case 'ProductName':
           return compare(a.productName, b.productName, isAsc);
-        case 'Supplier':
-          return compare(a.supplierName, b.supplierName, isAsc);
         case 'PurchasePrice':
           return compare(+a.purchasePrice, +b.purchasePrice, isAsc);
         case 'MinStock':
