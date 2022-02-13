@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {ProductSupplierStockItemDTO} from "../../classes/ProductSupplierStockItemDTO";
 import {Observable} from "rxjs";
 import { StockItemDTO } from '../../classes/StockItemDTO';
+import { ProductStockItemDTO } from '../../classes/ProductStockItemDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,10 @@ export class StoreService {
 
   getStockItems(): Observable<ProductSupplierStockItemDTO[]> {
     return this.http.get<ProductSupplierStockItemDTO[]>('storestockitem');
+  }
+
+  getLowStockItems(): Observable<ProductStockItemDTO[]> {
+    return this.http.get<ProductStockItemDTO[]>('lowstorestockitem');
   }
 
   changeStockItemPrice(stockItemId: number, newPrice: number): Observable<any> {

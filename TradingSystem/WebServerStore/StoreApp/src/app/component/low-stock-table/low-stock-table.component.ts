@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
+import { ProductStockItemDTO } from '../../classes/ProductStockItemDTO';
 import { ProductSupplierStockItemDTO } from '../../classes/ProductSupplierStockItemDTO';
 import { StoreService } from '../../services/store/store.service';
 import { LowStockItemDTODataSource } from './low-stock-table-datasource';
@@ -15,7 +16,7 @@ import { LowStockItemDTODataSource } from './low-stock-table-datasource';
 export class LowStockTableComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild(MatTable) table!: MatTable<ProductSupplierStockItemDTO>;
+  @ViewChild(MatTable) table!: MatTable<ProductStockItemDTO>;
   dataSource: LowStockItemDTODataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
