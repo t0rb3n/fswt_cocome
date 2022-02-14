@@ -117,7 +117,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
                 Location = store.Location
             };
             // Converts Entity object to DTO object and adds to the result stockItem list.
-            result.StockItems.AddRange(stockitems.Select(EntryObject.ToProductStockItemDTO));
+            result.StockItems.AddRange(stockitems.Select(EntryObject.ToProductSupplierStockItemDTO));
         }
         catch (ItemNotFoundException e)
         {
