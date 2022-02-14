@@ -7,6 +7,8 @@ const PROXY_CONFIG = [
   {
     context: [
       "/config",
+      "/report",
+      "/statistics"
    ],
     target: target,
     secure: false

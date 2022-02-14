@@ -36,6 +36,7 @@ public class StartUpEnterprise
         // Add services to the container.
         builder.Services.AddGrpc();
         builder.Services.AddSingleton<IEnterpriseApplication>(application);
+        builder.Services.AddSingleton<IReporting>(application);
         builder.Services.AddControllersWithViews();
 
         var app = builder.Build();

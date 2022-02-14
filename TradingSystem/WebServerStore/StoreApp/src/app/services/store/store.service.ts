@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {ProductSupplierStockItemDTO} from "../../classes/ProductSupplierStockItemDTO";
 import {Observable} from "rxjs";
-import { ProductStockItemDTO } from '../../classes/ProductStockItemDTO';
 import { OrderRequest } from 'src/app/classes/OrderProductDTO';
+
 
 @Injectable({
   providedIn: 'root'

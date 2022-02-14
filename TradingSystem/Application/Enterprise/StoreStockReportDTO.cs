@@ -10,7 +10,7 @@ namespace Application.Enterprise;
 /// </summary>
 public class StoreStockReportDTO : StoreDTO
 {
-    protected List<ProductStockItemDTO> stockItem;
+    protected List<ProductSupplierStockItemDTO> stockItem;
 
     /// <summary>
     /// This constructor initializes the new StoreStockReportDTO with default values.
@@ -21,7 +21,7 @@ public class StoreStockReportDTO : StoreDTO
         storeId = -1;
         storeName = "";
         location = "";
-        stockItem = new List<ProductStockItemDTO>();
+        stockItem = new List<ProductSupplierStockItemDTO>();
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ public class StoreStockReportDTO : StoreDTO
     /// </summary>
     /// <value>Property <c>StockItems</c> represents a list of <see cref="ProductStockItemDTO"/>.</value>
     /// <exception cref="ArgumentNullException">If set StockItems with null.</exception>
-    public List<ProductStockItemDTO> StockItems
+    public List<ProductSupplierStockItemDTO> StockItems
     {
         get => stockItem;
         set => stockItem = value ?? throw new ArgumentNullException(nameof(value));

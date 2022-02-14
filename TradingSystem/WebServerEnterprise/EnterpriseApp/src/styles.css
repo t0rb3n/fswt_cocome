@@ -18,3 +18,14 @@ code {
 body {
   font-family: Helvetica, serif;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.success {
+  background: #4CAF50
+}
+
+.failure {
+  background: #F44336
+}
