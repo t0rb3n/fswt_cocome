@@ -18,6 +18,7 @@ public class CashDeskEventHandler : IHostedService
         IHostApplicationLifetime appLifetime,
         CashDesk cashDesk,
         CashDeskEventPublisher cdep,
+        CashDeskCoordinator cdc,
         
         DisplayControllerEventHandler dceh,
         PrinterControllerEventHandler pceh)
@@ -26,10 +27,14 @@ public class CashDeskEventHandler : IHostedService
         _appLifetime = appLifetime;
         _cashDesk = cashDesk;
         _cdep = cdep;
-        RegisterHandler();
+
+        cdc.EnableExpressMode += EnableExpressModeHandler;
+
+        RegisterCashDeskHandler();
+
     }
 
-    private void RegisterHandler()
+    private void RegisterCashDeskHandler()
     {
         _cdep.StartSale += StartSaleHandler;
         _cdep.FinishSale += FinishSaleHandler;
@@ -107,6 +112,11 @@ public class CashDeskEventHandler : IHostedService
     private void PayWithCashHandler(object sender, EventArgs e)
     {
         _cashDesk.PayWithCash();
+    }
+
+    private void EnableExpressModeHandler(object sender, EventArgs e)
+    {
+        _cashDesk.EnableExpressMode();
     }
     
 }

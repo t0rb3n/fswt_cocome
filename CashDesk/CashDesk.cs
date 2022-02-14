@@ -1,41 +1,37 @@
-﻿using CashDesk.BankServer;
-using CashDesk.BarcodeScannerService;
-using CashDesk.CardReaderService;
-using CashDesk.CashboxService;
-using CashDesk.DisplayController;
+﻿using CashDesk.CardReaderService;
 using CashDesk.Exceptions;
-using CashDesk.PrintingService;
 using CashDesk.Sila.DisplayController;
-using CashDesk.TransferObjects;
+using Google.Protobuf.WellKnownTypes;
 using GrpcModule.Messages;
-using GrpcModule.Services.Enterprise;
+using GrpcModule.Services.Store;
+using Tecan.Sila2;
 using static CashDesk.CashDeskStates;
 
 namespace CashDesk;
 
 public class CashDesk
 {
-    private readonly EnterpriseService.EnterpriseServiceClient _enterpriseclient;
-    private CardReaderServiceClient _cardReaderClient;
-    private IBankServer _bankClient;
+    private readonly StoreService.StoreServiceClient _storeClient;
     private readonly ILogger<CashDesk> _logger;
+    private readonly CardReaderServiceClient _cardReaderClient;
+    private readonly IBankServer _bankClient;
 
-
-    private static readonly string InvalidCardInfo = "XXXX XXXX XXXX XXXX";
+    private CashDeskState _currentState = CashDeskState.ExpectingSale;
+    private List<ProductStockItemReply> _saleProducts = new List<ProductStockItemReply>();
 
     private double _currentRunningTotal;
-    private CashDeskState _currentState = CashDeskState.ExpectingSale;
-    private bool _expressModeEnabled = false;
-    private List<ProductStockItemReply> _saleProducts; // TODO use TO Objects
-    private string _cardInfo;
-    public event EventHandler<string> UpdateDisplay;
+    private bool _expressModeEnabled;
+
+
     public event EventHandler<ChangeRunningTotalArgs> ChangeRunningTotal;
+    public event EventHandler<SaleRegisteredArgs> SaleRegistered;
+    public event EventHandler<string> PaymentModeRejected;
+    public event EventHandler SaleSuccess;
 
-
-    public CashDesk(ILogger<CashDesk> logger, EnterpriseService.EnterpriseServiceClient esc,
+    public CashDesk(ILogger<CashDesk> logger, StoreService.StoreServiceClient esc,
         IBankServer bankServerClient, CardReaderServiceClient cardReaderClient)
     {
-        _enterpriseclient = esc;
+        _storeClient = esc;
         _logger = logger;
         _bankClient = bankServerClient;
         _cardReaderClient = cardReaderClient;
@@ -43,9 +39,7 @@ public class CashDesk
     }
 
     /*
-    
      Methods used by the CashDeskHandler
-    
      */
     public void StartSale()
     {
@@ -87,7 +81,7 @@ public class CashDesk
                 ProductStockItemReply productWithStockItem = GetProductWithStockItem(parsedBarcode);
                 AddItemToSale(productWithStockItem);
             }
-            catch (NoSuchProductException nspe)
+            catch (NoSuchProductException)
             {
                 _logger.LogError("No product/stock item for barcode ${Barcode}", barcode);
                 //TODO  send this.sendInvalidProductBarcodeEvent(barcode);
@@ -100,10 +94,16 @@ public class CashDesk
         }
         else
         {
-            // TODO check/discuss what to do when we try to add more than policy allows
-            // TODO show message in display
             _logger.LogError("Cannot process more than ${Number} items in express mode!",
                 ExpressModePolicy._expressItemsLimit);
+        }
+    }
+
+    public void EnableExpressMode()
+    {
+        if (!_expressModeEnabled)
+        {
+            _expressModeEnabled = true;
         }
     }
 
@@ -112,7 +112,6 @@ public class CashDesk
         if (_expressModeEnabled)
         {
             _expressModeEnabled = false;
-            // TODO send ExpressModeDisabledEvent
         }
     }
 
@@ -122,9 +121,12 @@ public class CashDesk
 
         // send PaymentModeSelectedEvent
         _currentState = CashDeskState.PayingByCash;
+
+        MakeSale(PaymentMode.Cash);
+        ResetState();
     }
 
-    public void PayWithCard()
+    public async void PayWithCard()
     {
         StateIsLegal(SelectPayingModeStates);
 
@@ -133,17 +135,18 @@ public class CashDesk
         {
             // send PaymentModeSelectedEvent
             _currentState = CashDeskState.ExpectingCardInfo;
-            
-            TryPayingByCard(Convert.ToInt64(_currentRunningTotal));
-            //TODO handle case when insufficient balance or card rejected
-            
-            // send salesuccess event
 
+            await TryPayingByCard(Convert.ToInt64(_currentRunningTotal));
+
+
+            MakeSale(PaymentMode.Card);
+            ResetState();
         }
         else
         {
-            _logger.LogInformation("Credit cards are not accepted in express mode");
-            // TODO send PaymentModeRejectedEvent
+            const string reason = "Credit cards are not accepted in express mode";
+            _logger.LogInformation("{Reason}", reason);
+            OnPaymentModeRejected(reason);
         }
     }
 
@@ -151,6 +154,9 @@ public class CashDesk
      * Helper methods 
      * 
      */
+    private void ResetState() => _currentState = CashDeskState.ExpectingSale;
+    private double CalculateCurrentTotal(double price) => _currentRunningTotal += price;
+
     private void StateIsLegal(IReadOnlySet<CashDeskState> legalStates)
     {
         if (!legalStates.Contains(_currentState))
@@ -163,7 +169,6 @@ public class CashDesk
     {
         _currentRunningTotal = 0.0;
         _saleProducts = new List<ProductStockItemReply>();
-        _cardInfo = InvalidCardInfo;
     }
 
 
@@ -190,20 +195,31 @@ public class CashDesk
         });
     }
 
-    private double CalculateCurrentTotal(double price) => _currentRunningTotal += price;
 
+    private void MakeSale(PaymentMode mode)
+    {
+        SaleRequest payload = CreateBookSalesTo();
+        _storeClient.BookSales(payload);
+
+        OnSaleSuccess();
+
+        OnSaleRegistered(new SaleRegisteredArgs
+        {
+            Amount = payload.Products.Count,
+            Mode = mode
+        });
+    }
 
     /*
      * GRPC Calls
      */
     private ProductStockItemReply GetProductWithStockItem(long barcode)
     {
-        return _enterpriseclient.GetProductStockItem(new ProductStockItemRequest
+        return _storeClient.GetProductStockItem(new ProductStockItemRequest
         {
             Barcode = barcode, StoreId = 1
         });
     }
-
 
     /*
      * Event Methods
@@ -211,26 +227,76 @@ public class CashDesk
 
     private void OnChangeRunningTotal(ChangeRunningTotalArgs args)
     {
-        ChangeRunningTotal?.Invoke(this, args);
+        ChangeRunningTotal.Invoke(this, args);
+    }
+
+    private void OnSaleSuccess()
+    {
+        SaleSuccess.Invoke(this, EventArgs.Empty);
+    }
+
+    private void OnSaleRegistered(SaleRegisteredArgs args)
+    {
+        SaleRegistered.Invoke(this, args);
+    }
+
+    private void OnPaymentModeRejected(string reason)
+    {
+        PaymentModeRejected.Invoke(this, reason);
+    }
+
+    /*
+     * Bank Methods
+     */
+    private async Task TryPayingByCard(long amount)
+    {
+        var context = _bankClient.CreateContext(amount);
+        var authorizeCommand = _cardReaderClient.Authorize(amount, context.Challenge);
+        var token = await authorizeCommand.Response;
+        try
+        {
+            _bankClient.AuthorizePayment(context.ContextId, token.Account, token.AuthorizationToken);
+            _cardReaderClient.Confirm();
+        }
+        catch (SilaException ex)
+        {
+            _cardReaderClient.Abort(ex.Message);
+            _currentState = CashDeskState.ExpectingCardInfo;
+
+            if (ex.Message.StartsWith("InsufficientCreditException"))
+            {
+                const string reason = "Card has insufficient balance.";
+                OnPaymentModeRejected(reason);
+            }
+            else
+            {
+                const string reason = "Error with your the card.";
+                OnPaymentModeRejected(reason);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Something went wrong when talking to the bank... ");
+            throw;
+        }
     }
 
 
-   /*
-    * Bank Methods
-    */
-   private async void TryPayingByCard(long amount)
-   {
-       var context = _bankClient.CreateContext(amount);
-       var authorizeCommand = _cardReaderClient.Authorize(amount, context.Challenge);
-       var token = await authorizeCommand.Response;
-       try
-       {
-           _bankClient.AuthorizePayment(context.ContextId, token.Account, token.AuthorizationToken);
-           _cardReaderClient.Confirm();
-       }
-       catch (Exception ex)
-       {
-           _cardReaderClient.Abort(ex.Message);
-       }
-   }
+    /*
+     * Converter Methods
+     */
+    private SaleRequest CreateBookSalesTo()
+    {
+        return new SaleRequest
+        {
+            Date = Timestamp.FromDateTime(DateTime.Now.ToUniversalTime()),
+            Products = {_saleProducts}
+        };
+    }
+}
+
+public class SaleRegisteredArgs : EventArgs
+{
+    public int Amount { get; init; }
+    public PaymentMode Mode { get; init; }
 }

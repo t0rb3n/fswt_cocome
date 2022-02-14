@@ -20,7 +20,7 @@ public class PrinterControllerEventHandler
         _printerClient = printerClient;
 
         cdep.StartSale += StartSaleHandler;
-        cdep.FinishSale += FinishSale;
+        cdep.FinishSale += FinishSaleHandler;
         cashDesk.ChangeRunningTotal += ChangeRunningTotalHandler;
 
     }
@@ -36,7 +36,7 @@ public class PrinterControllerEventHandler
         runningTotal = args.Total;
     }
 
-    private void FinishSale(object sender, EventArgs e)
+    private void FinishSaleHandler(object sender, EventArgs e)
     {
         // TODO if fancy try to make it that the price is always at the same spot
         // also make the limiter the right length
