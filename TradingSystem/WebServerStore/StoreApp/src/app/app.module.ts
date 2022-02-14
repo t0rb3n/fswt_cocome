@@ -27,6 +27,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { LowStockTableComponent } from './component/low-stock-table/low-stock-table.component';
+import { OrderAmountDialogComponent } from './component/order-amount-dialog/order-amount-dialog.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { LowStockTableComponent } from './component/low-stock-table/low-stock-ta
     ProducttableComponent,
     ChangePriceDialogComponent,
     LowStockTableComponent,
+    OrderAmountDialogComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

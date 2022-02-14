@@ -1,0 +1,32 @@
+<h1 mat-dialog-title>Order products</h1>
+
+<form (ngSubmit)="onSubmit()">
+
+    <mat-dialog-content>
+        <mat-form-field appearance="outline"> 
+            <mat-label> Amount to order</mat-label>
+            <input  
+                matInput 
+                placeholder="0" 
+                min="1"
+                type="number"
+                [formControl]="amountForm"
+                [errorStateMatcher]="matcher"
+            >
+            <mat-error *ngIf="( amountForm.hasError('min') || amountForm.hasError('max') ) && !amountForm.hasError('required')">
+            Enter a number &lt; 1 and &gt; {{max}}!
+            </mat-error>
+
+            <mat-error *ngIf="amountForm.hasError('required')">
+                An amount is <strong>required!</strong>
+            </mat-error>
+
+        </mat-form-field>
+    </mat-dialog-content>
+        
+    <mat-dialog-actions>
+        <button mat-raised-button color="primary" type="submit" (keydown.enter)="onSubmit()">Submit</button> 
+        <button mat-raised-button color="cancel" [mat-dialog-close]="null">Cancel</button> 
+    </mat-dialog-actions>   
+
+</form> 
