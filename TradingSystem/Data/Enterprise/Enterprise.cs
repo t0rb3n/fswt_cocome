@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Data.Enterprise;
 
+/// <summary>
+/// Class <c>Enterprise</c> represents an enterprise in the database.
+/// </summary>
 public class Enterprise
 {
     private long _id;
@@ -9,6 +12,10 @@ public class Enterprise
     private List<ProductSupplier> _productSuppliers;
     private List<Store.Store> _stores;
 
+    /// <summary>
+    /// This constructor initializes the new Enterprise with default values.
+    /// <para>Enterprise objects with Id = -1 means that it does not contain any data.</para>
+    /// </summary>
     public Enterprise()
     {
         _id = -1;
@@ -17,6 +24,7 @@ public class Enterprise
         _stores = new List<Store.Store>();
     }
 
+    /// <value>Property <c>Id</c> represents a unique identifier for Enterprise objects.</value>
     [Key]
     public long Id
     {
@@ -24,18 +32,24 @@ public class Enterprise
         set => _id = value;
     }
 
+    /// <value>Property <c>Name</c> represents the name of the enterprise.</value>
+    /// <exception cref="ArgumentNullException">If set Name with null.</exception>
     public string Name
     {
         get => _name;
         set => _name = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <value>Property <c>ProductSuppliers</c> represents a list of suppliers related to the enterprise.</value>
+    /// <exception cref="ArgumentNullException">If set ProductSuppliers with null.</exception>
     public List<ProductSupplier> ProductSuppliers
     {
         get => _productSuppliers;
         set => _productSuppliers = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <value>Property <c>Stores</c> represents a list of stores related to the enterprise.</value>
+    /// <exception cref="ArgumentNullException">If set Stores with null.</exception>
     public List<Store.Store> Stores
     {
         get => _stores;

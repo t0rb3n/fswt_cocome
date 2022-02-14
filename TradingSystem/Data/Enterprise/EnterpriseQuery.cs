@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Enterprise;
 
+/// <summary>
+/// Class <c>EnterpriseQuery</c> implemented the interfaces of IEnterpriseQuery
+/// </summary>
 public class EnterpriseQuery : IEnterpriseQuery
 {
     public Enterprise QueryEnterpriseById(long enterpriseId, DatabaseContext dbc)

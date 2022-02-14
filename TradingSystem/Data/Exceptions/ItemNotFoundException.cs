@@ -1,5 +1,8 @@
 namespace Data.Exceptions;
 
+/// <summary>
+/// This exception is thrown when no items come from the database.
+/// </summary>
 [Serializable]
 public class ItemNotFoundException : Exception
 {
