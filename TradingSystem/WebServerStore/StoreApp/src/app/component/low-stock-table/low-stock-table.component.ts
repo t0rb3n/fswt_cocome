@@ -9,8 +9,6 @@ import { LowStockItemDTODataSource } from './low-stock-table-datasource';
 import { OrderAmountDialogComponent } from '../order-amount-dialog/order-amount-dialog.component';
 import {OrderProductDTO} from '../../classes/OrderProductDTO'
 
-
-
 @Component({
   selector: 'app-low-stock-table',
   templateUrl: './low-stock-table.component.html',
@@ -24,7 +22,6 @@ export class LowStockTableComponent implements AfterViewInit {
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['ProductName', 'Supplier', 'PurchasePrice', 'MinStock', 'MaxStock', 'Amount', 'OrderedAmount',];
-
 
   constructor(private storeService: StoreService, public dialog: MatDialog) {
     this.dataSource = new LowStockItemDTODataSource(storeService);
