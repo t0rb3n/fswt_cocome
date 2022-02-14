@@ -23,8 +23,6 @@ public sealed class CashDeskEventPublisher
     // Item Events
     public event EventHandler<string> AddItemToSale;
     
-    
-    
     private readonly ILogger<CashDeskEventPublisher> _logger;
 
     private CashboxServiceClient _cashboxClient;
@@ -42,7 +40,6 @@ public sealed class CashDeskEventPublisher
         _logger = logger;
         _cashboxClient = cashboxClient;
         _barcodeClient = barcodeClient;
-        
     }
 
     public async Task StartListeningToTerminal()
@@ -123,6 +120,5 @@ public sealed class CashDeskEventPublisher
     {
         PayWithCash.Invoke(this, e);
     }
-
-
+    
 }

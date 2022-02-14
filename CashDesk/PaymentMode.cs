@@ -2,5 +2,6 @@
 
 public enum PaymentMode
 {
-    
+    Card,
+    Cash
 }

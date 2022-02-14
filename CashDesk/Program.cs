@@ -10,6 +10,7 @@ using CashDesk.Sila.DisplayController;
 using CashDesk.Sila.PrintingService;
 using Grpc.Core;
 using GrpcModule.Services.Enterprise;
+using GrpcModule.Services.Store;
 using Tecan.Sila2;
 using Tecan.Sila2.Client;
 using Tecan.Sila2.Client.ExecutionManagement;
@@ -46,18 +47,19 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddSingleton<CashDesk.CashDesk>();
 
         /*
-         * Event Listener
+         * Event Listener and publisher
          */
         
         services.AddSingleton<CashDeskEventPublisher>();
+        services.AddSingleton<CashDeskCoordinator>();
         services.AddHostedService<CashDeskEventHandler>();
         
         services.AddSingleton<DisplayControllerEventHandler>();
         services.AddSingleton<PrinterControllerEventHandler>();
         
-        services.AddGrpcClient<EnterpriseService.EnterpriseServiceClient>(options =>
+        services.AddGrpcClient<StoreService.StoreServiceClient>(options =>
         {
-            options.Address = new Uri("https://localhost:7046/grpc");
+            options.Address = new Uri("https://localhost:7228/grpc");
         }).ConfigurePrimaryHttpMessageHandler(() =>
         {
             var handler = new HttpClientHandler();

@@ -11,25 +11,26 @@ public class DisplayControllerEventHandler
         ILogger<DisplayControllerEventHandler> logger,
         CashDesk cashDesk,
         DisplayControllerClient displayClient,
-        CashDeskEventPublisher cdep
+        CashDeskEventPublisher cdep,
+        CashDeskCoordinator cdc
     )
     {
         _logger = logger;
         _displayClient = displayClient;
         
-        cashDesk.UpdateDisplay += UpdateDisplayHandler;
         cashDesk.ChangeRunningTotal += ChangeRunningTotalHandler;
+        cashDesk.SaleSuccess += SaleSuccessHandler;
+        cashDesk.PaymentModeRejected += PaymentModeRejectedHandler;
         cdep.StartSale += StartSaleHandler;
+        cdep.PayWithCard += PayWithCardHandler;
+        cdep.DisableExpressMode += DisableExpressModeHandler;
+        cdc.EnableExpressMode += EnableExpressModeHandler;
+
         //cdep.AddItemToSale += AddItemToSaleHandler;
-        
+
 
     }
-
-    private void UpdateDisplayHandler(object sender, string text)
-    {
-        _displayClient.SetDisplayText(text);
-    }
-
+    
     private void StartSaleHandler(object sender, EventArgs e)
     {
         _displayClient.SetDisplayText("New Sale");
@@ -37,7 +38,31 @@ public class DisplayControllerEventHandler
 
     private void ChangeRunningTotalHandler(object sender, ChangeRunningTotalArgs args)
     {
-        _displayClient.SetDisplayText($"{args.ProductName}: {args.Price}\n Total: {args.Total} ");
+        _displayClient.SetDisplayText($"{args.ProductName}: {args.Price}\nTotal: {args.Total} ");
+    }
+
+    private void PayWithCardHandler(object sender, EventArgs e)
+    {
+        _displayClient.SetDisplayText("Waiting for the card...");
+    }
+
+    private void SaleSuccessHandler(object sender, EventArgs e)
+    {
+        _displayClient.SetDisplayText("Thank you for shopping with us. Goodbye");
+    }
+    private void PaymentModeRejectedHandler(object sender, string reason)
+    {
+        _displayClient.SetDisplayText(reason);
+    }
+
+    private void DisableExpressModeHandler(object sender, EventArgs e)
+    {
+        _displayClient.SetDisplayText("Express mode disabled.");
+    }
+    
+    private void EnableExpressModeHandler(object sender, EventArgs e)
+    {
+        _displayClient.SetDisplayText("Express mode enabled.");
     }
 }
 
