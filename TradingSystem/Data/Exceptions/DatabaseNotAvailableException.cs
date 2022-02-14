@@ -1,5 +1,8 @@
 namespace Data.Exceptions;
 
+/// <summary>
+/// This exception is thrown when no connection to the database could be established.
+/// </summary>
 [Serializable]
 public class DatabaseNotAvailableException : Exception
 {

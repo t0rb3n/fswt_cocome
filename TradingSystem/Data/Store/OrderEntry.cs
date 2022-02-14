@@ -3,6 +3,9 @@ using Data.Enterprise;
 
 namespace Data.Store;
 
+/// <summary>
+/// Class <c>OrderEntry</c> represents a single product order entry in the database
+/// </summary>
 public class OrderEntry
 {
     private long _id;
@@ -10,6 +13,10 @@ public class OrderEntry
     private Product _product;
     private ProductOrder _productOrder;
 
+    /// <summary>
+    /// This constructor initializes the new OrderEntry with default values.
+    /// <para>OrderEntry objects with Id = -1 means that it does not contain any data.</para>
+    /// </summary>
     public OrderEntry()
     {
         _id = -1;
@@ -18,6 +25,7 @@ public class OrderEntry
         _productOrder = new ProductOrder();
     }
 
+    /// <value>Property <c>Id</c> represents a unique identifier for OrderEntry objects.</value>
     [Key]
     public long Id
     {
@@ -25,18 +33,23 @@ public class OrderEntry
         set => _id = value;
     }
 
+    /// <value>Property <c>Amount</c> represents the amount of ordered products.</value>
     public int Amount
     {
         get => _amount;
         set => _amount = value;
     }
 
+    /// <value>Property <c>Product</c> represents the product which is ordered.</value>
+    /// <exception cref="ArgumentNullException">If set Product with null.</exception>
     public Product Product
     {
         get => _product;
         set => _product = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <value>Property <c>ProductOrder</c> represents where the OrderEntry belongs to.</value>
+    /// <exception cref="ArgumentNullException">If set ProductOrder with null.</exception>
     public ProductOrder ProductOrder
     {
         get => _productOrder;

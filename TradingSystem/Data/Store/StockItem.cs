@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using System.Net.NetworkInformation;
 using Data.Enterprise;
 
 namespace Data.Store;
 
+/// <summary>
+/// Class <c>StockItem</c> represents a concrete product from the store in the database.
+/// </summary>
 public class StockItem
 {
     private long _id;
@@ -14,6 +16,10 @@ public class StockItem
     private Store _store;
     private Product _product;
 
+    /// <summary>
+    /// This constructor initializes the new StockItem with default values.
+    /// <para>StockItem objects with Id = -1 means that it does not contain any data.</para>
+    /// </summary>
     public StockItem()
     {
         _id = -1;
@@ -25,6 +31,7 @@ public class StockItem
         _product = new Product();
     }
     
+    /// <value>Property <c>Id</c> represents a unique identifier for StockItem objects.</value>
     [Key]
     public long Id
     {
@@ -32,36 +39,44 @@ public class StockItem
         set => _id = value;
     }
 
+    /// <value>Property <c>SalesPrice</c> represents the sales price of the StockItem.</value>
     public double SalesPrice
     {
         get => _salesPrice;
         set => _salesPrice = value;
     }
 
+    /// <value>Property <c>Amount</c> represents the currently available amount of items of a product.</value>
     public int Amount
     {
         get => _amount;
         set => _amount = value;
     }
 
+    /// <value>Property <c>MinStock</c> represents the minimum amount of products which has to be available in a store.</value>
     public int MinStock
     {
         get => _minStock;
         set => _minStock = value;
     }
 
+    /// <value>Property <c>MaxStock</c> represents the maximum capacity of a product in a store.</value>
     public int MaxStock
     {
         get => _maxStock;
         set => _maxStock = value;
     }
-
+    
+    /// <value>Property <c>Store</c> represents the store where the StockItem belongs to.</value>
+    /// <exception cref="ArgumentNullException">If set Store with null.</exception>
     public Store Store
     {
         get => _store;
         set => _store = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <value>Property <c>Product</c> represents the product of a StockItem.</value>
+    /// <exception cref="ArgumentNullException">If set Product with null.</exception>
     public Product Product
     {
         get => _product;

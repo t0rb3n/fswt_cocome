@@ -4,6 +4,9 @@ using Data.Exceptions;
 
 namespace Data.Store;
 
+/// <summary>
+/// Class <c>StoreQuery</c> implemented the interfaces of IStoreQuery
+/// </summary>
 public class StoreQuery : IStoreQuery
 {
     public Store QueryStoreById(long storeId, DatabaseContext dbc)

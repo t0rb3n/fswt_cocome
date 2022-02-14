@@ -127,7 +127,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         StoreEnterpriseDTO result;
         using var dbc = new DatabaseContext();
         using var transaction = dbc.Database.BeginTransaction();
-        
+
         try
         {
             var query = _storeQuery.QueryStoreById(storeId, dbc);
