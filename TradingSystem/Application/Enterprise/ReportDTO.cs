@@ -1,5 +1,8 @@
 namespace Application.Enterprise;
 
+/// <summary>
+/// Class <c>ReportDTO</c> is used for encapsulating report information in simple text format.
+/// </summary>
 public class ReportDTO
 {
     protected string reportText;

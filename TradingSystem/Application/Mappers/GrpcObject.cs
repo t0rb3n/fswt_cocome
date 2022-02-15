@@ -2,11 +2,18 @@ using Application.Enterprise;
 using Application.Store;
 using GrpcModule.Messages;
 
-
 namespace Application.Mappers;
 
+/// <summary>
+/// GrpcObject is a helper class for converting Grpc objects to DTO objects.
+/// </summary>
 public static class GrpcObject
 {
+    /// <summary>
+    /// Converts <see cref="StoreEnterpriseReply"/> to <see cref="StoreEnterpriseDTO"/>.
+    /// </summary>
+    /// <param name="storeEnterpriseReply">The Grpc object to be converted.</param>
+    /// <returns>A new <see cref="StoreEnterpriseDTO"/>.</returns>
     public static StoreEnterpriseDTO ToStoreEnterpriseDTO(StoreEnterpriseReply storeEnterpriseReply)
     {
         return new StoreEnterpriseDTO
@@ -22,6 +29,11 @@ public static class GrpcObject
         };
     }
 
+    /// <summary>
+    /// Converts <see cref="stockItemReply"/> to <see cref="StockItemDTO"/>.
+    /// </summary>
+    /// <param name="stockItemReply">The Grpc object to be converted.</param>
+    /// <returns>A new <see cref="StockItemDTO"/>.</returns>
     public static StockItemDTO ToStockItemDTO(StockItemReply stockItemReply)
     {
         return new StockItemDTO
@@ -34,6 +46,11 @@ public static class GrpcObject
         };
     }
 
+    /// <summary>
+    /// Converts <see cref="ProductStockItemReply"/> to <see cref="ProductStockItemDTO"/>.
+    /// </summary>
+    /// <param name="productStockItemReply">The Grpc object to be converted.</param>
+    /// <returns>A new <see cref="ProductStockItemDTO"/>.</returns>
     public static ProductStockItemDTO ToProductStockItemDTO(ProductStockItemReply productStockItemReply)
     {
         return new ProductStockItemDTO
@@ -46,6 +63,11 @@ public static class GrpcObject
         };
     }
 
+    /// <summary>
+    /// Converts <see cref="ProductSupplierReply"/> to <see cref="ProductSupplierDTO"/>.
+    /// </summary>
+    /// <param name="productSupplierReply">The Grpc object to be converted.</param>
+    /// <returns>A new <see cref="ProductSupplierDTO"/>.</returns>
     public static ProductSupplierDTO ToProductSupplierDTO(ProductSupplierReply productSupplierReply)
     {
         return new ProductSupplierDTO
@@ -59,6 +81,11 @@ public static class GrpcObject
         };
     }
 
+    /// <summary>
+    /// Converts <see cref="ProductSupplierStockItemReply"/> to <see cref="ProductSupplierStockItemDTO"/>.
+    /// </summary>
+    /// <param name="productSupplierStockItemReply">The Grpc object to be converted.</param>
+    /// <returns>A new <see cref="ProductSupplierStockItemDTO"/>.</returns>
     public static ProductSupplierStockItemDTO ToProductSupplierStockItemDTO(
         ProductSupplierStockItemReply productSupplierStockItemReply)
     {
@@ -74,6 +101,11 @@ public static class GrpcObject
         };
     }
 
+    /// <summary>
+    /// Converts <see cref="OrderReply"/> to <see cref="ToOrderDTO"/>.
+    /// </summary>
+    /// <param name="orderReply">The Grpc object to be converted.</param>
+    /// <returns>A new <see cref="ToOrderDTO"/>.</returns>
     public static OrderDTO ToOrderDTO(OrderReply orderReply)
     {
         return new OrderDTO
@@ -84,6 +116,11 @@ public static class GrpcObject
         };
     }
 
+    /// <summary>
+    /// Converts <see cref="ProductOrderReply"/> to <see cref="ProductOrderDTO"/>.
+    /// </summary>
+    /// <param name="productOrderReply">The Grpc object to be converted.</param>
+    /// <returns>A new <see cref="ProductOrderDTO"/>.</returns>
     public static ProductOrderDTO ToProductOrderDTO(ProductOrderReply productOrderReply)
     {
         var result = new ProductOrderDTO
@@ -101,6 +138,11 @@ public static class GrpcObject
         return result;
     }
     
+    /// <summary>
+    /// Converts <see cref="ProductOrderRequest"/> to <see cref="ProductOrderDTO"/>.
+    /// </summary>
+    /// <param name="productOrderRequest">The Grpc object to be converted.</param>
+    /// <returns>A new <see cref="ProductOrderDTO"/>.</returns>
     public static ProductOrderDTO ToProductOrderDTO(ProductOrderRequest productOrderRequest)
     {
         var result = new ProductOrderDTO
@@ -118,6 +160,11 @@ public static class GrpcObject
         return result;
     }
 
+    /// <summary>
+    /// Converts <see cref="SaleRequest"/> to <see cref="SaleDTO"/>.
+    /// </summary>
+    /// <param name="saleRequest">The Grpc object to be converted.</param>
+    /// <returns>A new <see cref="SaleDTO"/>.</returns>
     public static SaleDTO ToSaleDTO(SaleRequest saleRequest)
     {
         var result = new SaleDTO

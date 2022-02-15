@@ -1,5 +1,8 @@
 namespace Application.Exceptions;
 
+/// <summary>
+/// This exception is thrown when an unexpected error occurs in the Enterprise application.
+/// </summary>
 [Serializable]
 public class EnterpriseException : Exception
 {

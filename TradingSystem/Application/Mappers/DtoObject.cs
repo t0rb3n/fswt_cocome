@@ -4,8 +4,16 @@ using GrpcModule.Messages;
 
 namespace Application.Mappers;
 
+/// <summary>
+/// DtoObject is a helper class for converting DTO objects to Grpc objects.
+/// </summary>
 public static class DtoObject
-{ 
+{
+    /// <summary>
+    /// Converts <see cref="StoreEnterpriseDTO"/> to <see cref="StoreEnterpriseReply"/>.
+    /// </summary>
+    /// <param name="storeEnterpriseDto">The DTO object to be converted.</param>
+    /// <returns>A new <see cref="StoreEnterpriseReply"/>.</returns>
     public static StoreEnterpriseReply ToStoreEnterpriseReply(StoreEnterpriseDTO storeEnterpriseDto)
     {
         return new StoreEnterpriseReply
@@ -18,6 +26,11 @@ public static class DtoObject
         };
     }
 
+    /// <summary>
+    /// Converts <see cref="StockItemDTO"/> to <see cref="StockItemReply"/>.
+    /// </summary>
+    /// <param name="stockItemDto">The DTO object to be converted.</param>
+    /// <returns>A new <see cref="StockItemReply"/>.</returns>
     public static StockItemReply ToStockItemReply(StockItemDTO stockItemDto)
     {
         return new StockItemReply
@@ -30,6 +43,11 @@ public static class DtoObject
         };
     }
     
+    /// <summary>
+    /// Converts <see cref="ProductStockItemDTO"/> to <see cref="ProductStockItemReply"/>.
+    /// </summary>
+    /// <param name="productStockItemDto">The DTO object to be converted.</param>
+    /// <returns>A new <see cref="ProductStockItemReply"/>.</returns>
     public static ProductStockItemReply ToProductStockItemReply(ProductStockItemDTO productStockItemDto)
     {
         return new ProductStockItemReply
@@ -42,6 +60,11 @@ public static class DtoObject
         };
     }
 
+    /// <summary>
+    /// Converts <see cref="ProductSupplierDTO"/> to <see cref="ProductSupplierReply"/>.
+    /// </summary>
+    /// <param name="productSupplierDto">The DTO object to be converted.</param>
+    /// <returns>A new <see cref="ProductSupplierReply"/>.</returns>
     public static ProductSupplierReply ToProductSupplierReply(ProductSupplierDTO productSupplierDto)
     {
         return new ProductSupplierReply
@@ -55,6 +78,11 @@ public static class DtoObject
         };
     }
 
+    /// <summary>
+    /// Converts <see cref="ProductSupplierStockItemDTO"/> to <see cref="ProductSupplierStockItemReply"/>.
+    /// </summary>
+    /// <param name="productSupplierStockItemDto">The DTO object to be converted.</param>
+    /// <returns>A new <see cref="ProductSupplierStockItemReply"/>.</returns>
     public static ProductSupplierStockItemReply ToProductSupplierStockItemReply(
         ProductSupplierStockItemDTO productSupplierStockItemDto)
     {
@@ -70,6 +98,11 @@ public static class DtoObject
         };
     }
 
+    /// <summary>
+    /// Converts <see cref="OrderDTO"/> to <see cref="OrderReply"/>.
+    /// </summary>
+    /// <param name="orderDto">The DTO object to be converted.</param>
+    /// <returns>A new <see cref="OrderReply"/>.</returns>
     public static OrderReply ToOrderReply(OrderDTO orderDto)
     {
         return new OrderReply
@@ -80,6 +113,11 @@ public static class DtoObject
         };
     }
 
+    /// <summary>
+    /// Converts <see cref="ProductOrderDTO"/> to <see cref="ProductOrderReply"/>.
+    /// </summary>
+    /// <param name="productOrderDto">The DTO object to be converted.</param>
+    /// <returns>A new <see cref="ProductOrderReply"/>.</returns>
     public static ProductOrderReply ToProductOrderReply(ProductOrderDTO productOrderDto)
     {
         var result = new ProductOrderReply
@@ -97,6 +135,12 @@ public static class DtoObject
         return result;
     }
     
+    /// <summary>
+    /// Converts <see cref="ProductOrderDTO"/> to <see cref="ProductOrderRequest"/>.
+    /// </summary>
+    /// <param name="productOrderDto">The DTO object to be converted.</param>
+    /// <param name="storeId">The id from this store.</param>
+    /// <returns>A new <see cref="ProductOrderRequest"/>.</returns>
     public static ProductOrderRequest ToProductOrderRequest(ProductOrderDTO productOrderDto, long storeId)
     {
         var result = new ProductOrderRequest
@@ -114,6 +158,11 @@ public static class DtoObject
         return result;
     }
 
+    /// <summary>
+    /// Converts <see cref="SaleDTO"/> to <see cref="SaleRequest"/>.
+    /// </summary>
+    /// <param name="saleDto">The DTO object to be converted.</param>
+    /// <returns>A new <see cref="SaleRequest"/>.</returns>
     public static SaleRequest ToSaleRequest(SaleDTO saleDto)
     {
         var result = new SaleRequest
