@@ -4,6 +4,7 @@ import {ProductSupplierStockItemDTO} from "../../classes/ProductSupplierStockIte
 import {Observable} from "rxjs";
 import { StockItemDTO } from '../../classes/StockItemDTO';
 import { ProductStockItemDTO } from '../../classes/ProductStockItemDTO';
+import { OrderProductDTO } from 'src/app/classes/OrderProductDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -31,5 +32,11 @@ export class StoreService {
         "value": newPrice
       }]);
   }
+
+  /*
+  TODO
+  orderProducts(): Observable<any> {
+    return this
+  }*/
 }
 

@@ -17,7 +17,7 @@ import {OrderProductDTO} from '../../classes/OrderProductDTO'
 export class LowStockTableComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild(MatTable) table!: MatTable<ProductStockItemDTO>;
+  @ViewChild(MatTable) table!: MatTable<OrderProductDTO>;
   dataSource: LowStockItemDTODataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
@@ -34,25 +34,33 @@ export class LowStockTableComponent implements AfterViewInit {
   }
 
 
-  onClick(){
-    this.dataSource.data[0].stockItem.minStock = 6969696
+  onOrderProductClick(){
+    const productsToOrder: Array<OrderProductDTO> = []
+
+
+    this.dataSource.data.forEach( (row) => {
+      if(!row.orderAmount || row.orderAmount < 1){
+        return;
+      }
+
+      productsToOrder.push(row)
+    });
+
+    
+
+
   }
 
-  openOrderProductDialog(row: ProductSupplierStockItemDTO){
-    this.dialog.open(OrderAmountDialogComponent, { data: row }).afterClosed().subscribe(data => {
+  openOrderProductDialog(row: OrderProductDTO){
+    this.dialog.open(OrderAmountDialogComponent, { data: row }).afterClosed().subscribe(orderamount => {
       
-      if(data){ 
-        const result = this.dataSource.data.find( item => item.productId === row.productId);
+      
+      if(orderamount){ 
+        const result = this.dataSource.data.findIndex( item => item.productId === row.productId);
         
-        if(!result) return;
+        if(result < 0) return;
 
-        let updatedShit = new OrderProductDTO(
-          row, 
-          data
-        );
-
-        this.dataSource.data.map ( product => product.productId !== row.productId ? product : updatedShit)
-        
+        this.dataSource.data[result].orderAmount = orderamount.data;
       }
       
     });
