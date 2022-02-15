@@ -4,25 +4,32 @@ import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "GrpcModule.Messages";
 
+// Message definition for enterprise and store service.
+
+// Message reply for void methods calls.
 message MessageReply {
   bool success = 1;
   string msg = 2;
 }
 
+// Request for get information about a product from a specified store.
 message ProductStockItemRequest {
   int64 barcode = 1;
   int64 store_id = 2;
 }
 
+// Request for get information about a specified store.
 message StoreRequest {
   int64 store_id = 1;
 }
 
+// Represents the SaleDTO.
 message SaleRequest {
   google.protobuf.Timestamp date = 1;
   repeated ProductStockItemReply products = 2;
 }
 
+// Represents the ProductOrderDTO.
 message ProductOrderRequest {
   int64 product_order_id = 1;
   int64 store_id = 2;
@@ -31,11 +38,13 @@ message ProductOrderRequest {
   repeated OrderReply orders = 5;
 }
 
+// Request for change the sale price of a stock item.
 message StockItemIdRequest {
   int64 item_id = 1;
   double new_price = 2;
 }
 
+// Represents the StoreEnterpriseDTO.
 message StoreEnterpriseReply {
   int64 store_id = 1;
   string store_name = 2;
@@ -44,6 +53,7 @@ message StoreEnterpriseReply {
   string enterprise_name = 5;
 }
 
+// Represents the ProductDTO.
 message ProductReply {
   int64 product_id = 1;
   int64 barcode = 2;
@@ -51,6 +61,7 @@ message ProductReply {
   string product_name = 4;
 }
 
+// Represents the ProductSupplierDTO.
 message ProductSupplierReply {
   int64 supplier_id = 1;
   string supplier_name = 2;
@@ -60,12 +71,14 @@ message ProductSupplierReply {
   string product_name = 6;
 }
 
+// Represents the OrderDTO.
 message OrderReply {
   int64 order_id = 1;
   int32 amount = 2;
   repeated ProductSupplierReply product_supplier = 3;
 }
 
+// Represents the ProductOrderDTO.
 message ProductOrderReply {
   int64 product_order_id = 1;
   google.protobuf.Timestamp delivery_date = 2;
@@ -73,6 +86,7 @@ message ProductOrderReply {
   repeated OrderReply orders = 4;
 }
 
+// Represents the StockItemDTO.
 message StockItemReply {
   int64 item_id = 1;
   double sales_price = 2;
@@ -81,6 +95,7 @@ message StockItemReply {
   int32 max_stock = 5;
 }
 
+// Represents the ProductSupplierStockItemDTO.
 message ProductSupplierStockItemReply {
   int64 supplier_id = 1;
   string supplier_name = 2;
@@ -91,6 +106,7 @@ message ProductSupplierStockItemReply {
   repeated StockItemReply stock_item = 7;
 }
 
+// Represents the ProductStockItemDTO.
 message ProductStockItemReply {
   int64 product_id = 1;
   int64 barcode = 2;

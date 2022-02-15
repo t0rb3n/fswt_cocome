@@ -4,11 +4,11 @@ import "Messages/message.proto";
 
 option csharp_namespace = "GrpcModule.Services.Store";
 
-// The greeting service definition.
+// The store service and calls definition.
 service StoreService {
-  // store calls
-  
+  // Books the sales from the cash desk.
   rpc BookSales(SaleRequest) returns (MessageReply) {};
+  // Gets information about a product from a specific store.
   rpc GetProductStockItem(ProductStockItemRequest) returns (ProductStockItemReply) {};
 }
 

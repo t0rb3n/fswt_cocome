@@ -4,18 +4,27 @@ import "Messages/message.proto";
 
 option csharp_namespace = "GrpcModule.Services.Enterprise";
 
-// The greeting service definition.
+// The enterprise service and calls definition.
 service EnterpriseService {
-  // enterprise calls
+  // Gets information about a store.
   rpc GetStore(StoreRequest) returns (StoreEnterpriseReply) {};
+  // Gets all low stock items from a specific store.
   rpc GetProductsLowStockItems(StoreRequest) returns (stream ProductStockItemReply) {};
+  // Gets all products with suppliers from a specific store.
   rpc GetAllProductSuppliers(StoreRequest) returns (stream ProductSupplierReply) {};
+  // Gets all products with suppliers and stock items from a specific store.
   rpc GetAllProductSupplierStockItems(StoreRequest) returns (stream ProductSupplierStockItemReply) {};
+  // Processes the order from a specific store.
   rpc OrderProducts(stream ProductOrderRequest) returns (MessageReply) {};
+  // Gets information about a specific product order.
   rpc GetProductOrder(ProductOrderRequest) returns (ProductOrderReply) {};
+  // Completes a product order from a specific store.
   rpc RollInReceivedProductOrder(ProductOrderRequest) returns (MessageReply) {};
+  // Changes the sale price from a specific stock item.
   rpc ChangePrice(StockItemIdRequest) returns (MessageReply) {};
+  // Books the sales from a store.
   rpc makeBookSales(SaleRequest) returns (MessageReply) {};
+  // Gets information about a product from a specific store.
   rpc GetProductStockItem(ProductStockItemRequest) returns (ProductStockItemReply) {};
 }
 
