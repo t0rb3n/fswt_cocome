@@ -33,10 +33,8 @@ export class StoreService {
       }]);
   }
 
-  /*
-  TODO
-  orderProducts(): Observable<any> {
-    return this
-  }*/
+  orderProducts(orderProducts: OrderProductDTO[]): Observable<any> {
+    return this.http.post('orderstockitem', orderProducts);
+  }
 }
 

@@ -9,6 +9,7 @@ import { StoreService } from '../../services/store/store.service';
 import { LowStockItemDTODataSource } from './low-stock-table-datasource';
 import { OrderAmountDialogComponent } from '../order-amount-dialog/order-amount-dialog.component';
 import {OrderProductDTO} from '../../classes/OrderProductDTO'
+
 @Component({
   selector: 'app-low-stock-table',
   templateUrl: './low-stock-table.component.html',
@@ -46,8 +47,11 @@ export class LowStockTableComponent implements AfterViewInit {
       productsToOrder.push(row)
     });
 
-    
-
+    this.storeService.orderProducts(productsToOrder).subscribe(data => {
+      console.log(data);
+    }, error => {
+      console.log(error);
+    });
 
   }
 
