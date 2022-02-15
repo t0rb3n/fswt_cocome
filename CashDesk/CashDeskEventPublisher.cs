@@ -100,7 +100,7 @@ public sealed class CashDeskEventPublisher
                     break;
                 default:
                     _logger.LogWarning("Got CashBoxButton that I don't know with name {Button}", button.ToString());
-                    return;
+                    break;
             }
         }
     }

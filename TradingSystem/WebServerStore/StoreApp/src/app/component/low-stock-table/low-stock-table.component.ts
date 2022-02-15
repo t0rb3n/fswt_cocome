@@ -1,12 +1,13 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTable } from '@angular/material/table';
-import { ProductStockItemDTO } from '../../classes/ProductStockItemDTO';
-import { StoreService } from '../../services/store/store.service';
-import { LowStockItemDTODataSource } from './low-stock-table-datasource';
-import { OrderAmountDialogComponent } from '../order-amount-dialog/order-amount-dialog.component';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import {MatTable} from '@angular/material/table';
+import {ProductStockItemDTO} from '../../classes/ProductStockItemDTO';
+import {ProductSupplierStockItemDTO} from '../../classes/ProductSupplierStockItemDTO';
+import {StoreService} from '../../services/store/store.service';
+import {LowStockItemDTODataSource} from './low-stock-table-datasource';
+import {OrderAmountDialogComponent} from '../order-amount-dialog/order-amount-dialog.component';
 import {OrderProductDTO} from '../../classes/OrderProductDTO'
 
 @Component({
@@ -33,17 +34,10 @@ export class LowStockTableComponent implements AfterViewInit {
     this.table.dataSource = this.dataSource;
   }
 
-  onOrderProductClick(){
-    const productsToOrder: Array<OrderProductDTO> = []
 
+  onOrderProductClick() {
 
-    this.dataSource.data.forEach( (row) => {
-      if(!row.orderAmount || row.orderAmount < 1){
-        return;
-      }
-
-      productsToOrder.push(row)
-    });
+    const productsToOrder = this.dataSource.data.filter(row => row.orderAmount && row.orderAmount >= 1)
 
     this.storeService.orderProducts(productsToOrder).subscribe(data => {
       console.log(data);
@@ -51,27 +45,17 @@ export class LowStockTableComponent implements AfterViewInit {
       console.log(error);
     });
 
-  onOrderProductClick(){
-    const productsToOrder: Array<OrderProductDTO> = []
-
-
-    this.dataSource.data.forEach( (row) => {
-      if(!row.orderAmount || row.orderAmount < 1){
-        return;
-      }
-
-      productsToOrder.push(row)
-    });
   }
 
-  openOrderProductDialog(row: OrderProductDTO){
-    this.dialog.open(OrderAmountDialogComponent, { data: row }).afterClosed().subscribe(orderamount => {
-      if(orderamount){
-        const result = this.dataSource.data.findIndex( item => item.productId === row.productId);
+  openOrderProductDialog(row: OrderProductDTO) {
+    this.dialog.open(OrderAmountDialogComponent, {data: row}).afterClosed().subscribe(orderAmount => {
 
-        if(result < 0) return;
+      if (orderAmount) {
+        const result = this.dataSource.data.findIndex(item => item.productId === row.productId);
 
-        this.dataSource.data[result].orderAmount = orderamount.data;
+        if (result < 0) return;
+
+        this.dataSource.data[result].orderAmount = orderAmount.data;
       }
 
     });
