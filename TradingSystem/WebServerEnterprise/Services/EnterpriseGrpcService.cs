@@ -7,17 +7,34 @@ using GrpcModule.Services.Enterprise;
 
 namespace WebServerEnterprise.Services;
 
+/// <summary>
+/// The class <c>EnterpriseGrpcService</c> implements the Grpc calls of EnterpriseService
+/// </summary>
 public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 {
     private readonly ILogger<EnterpriseGrpcService> _logger;
     private readonly IEnterpriseApplication _enterpriseApplication;
 
+    /// <summary>
+    /// This constructor initializes a new EnterpriseGrpcService.
+    /// </summary>
+    /// <param name="logger">For logging messages.</param>
+    /// <param name="enterpriseApplication">Access to the logic of the enterprise application</param>
     public EnterpriseGrpcService(ILogger<EnterpriseGrpcService> logger, IEnterpriseApplication enterpriseApplication)
     {
         _logger = logger;
         _enterpriseApplication = enterpriseApplication;
     }
 
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.GetStore"/> method as a grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>
+    /// A successfully completed task with the result of <see cref="StoreEnterpriseReply"/> object.
+    /// </returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
     public override Task<StoreEnterpriseReply> GetStore(StoreRequest request, ServerCallContext context)
     {
         StoreEnterpriseReply reply;
@@ -25,6 +42,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         try
         {
             var result = _enterpriseApplication.GetStore(request.StoreId);
+            // Converts DTO object to reply object.
             reply = DtoObject.ToStoreEnterpriseReply(result);
             _logger.LogInformation("get Store : {id}", result.StoreId);
         }
@@ -38,7 +56,15 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         return Task.FromResult(reply);
     }
 
-
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.GetProductsLowStockItems"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="responseStream">A writable stream to send messages to the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>The successfully completed task.</returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
     public override Task GetProductsLowStockItems(StoreRequest request,
         IServerStreamWriter<ProductStockItemReply> responseStream, ServerCallContext context)
     {
@@ -59,12 +85,22 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         foreach (var productStockItemDto in result)
         {
+            // Converts DTO object to reply object and sends to the client.
             responseStream.WriteAsync(DtoObject.ToProductStockItemReply(productStockItemDto));
         }
 
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.GetAllProductSuppliers"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="responseStream">A writable stream to send messages to the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>The successfully completed task.</returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
     public override Task GetAllProductSuppliers(StoreRequest request,
         IServerStreamWriter<ProductSupplierReply> responseStream, ServerCallContext context)
     {
@@ -85,12 +121,22 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         foreach (var productSupplierDto in result)
         {
+            // Converts DTO object to reply object and sends to the client.
             responseStream.WriteAsync(DtoObject.ToProductSupplierReply(productSupplierDto));
         }
 
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.GetAllProductSupplierStockItems"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="responseStream">A writable stream to send messages to the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>The successfully completed task.</returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
     public override Task GetAllProductSupplierStockItems(StoreRequest request,
         IServerStreamWriter<ProductSupplierStockItemReply> responseStream,
         ServerCallContext context)
@@ -112,12 +158,23 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         foreach (var productSupplierStockItemDto in result)
         {
+            // Converts DTO object to reply object and sends to the client.
             responseStream.WriteAsync(DtoObject.ToProductSupplierStockItemReply(productSupplierStockItemDto));
         }
 
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.GetProductOrder"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>
+    /// A successfully completed task with the result of <see cref="ProductOrderReply"/> object.
+    /// </returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
     public override Task<ProductOrderReply> GetProductOrder(ProductOrderRequest request, ServerCallContext context)
     {
         ProductOrderDTO result;
@@ -134,9 +191,18 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         }
         
         _logger.LogInformation("Get ProductOrder: {id}", result.ProductOrderId);
+        // Converts DTO object to reply object and adds the result to the task.
         return Task.FromResult(DtoObject.ToProductOrderReply(result));
     }
 
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.OrderProducts"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="requestStream">A writable stream to send messages to the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>A <see cref="MessageReply"/> object</returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
     public override async Task<MessageReply> OrderProducts(
         IAsyncStreamReader<ProductOrderRequest> requestStream, ServerCallContext context)
     {
@@ -144,15 +210,20 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         try
         {
+            // Gets all product orders from one client.
             await foreach (var productOrder in requestStream.ReadAllAsync())
             {
                 requests.Add(productOrder);
-                _logger.LogInformation("Received order with {size} products", productOrder.Orders.Count);
             }
+            
+            _logger.LogInformation("Received order with {size} products", requests.Count);
 
+            // Processes each order from client.
             foreach (var order in requests)
             {
+                // Converts DTO object to reply object.
                 var orderRequest = GrpcObject.ToProductOrderDTO(order);
+                // make order
                 _enterpriseApplication.OrderProducts(orderRequest, order.StoreId);
             }
         }
@@ -170,12 +241,22 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         };
     }
 
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.RollInReceivedProductOrder"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>A successfully completed task with the result of <see cref="MessageReply"/> object.</returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
     public override Task<MessageReply> RollInReceivedProductOrder(
         ProductOrderRequest request, ServerCallContext context)
     {
         try
         {
+            // Get product order.
             var result = _enterpriseApplication.GetProductOrder(request.ProductOrderId);
+            // Set the delivery date from the product order.
             result.DeliveryDate = request.DeliveryDate.ToDateTime();
             _enterpriseApplication.RollInReceivedProductOrder(result, request.StoreId);
         }
@@ -194,6 +275,14 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         });
     }
 
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.ChangePrice"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>A successfully completed task with the result of <see cref="MessageReply"/> object.</returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
     public override Task<MessageReply> ChangePrice(StockItemIdRequest request, ServerCallContext context)
     {
         try
@@ -211,6 +300,14 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         return Task.FromResult(new MessageReply());
     }
 
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.MakeBookSale"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>A successfully completed task with the result of <see cref="MessageReply"/> object.</returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
     public override Task<MessageReply> makeBookSales(SaleRequest request, ServerCallContext context)
     {
         try
@@ -232,6 +329,14 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         });
     }
 
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.GetProductStockItem"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>A successfully completed task with the result of <see cref="ProductStockItemReply"/> object.</returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
     public override Task<ProductStockItemReply> GetProductStockItem(
         ProductStockItemRequest request, ServerCallContext context)
     {
