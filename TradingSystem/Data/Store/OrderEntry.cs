@@ -25,6 +25,9 @@ public class OrderEntry
         _productOrder = new ProductOrder();
     }
 
+    /// <summary>
+    /// Provides get and set methods for Id property.
+    /// </summary>
     /// <value>Property <c>Id</c> represents a unique identifier for OrderEntry objects.</value>
     [Key]
     public long Id
@@ -33,6 +36,9 @@ public class OrderEntry
         set => _id = value;
     }
 
+    /// <summary>
+    /// Provides get and set methods for Amount property.
+    /// </summary>
     /// <value>Property <c>Amount</c> represents the amount of ordered products.</value>
     public int Amount
     {
@@ -40,6 +46,9 @@ public class OrderEntry
         set => _amount = value;
     }
 
+    /// <summary>
+    /// Provides get and set methods for Product property.
+    /// </summary>
     /// <value>Property <c>Product</c> represents the product which is ordered.</value>
     /// <exception cref="ArgumentNullException">If set Product with null.</exception>
     public Product Product
@@ -48,6 +57,9 @@ public class OrderEntry
         set => _product = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <summary>
+    /// Provides get and set methods for ProductOrder property.
+    /// </summary>
     /// <value>Property <c>ProductOrder</c> represents where the OrderEntry belongs to.</value>
     /// <exception cref="ArgumentNullException">If set ProductOrder with null.</exception>
     public ProductOrder ProductOrder

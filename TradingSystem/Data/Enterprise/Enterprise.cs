@@ -24,6 +24,9 @@ public class Enterprise
         _stores = new List<Store.Store>();
     }
 
+    /// <summary>
+    /// Provides get and set methods for Id property.
+    /// </summary>
     /// <value>Property <c>Id</c> represents a unique identifier for Enterprise objects.</value>
     [Key]
     public long Id
@@ -32,6 +35,9 @@ public class Enterprise
         set => _id = value;
     }
 
+    /// <summary>
+    /// Provides get and set methods for Name property.
+    /// </summary>
     /// <value>Property <c>Name</c> represents the name of the enterprise.</value>
     /// <exception cref="ArgumentNullException">If set Name with null.</exception>
     public string Name
@@ -40,6 +46,9 @@ public class Enterprise
         set => _name = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <summary>
+    /// Provides get and set methods for ProductSuppliers property.
+    /// </summary>
     /// <value>Property <c>ProductSuppliers</c> represents a list of suppliers related to the enterprise.</value>
     /// <exception cref="ArgumentNullException">If set ProductSuppliers with null.</exception>
     public List<ProductSupplier> ProductSuppliers
@@ -48,6 +57,9 @@ public class Enterprise
         set => _productSuppliers = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <summary>
+    /// Provides get and set methods for Stores property.
+    /// </summary>
     /// <value>Property <c>Stores</c> represents a list of stores related to the enterprise.</value>
     /// <exception cref="ArgumentNullException">If set Stores with null.</exception>
     public List<Store.Store> Stores

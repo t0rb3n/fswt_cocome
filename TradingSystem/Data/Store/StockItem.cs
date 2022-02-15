@@ -31,6 +31,9 @@ public class StockItem
         _product = new Product();
     }
     
+    /// <summary>
+    /// Provides get and set methods for Id property.
+    /// </summary>
     /// <value>Property <c>Id</c> represents a unique identifier for StockItem objects.</value>
     [Key]
     public long Id
@@ -39,6 +42,9 @@ public class StockItem
         set => _id = value;
     }
 
+    /// <summary>
+    /// Provides get and set methods for SalesPrice property.
+    /// </summary>
     /// <value>Property <c>SalesPrice</c> represents the sales price of the StockItem.</value>
     public double SalesPrice
     {
@@ -46,6 +52,9 @@ public class StockItem
         set => _salesPrice = value;
     }
 
+    /// <summary>
+    /// Provides get and set methods for Amount property.
+    /// </summary>
     /// <value>Property <c>Amount</c> represents the currently available amount of items of a product.</value>
     public int Amount
     {
@@ -53,6 +62,9 @@ public class StockItem
         set => _amount = value;
     }
 
+    /// <summary>
+    /// Provides get and set methods for MinStock property.
+    /// </summary>
     /// <value>Property <c>MinStock</c> represents the minimum amount of products which has to be available in a store.</value>
     public int MinStock
     {
@@ -60,13 +72,19 @@ public class StockItem
         set => _minStock = value;
     }
 
-    /// <value>Property <c>MaxStock</c> represents the maximum capacity of a product in a store.</value>
+    /// <summary>
+    /// Provides get and set methods for MaxStock property.
+    /// </summary>
+    /// <value>Property <c>MaxStock</c> represents the maximum amount of a product in a store.</value>
     public int MaxStock
     {
         get => _maxStock;
         set => _maxStock = value;
     }
     
+    /// <summary>
+    /// Provides get and set methods for Store property.
+    /// </summary>
     /// <value>Property <c>Store</c> represents the store where the StockItem belongs to.</value>
     /// <exception cref="ArgumentNullException">If set Store with null.</exception>
     public Store Store
@@ -75,6 +93,9 @@ public class StockItem
         set => _store = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <summary>
+    /// Provides get and set methods for Product property.
+    /// </summary>
     /// <value>Property <c>Product</c> represents the product of a StockItem.</value>
     /// <exception cref="ArgumentNullException">If set Product with null.</exception>
     public Product Product

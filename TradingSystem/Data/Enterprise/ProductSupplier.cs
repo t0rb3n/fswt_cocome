@@ -22,6 +22,9 @@ public class ProductSupplier
         _products = new List<Product>();
     }
     
+    /// <summary>
+    /// Provides get and set methods for Id property.
+    /// </summary>
     /// <value>Property <c>Id</c> represents a unique identifier for ProductSupplier objects.</value>
     [Key]
     public long Id
@@ -30,6 +33,9 @@ public class ProductSupplier
         set => _id = value;
     }
 
+    /// <summary>
+    /// Provides get and set methods for Name property.
+    /// </summary>
     /// <value>Property <c>Name</c> represents the name of the supplier.</value>
     /// <exception cref="ArgumentNullException">If set Name with null.</exception>
     public string Name
@@ -38,6 +44,9 @@ public class ProductSupplier
         set => _name = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <summary>
+    /// Provides get and set methods for Products property.
+    /// </summary>
     /// <value>Property <c>Products</c> represents a list of products provided by the product supplier.</value>
     /// <exception cref="ArgumentNullException">If set Products with null.</exception>
     public List<Product> Products

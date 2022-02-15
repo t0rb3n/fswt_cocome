@@ -28,6 +28,9 @@ public class Store
         _stockItems = new List<StockItem>();
     }
 
+    /// <summary>
+    /// Provides get and set methods for Id property.
+    /// </summary>
     /// <value>Property <c>Id</c> represents a unique identifier for Store objects.</value>
     [Key]
     public long Id
@@ -36,6 +39,9 @@ public class Store
         set => _id = value;
     }
     
+    /// <summary>
+    /// Provides get and set methods Name property.
+    /// </summary>
     /// <value>Property <c>Name</c> represents the name of the store.</value>
     /// <exception cref="ArgumentNullException">If set Name with null.</exception>
     public string Name
@@ -44,6 +50,9 @@ public class Store
         set => _name = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <summary>
+    /// Provides get and set methods Location property.
+    /// </summary>
     /// <value>Property <c>Location</c> represents the location of the store.</value>
     /// <exception cref="ArgumentNullException">If set Location with null.</exception>
     public string Location
@@ -52,6 +61,9 @@ public class Store
         set => _location = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <summary>
+    /// Provides get and set methods Enterprise property.
+    /// </summary>
     /// <value>Property <c>Enterprise</c> represents the enterprise which the store belongs to.</value>
     /// <exception cref="ArgumentNullException">If set Enterprise with null.</exception>
     public Enterprise.Enterprise Enterprise
@@ -60,6 +72,9 @@ public class Store
         set => _enterprise = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <summary>
+    /// Provides get and set methods ProductOrders property.
+    /// </summary>
     /// <value>Property <c>ProductOrders</c> represents a list of product orders from the store.</value>
     /// <exception cref="ArgumentNullException">If set ProductOrders with null.</exception>
     public List<ProductOrder> ProductOrders
@@ -68,6 +83,9 @@ public class Store
         set => _productOrders = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <summary>
+    /// Provides get and set methods StockItems property.
+    /// </summary>
     /// <value>Property <c>StockItems</c> represents a list of stock items from the store.</value>
     /// <exception cref="ArgumentNullException">If set StockItems with null.</exception>
     public List<StockItem> StockItems

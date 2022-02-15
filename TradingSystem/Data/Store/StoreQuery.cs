@@ -5,7 +5,7 @@ using Data.Exceptions;
 namespace Data.Store;
 
 /// <summary>
-/// Class <c>StoreQuery</c> implemented the interfaces of IStoreQuery
+/// Class <c>StoreQuery</c> implemented the interfaces of IStoreQuery.
 /// </summary>
 public class StoreQuery : IStoreQuery
 {

@@ -26,6 +26,9 @@ public class Product
         _productSupplier = new ProductSupplier();
     }
     
+    /// <summary>
+    /// Provides get and set methods for Id property.
+    /// </summary>
     /// <value>Property <c>Id</c> represents a unique identifier for Product objects.</value>
     [Key]
     public long Id
@@ -34,6 +37,9 @@ public class Product
         set => _id = value;
     }
     
+    /// <summary>
+    /// Provides get and set methods for Barcode property.
+    /// </summary>
     /// <value>Property <c>Barcode</c> represents the barcode of the product.</value>
     public long Barcode
     {
@@ -41,6 +47,9 @@ public class Product
         set => _barcode = value;
     }
 
+    /// <summary>
+    /// Provides get and set methods for PurchasePrice property.
+    /// </summary>
     /// <value>Property <c>PurchasePrice</c> represents the purchase price of this product.</value>
     public double PurchasePrice
     {
@@ -48,6 +57,9 @@ public class Product
         set => _purchasePrice = value;
     }
 
+    /// <summary>
+    /// Provides get and set methods for Name property.
+    /// </summary>
     /// <value>Property <c>Name</c> represents the name of the product.</value>
     /// <exception cref="ArgumentNullException">If set Name with null.</exception>
     public string Name
@@ -56,6 +68,9 @@ public class Product
         set => _name = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    /// <summary>
+    /// Provides get and set methods for ProductSupplier property.
+    /// </summary>
     /// <value>Property <c>ProductSupplier</c> represents the supplier of the product.</value>
     /// <exception cref="ArgumentNullException">If set ProductSupplier with null.</exception>
     public ProductSupplier ProductSupplier
