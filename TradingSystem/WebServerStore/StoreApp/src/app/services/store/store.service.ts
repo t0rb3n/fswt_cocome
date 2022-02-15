@@ -5,7 +5,6 @@ import {Observable} from "rxjs";
 import { ProductStockItemDTO } from '../../classes/ProductStockItemDTO';
 import { OrderProductDTO } from 'src/app/classes/OrderProductDTO';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -36,5 +35,6 @@ export class StoreService {
   orderProducts(orderProducts: OrderProductDTO[]): Observable<any> {
     return this.http.post('orderstockitem', orderProducts);
   }
+
 }
 
