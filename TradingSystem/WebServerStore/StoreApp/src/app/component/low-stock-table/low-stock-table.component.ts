@@ -51,12 +51,21 @@ export class LowStockTableComponent implements AfterViewInit {
       console.log(error);
     });
 
+  onOrderProductClick(){
+    const productsToOrder: Array<OrderProductDTO> = []
+
+
+    this.dataSource.data.forEach( (row) => {
+      if(!row.orderAmount || row.orderAmount < 1){
+        return;
+      }
+
+      productsToOrder.push(row)
+    });
   }
 
   openOrderProductDialog(row: OrderProductDTO){
     this.dialog.open(OrderAmountDialogComponent, { data: row }).afterClosed().subscribe(orderamount => {
-
-
       if(orderamount){
         const result = this.dataSource.data.findIndex( item => item.productId === row.productId);
 

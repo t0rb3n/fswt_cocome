@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {DataSource} from '@angular/cdk/collections';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
@@ -7,14 +6,6 @@ import {Observable, of as observableOf, merge} from 'rxjs';
 import {StoreService} from "../../services/store/store.service";
 import {Injectable} from "@angular/core";
 import {OrderProductDTO} from 'src/app/classes/OrderProductDTO';
-=======
-import { DataSource } from '@angular/cdk/collections';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { catchError, map, startWith, switchMap} from 'rxjs/operators';
-import { Observable, of as observableOf, merge } from 'rxjs';
-import { StoreService } from "../../services/store/store.service";
-import { Injectable } from "@angular/core";
 
 
 /**
@@ -23,10 +14,8 @@ import { Injectable } from "@angular/core";
  * (including sorting, pagination, and filtering).
  */
 @Injectable()
-
 export class LowStockItemDTODataSource extends DataSource<OrderProductDTO> {
   data: OrderProductDTO[] = [];
-
   paginator: MatPaginator | undefined;
   sort: MatSort | undefined;
   length: number = 0;
@@ -40,9 +29,7 @@ export class LowStockItemDTODataSource extends DataSource<OrderProductDTO> {
    * the returned stream emits new items.
    * @returns A stream of the items to be rendered.
    */
-
   connect(): Observable<OrderProductDTO[]> {
-
     if (this.paginator && this.sort) {
       // Combine everything that affects the rendered data into one update
       // stream for the data-table to consume.
