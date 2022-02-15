@@ -14,7 +14,7 @@ public interface IStoreApplication
     /// <returns>Store and enterprise information about the local store.</returns>
     /// <exception cref="StoreException">If the rpc call failed.</exception>
     public StoreEnterpriseDTO GetStore();
-   
+
     /// <summary>
     /// Determines products and stock items that are nearly out of stock, meaning amount is lower than minimum amount.
     /// </summary>
