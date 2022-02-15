@@ -8,10 +8,10 @@ namespace WebServerStore.Controllers
     [ApiController]
     public class LowStoreStockItemController : ControllerBase
     {
-        private readonly ILogger<StoreStockItemController> _logger;
+        private readonly ILogger<LowStoreStockItemController> _logger;
         private readonly IStoreApplication _storeApp;
 
-        public LowStoreStockItemController(ILogger<StoreStockItemController> logger, IStoreApplication storeApp)
+        public LowStoreStockItemController(ILogger<LowStoreStockItemController> logger, IStoreApplication storeApp)
         {
             _logger = logger;
             _storeApp = storeApp;
