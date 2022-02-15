@@ -66,7 +66,7 @@ public interface IEnterpriseApplication
     /// <returns>A list of products and their stock item from this specified store.</returns>
     /// <exception cref="EnterpriseException">If no low stock items from the specified store were found.</exception>
     public IList<ProductSupplierStockItemDTO> GetProductsLowStockItems(long storeId);
-    
+
     /// <summary>
     /// Determines all products of the specified store and the supplier for each of them.
     /// </summary>

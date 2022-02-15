@@ -58,6 +58,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
                 await foreach(var productStockItem in call.ResponseStream.ReadAllAsync())
                 {
+
                     // Converts reply object to DTO object and adds to result list.
                     result.Add(GrpcObject.ToProductSupplierStockItemDTO(productStockItem));
                 }
