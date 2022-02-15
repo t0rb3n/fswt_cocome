@@ -33,8 +33,7 @@ export class StoreService {
   }
 
   orderProducts(orderProducts: OrderProductDTO[]): Observable<any> {
-    return this.http.post('orderstockitem', orderProducts);
+    return this.http.post('OrderStockItem', orderProducts);
   }
-
 }
 
