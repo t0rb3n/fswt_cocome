@@ -80,6 +80,7 @@ public class StoreQuery : IStoreQuery
                 .StockItems
                 .Where(item => item.Store.Id == storeId && item.Amount < item.MinStock)
                 .Include(item => item.Product)
+                .ThenInclude(product => product.ProductSupplier)
                 .ToList();
 
             if (result.Count == 0)
