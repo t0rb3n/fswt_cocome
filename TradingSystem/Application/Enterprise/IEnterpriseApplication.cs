@@ -101,6 +101,14 @@ public interface IEnterpriseApplication
     public ProductOrderDTO GetProductOrder(long productOrderId);
     
     /// <summary>
+    /// Gets information about all product orders for a specified store.
+    /// </summary>
+    /// <param name="storeId">The id of the store.</param>
+    /// <returns>A list of product orders from this specified store.</returns>
+    /// <exception cref="EnterpriseException">If no product orders were found.</exception>
+    public IList<ProductOrderDTO> GetAllProductOrders(long storeId);
+    
+    /// <summary>
     /// Updates stocks from this specified store after order delivery.
     /// Adds amount of ordered items to the stock items of the specified store.
     /// </summary>

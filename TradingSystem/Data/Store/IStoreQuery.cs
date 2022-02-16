@@ -75,6 +75,16 @@ public interface IStoreQuery
     public ProductOrder QueryOrderById(long orderId, DatabaseContext dbc);
     
     /// <summary>
+    /// Queries for all product order which owned this store and adds the
+    /// <see cref="OrderEntry"/>, <see cref="Product"/> and <see cref="ProductSupplier"/> reference.
+    /// </summary>
+    /// <param name="storeId">A unique id of the store.</param>
+    /// <param name="dbc">A database context to query.</param>
+    /// <returns>A list of <see cref="ProductOrder"/> owned by this store.</returns>
+    /// <exception cref="ItemNotFoundException">If no product orders were found.</exception>
+    public IList<ProductOrder> QueryAllOrders(long storeId, DatabaseContext dbc);
+    
+    /// <summary>
     /// Queries for a stock item with the barcode of the product from this store and
     /// adds the <see cref="Product"/> reference.
     /// </summary>

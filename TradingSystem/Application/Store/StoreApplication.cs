@@ -203,6 +203,33 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         return GrpcObject.ToProductOrderDTO(reply);
     }
 
+    public IList<ProductOrderDTO> GetAllProductOrders()
+    {
+        return Task.Run(async () =>
+        {
+            List<ProductOrderDTO> result = new();
+            
+            try
+            {
+                // Calls the method stream from the enterprise server.
+                using var call = _client.GetAllProductOrders(new StoreRequest {StoreId = _storeId});
+
+                await foreach (var productOrder in call.ResponseStream.ReadAllAsync())
+                {
+                    // Converts reply object to DTO object and adds to result list.
+                    result.Add(GrpcObject.ToProductOrderDTO(productOrder));
+                }
+            }
+            catch (RpcException e)
+            {
+                throw new StoreException(e.Message);
+            }
+            
+            Console.WriteLine("List<ProductOrderDTO> size: " + result.Count);
+            return result;
+        }).Result;
+    }
+    
     public void RollInReceivedProductOrder(long productOrderId)
     {
         try

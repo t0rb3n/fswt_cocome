@@ -41,7 +41,7 @@ public interface IStoreApplication
     /// Creates a list of orders for different suppliers for an initial list of products to be ordered by a store.
     /// ProductOrderDTO is persisted and ordering date is set to date of method execution.
     /// </summary>
-    /// <param name="productOrder">The product order.</param>
+    /// <param name="productOrder">The product order dto with the list of orders dto.</param>
     /// <exception cref="StoreException">If the rpc call failed.</exception>
     public void OrderProducts(ProductOrderDTO productOrder);
     
@@ -50,13 +50,22 @@ public interface IStoreApplication
     /// </summary>
     /// <param name="productOrderId">The id of the order.</param>
     /// <returns>A detailed order information of the desired order.</returns>
+    /// <exception cref="StoreException">If the rpc call failed.</exception>
     public ProductOrderDTO GetProductOrder(long productOrderId);
+    
+    /// <summary>
+    /// Returns all product orders that this owns store.
+    /// </summary>
+    /// <returns>A list of product orders with their order entries, supplier and product.</returns>
+    /// <exception cref="StoreException">If the rpc call failed.</exception>
+    public IList<ProductOrderDTO> GetAllProductOrders();
     
     /// <summary>
     /// Updates stocks after order delivery. Adds amount of ordered items to the stock items of the store.
     /// Sets delivery date to date of method execution.
     /// </summary>
     /// <param name="productOrderId">The id of the order.</param>
+    /// <exception cref="StoreException">If the rpc call failed.</exception>
     public void RollInReceivedProductOrder(long productOrderId);
     
     /// <summary>
@@ -64,5 +73,6 @@ public interface IStoreApplication
     /// </summary>
     /// <param name="stockItemId">The id of the stock item.</param>
     /// <param name="newPrice">The new price of the stock item.</param>
+    /// <exception cref="StoreException">If the rpc call failed.</exception>
     public void ChangePrice(long stockItemId, double newPrice);
 }
