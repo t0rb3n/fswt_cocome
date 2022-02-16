@@ -140,9 +140,9 @@ public class StoreQuery : IStoreQuery
         {
             result = dbc.ProductOrders
                 .Where(order => order.Store.Id == storeId)
-                /*.Include(order => order.OrderEntries)
+                .Include(order => order.OrderEntries)
                 .ThenInclude(entry => entry.Product)
-                .ThenInclude(product => product.ProductSupplier)*/
+                .ThenInclude(product => product.ProductSupplier)
                 .ToList();
         }
         catch (ArgumentNullException)
