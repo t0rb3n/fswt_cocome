@@ -237,7 +237,10 @@ public class EnterpriseApplication : IEnterpriseApplication
         
         try
         {
-            ProductOrder poe = new();
+            var poe = new ProductOrder
+            {
+                Id = 0
+            };
             // Adds each order in the product order Entity object.
             foreach (var order in productOrder.Orders)
             {
@@ -245,6 +248,7 @@ public class EnterpriseApplication : IEnterpriseApplication
                 var product = _storeQuery.QueryProductById(order.ProductSupplier.ProductId, dbc);
                 var oe = new OrderEntry
                 {
+                    Id = 0,
                     Amount = order.Amount,
                     Product = product
                 };
