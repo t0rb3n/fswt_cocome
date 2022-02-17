@@ -14,23 +14,19 @@ namespace CashDesk;
 public sealed class CashDeskEventPublisher
 {
     // Cash Box Button Events
-    public event EventHandler StartSale;
-    public event EventHandler FinishSale;
-    public event EventHandler PayWithCard;
-    public event EventHandler PayWithCash;
-    public event EventHandler DisableExpressMode;
+    public event EventHandler? StartSale;
+    public event EventHandler? FinishSale;
+    public event EventHandler? PayWithCard;
+    public event EventHandler? PayWithCash;
+    public event EventHandler? DisableExpressMode;
 
     // Item Events
-    public event EventHandler<string> AddItemToSale;
+    public event EventHandler<string>? AddItemToSale;
     
     private readonly ILogger<CashDeskEventPublisher> _logger;
 
-    private CashboxServiceClient _cashboxClient;
-    private DisplayControllerClient _displayClient;
-    private PrintingServiceClient _printerClient;
-    private BarcodeScannerServiceClient _barcodeClient;
-    private CardReaderServiceClient _cardReaderClient;
-    private BankServerClient _bankClient;
+    private readonly CashboxServiceClient _cashboxClient;
+    private readonly BarcodeScannerServiceClient _barcodeClient;
 
     public CashDeskEventPublisher(
         ILogger<CashDeskEventPublisher> logger,
@@ -69,8 +65,8 @@ public sealed class CashDeskEventPublisher
                     OnPayWithCash(EventArgs.Empty);
                     break;
                 default:
-                    throw new NotImplementedException();
-                // TODO throw new NoSuchEventException();
+                    _logger.LogWarning("Got CashBoxButton that I don't know with name {Button}", button.ToString());
+                    return;
             }
         }
     }
@@ -88,37 +84,35 @@ public sealed class CashDeskEventPublisher
         }
         
     }
-
-
-
+    
     private void OnStartSaleEvent(EventArgs e)
     {
-        StartSale.Invoke(this, e);
+        StartSale?.Invoke(this, e);
     }
 
     private void OnAddItemToSaleEvent(string barcode)
     {
-        AddItemToSale.Invoke(this, barcode);
+        AddItemToSale?.Invoke(this, barcode);
     }
 
     private void OnFinishSale(EventArgs e)
     {
-        FinishSale.Invoke(this, e);
+        FinishSale?.Invoke(this, e);
     }
 
     private void OnDisableExpressMode(EventArgs e)
     {
-        DisableExpressMode.Invoke(this, e);
+        DisableExpressMode?.Invoke(this, e);
     }
 
     private void OnPayWithCard(EventArgs e)
     {
-        PayWithCard.Invoke(this, e);
+        PayWithCard?.Invoke(this, e);
     }
 
     private void OnPayWithCash(EventArgs e)
     {
-        PayWithCash.Invoke(this, e);
+        PayWithCash?.Invoke(this, e);
     }
     
 }

@@ -1,9 +1,11 @@
-﻿namespace CashDesk.Exceptions;
+﻿using CashDesk.Classes.Enums;
+
+namespace CashDesk.Exceptions;
 
 public class IllegalCashDeskStateException : Exception
 {
-    private CashDeskState _state;
-    private IReadOnlySet<CashDeskState> _legalStates;
+    private CashDeskState? _state;
+    private IReadOnlySet<CashDeskState>? _legalStates;
 
     public IllegalCashDeskStateException()
     {
@@ -19,7 +21,7 @@ public class IllegalCashDeskStateException : Exception
 
     public IllegalCashDeskStateException(CashDeskState currentState, IReadOnlySet<CashDeskState> legalStates)
     {
-        this._state = currentState;
-        this._legalStates = legalStates;
+        _state = currentState;
+        _legalStates = legalStates;
     }
 }

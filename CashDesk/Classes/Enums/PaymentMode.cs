@@ -1,4 +1,4 @@
-﻿namespace CashDesk;
+﻿namespace CashDesk.Classes.Enums;
 
 public enum PaymentMode
 {
