@@ -1,11 +1,14 @@
-﻿using CashDesk.CardReaderService;
+﻿using CashDesk.BarcodeScannerService;
+using CashDesk.CardReaderService;
+using CashDesk.Classes.Enums;
+using CashDesk.Classes.EventArgs;
 using CashDesk.Exceptions;
-using CashDesk.Sila.DisplayController;
 using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using GrpcModule.Messages;
 using GrpcModule.Services.Store;
 using Tecan.Sila2;
-using static CashDesk.CashDeskStates;
+using static CashDesk.Classes.CashDeskStates;
 
 namespace CashDesk;
 
@@ -23,10 +26,12 @@ public class CashDesk
     private bool _expressModeEnabled;
 
 
-    public event EventHandler<ChangeRunningTotalArgs> ChangeRunningTotal;
-    public event EventHandler<SaleRegisteredArgs> SaleRegistered;
-    public event EventHandler<string> PaymentModeRejected;
-    public event EventHandler SaleSuccess;
+    public event EventHandler<ChangeRunningTotalArgs>? ChangeRunningTotal;
+    public event EventHandler<SaleRegisteredArgs>? SaleRegistered;
+    public event EventHandler<string>? PaymentModeRejected;
+    public event EventHandler? SaleSuccess;
+    public event EventHandler<long>? ProductNotFound;
+    public event EventHandler<string>? BarcodeInvalid;
 
     public CashDesk(ILogger<CashDesk> logger, StoreService.StoreServiceClient esc,
         IBankServer bankServerClient, CardReaderServiceClient cardReaderClient)
@@ -72,8 +77,10 @@ public class CashDesk
             }
             catch (FormatException)
             {
-                _logger.LogError("The barcode has to be a number");
-                throw;
+                _logger.LogInformation("Barcode is not a number");
+                
+                OnBarcodeInvalid(barcode);
+                return;
             }
 
             try
@@ -81,21 +88,20 @@ public class CashDesk
                 ProductStockItemReply productWithStockItem = GetProductWithStockItem(parsedBarcode);
                 AddItemToSale(productWithStockItem);
             }
-            catch (NoSuchProductException)
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
             {
-                _logger.LogError("No product/stock item for barcode ${Barcode}", barcode);
-                //TODO  send this.sendInvalidProductBarcodeEvent(barcode);
-                // TODO throw this correctly
+                _logger.LogWarning("No product found for barcode {Barcode}", barcode);
+                OnProductNotFound(parsedBarcode);
             }
-            catch (Exception exception)
+            catch (RpcException ex)
             {
-                _logger.LogError("Failed to communicate with store server with reason: \n {Exception}", exception);
+                _logger.LogError("Failed to communicate with store server with reason: \n {Exception}", ex.Message);
             }
         }
         else
         {
             _logger.LogError("Cannot process more than ${Number} items in express mode!",
-                ExpressModePolicy._expressItemsLimit);
+                ExpressModePolicy.ExpressItemsLimit);
         }
     }
 
@@ -119,10 +125,10 @@ public class CashDesk
     {
         StateIsLegal(SelectPayingModeStates);
 
-        // send PaymentModeSelectedEvent
         _currentState = CashDeskState.PayingByCash;
 
         MakeSale(PaymentMode.Cash);
+        
         ResetState();
     }
 
@@ -176,7 +182,7 @@ public class CashDesk
     private bool CanAcceptItem()
     {
         bool expressModeDisabled = !this._expressModeEnabled;
-        bool itemCountUnderLimit = this._saleProducts.Count < ExpressModePolicy._expressItemsLimit;
+        bool itemCountUnderLimit = this._saleProducts.Count < ExpressModePolicy.ExpressItemsLimit;
         return expressModeDisabled || itemCountUnderLimit;
     }
 
@@ -184,13 +190,13 @@ public class CashDesk
     {
         _saleProducts.Add(product);
 
-        var stockitem = product.StockItem[0];
-        var currentTotal = CalculateCurrentTotal(stockitem.SalesPrice);
+        var stockItem = product.StockItem[0];
+        var currentTotal = CalculateCurrentTotal(stockItem.SalesPrice);
 
         OnChangeRunningTotal(new ChangeRunningTotalArgs
         {
-            Price = stockitem.SalesPrice,
             ProductName = product.ProductName,
+            Price = stockItem.SalesPrice,
             Total = currentTotal
         });
     }
@@ -227,22 +233,36 @@ public class CashDesk
 
     private void OnChangeRunningTotal(ChangeRunningTotalArgs args)
     {
-        ChangeRunningTotal.Invoke(this, args);
+        ChangeRunningTotal?.Invoke(this, args);
     }
 
     private void OnSaleSuccess()
     {
-        SaleSuccess.Invoke(this, EventArgs.Empty);
+        SaleSuccess?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnSaleRegistered(SaleRegisteredArgs args)
     {
-        SaleRegistered.Invoke(this, args);
+        SaleRegistered?.Invoke(this, args);
     }
 
     private void OnPaymentModeRejected(string reason)
     {
-        PaymentModeRejected.Invoke(this, reason);
+        PaymentModeRejected?.Invoke(this, reason);
+    }
+
+    /*
+     * Error Event Methods
+     */
+
+    private void OnProductNotFound(long barcode)
+    {
+        ProductNotFound?.Invoke(this, barcode);
+    }
+
+    private void OnBarcodeInvalid(string barcode)
+    {
+        BarcodeInvalid?.Invoke(this, barcode);
     }
 
     /*
@@ -270,14 +290,15 @@ public class CashDesk
             }
             else
             {
-                const string reason = "Error with your the card.";
+                const string reason = "Error with the credit card.";
                 OnPaymentModeRejected(reason);
             }
-        }
+        } 
         catch (Exception ex)
         {
-            _logger.LogError("Something went wrong when talking to the bank... ");
+            _logger.LogError("Something went wrong when talking to the bank, reason: {Reason} ", ex.Message);
             throw;
+            //TODO consider OnBankFailed()
         }
     }
 
@@ -295,8 +316,3 @@ public class CashDesk
     }
 }
 
-public class SaleRegisteredArgs : EventArgs
-{
-    public int Amount { get; init; }
-    public PaymentMode Mode { get; init; }
-}

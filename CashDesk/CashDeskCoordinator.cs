@@ -1,22 +1,27 @@
-﻿namespace CashDesk;
+﻿using CashDesk.Classes;
+using CashDesk.Classes.Enums;
+using CashDesk.Classes.EventArgs;
+
+namespace CashDesk;
 
 public class CashDeskCoordinator
 {
-    public event EventHandler EnableExpressMode;
+    public event EventHandler? EnableExpressMode;
     private readonly ILogger<CashDeskCoordinator> _logger;
     private DateTime _lastCheck;
-    private Queue<Sale> History = new Queue<Sale>();
-    private bool _expressModeNeeded = false;
+    private readonly Queue<Sale> _history = new Queue<Sale>();
+    private bool _expressModeNeeded;
 
     public CashDeskCoordinator(
         ILogger<CashDeskCoordinator> logger,
         CashDesk cashDesk
     )
     {
+        _logger = logger;
         cashDesk.SaleRegistered += SaleRegisteredHandler;
     }
 
-    private void SaleRegisteredHandler(object sender, SaleRegisteredArgs args)
+    private void SaleRegisteredHandler(object? sender, SaleRegisteredArgs args)
     {
         var sale = new Sale
         {
@@ -24,23 +29,23 @@ public class CashDeskCoordinator
             Amount = args.Amount,
             Mode = args.Mode,
         };
-        History.Enqueue(sale);
+        _history.Enqueue(sale);
         CleanHistory();
 
-        if (IsExpressModeNeeded())
-        {
-            EnableExpressMode?.Invoke(this, EventArgs.Empty);
-        }
+        if (!IsExpressModeNeeded()) return;
+
+        _logger.LogInformation("Enabling Express mode for cash-desk");
+        EnableExpressMode?.Invoke(this, EventArgs.Empty);
     }
-    
+
     // Clean the sale history and removes every item its age is greater than the policy allows
     private void CleanHistory()
     {
-        DateTime now = DateTime.Now;
-            //TODO care for Peek() exception
-        while ((History.Peek().Date - now).TotalMinutes >= ExpressModePolicy._salesWindow)
+        var now = DateTime.Now;
+        //TODO care for Peek() exception
+        while ((_history.Peek().Date - now).TotalMinutes >= ExpressModePolicy.SalesWindow)
         {
-            History.Dequeue();
+            _history.Dequeue();
         }
     }
 
@@ -49,12 +54,11 @@ public class CashDeskCoordinator
     {
         var now = DateTime.Now;
 
-        if (IsCheckNeeded(now))
-        {
-            CleanHistory();
-            _lastCheck = now;
-            _expressModeNeeded = EvaluateExpressMode(History);
-        }
+        if (!IsCheckNeeded(now)) return _expressModeNeeded;
+
+        CleanHistory();
+        _lastCheck = now;
+        _expressModeNeeded = EvaluateExpressMode(_history);
 
         return _expressModeNeeded;
     }
@@ -62,38 +66,26 @@ public class CashDeskCoordinator
     // Checks if the time since the last check is greater than the policy allows
     private bool IsCheckNeeded(DateTime now)
     {
-        return (now - _lastCheck).TotalSeconds >= ExpressModePolicy._checkPeriodSeconds;
+        return (now - _lastCheck).TotalSeconds >= ExpressModePolicy.CheckPeriodSeconds;
     }
 
-    // checks if the ratio of sales that count as expresssales is greater than the policy allows
-    private bool EvaluateExpressMode(Queue<Sale> history)
+    // checks if the ratio of sales that count as express sales is greater than the policy allows
+    private static bool EvaluateExpressMode(IReadOnlyCollection<Sale> history)
     {
         var allSalesCount = history.Count;
-        var expressSalesCount = CountEligbleExpressSales(history);
+        var expressSalesCount = CountEligibleExpressSales(history);
 
-        double ratio = (double) expressSalesCount / allSalesCount;
+        var ratio = (double) expressSalesCount / allSalesCount;
 
-        return ratio >= ExpressModePolicy._expressThreshold;
+        return ratio >= ExpressModePolicy.ExpressThreshold;
     }
 
-    // checks the sales and counts how many count as express sales
-    private int CountEligbleExpressSales(Queue<Sale> history)
+    // checks the sales and counts how many count as express sales Eligible
+    private static int CountEligibleExpressSales(IEnumerable<Sale> history)
     {
-        int counter = 0;
-        foreach (var sale in history)
-        {
-            counter +=
-                (sale.Mode == PaymentMode.Cash
-                 && sale.Amount <= ExpressModePolicy._expressItemsLimit)
-                    ? 1
-                    : 0;
-        }
-
-        return counter;
+        return history.Sum(sale =>
+            (sale.Mode == PaymentMode.Cash && sale.Amount <= ExpressModePolicy.ExpressItemsLimit)
+                ? 1
+                : 0);
     }
-}
-
-public class Sale : SaleRegisteredArgs
-{
-    public DateTime Date { get; set; }
 }

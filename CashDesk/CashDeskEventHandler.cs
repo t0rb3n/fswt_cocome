@@ -7,7 +7,7 @@ namespace CashDesk;
 
 public class CashDeskEventHandler : IHostedService
 {
-    private CashDeskEventPublisher _cdep;
+    private readonly CashDeskEventPublisher _cdep;
     private readonly CashDesk _cashDesk;
 
     private readonly ILogger _logger;
@@ -84,39 +84,38 @@ public class CashDeskEventHandler : IHostedService
      *  Handler Methods
      */
 
-    private void StartSaleHandler(object sender, EventArgs e)
+    private void StartSaleHandler(object? sender, EventArgs e)
     {
         _cashDesk.StartSale();
     }
 
-    private void AddItemToSaleHandler(object sender, string barcode)
+    private void AddItemToSaleHandler(object? sender, string barcode)
     {
         _cashDesk.AddItemToSale(barcode);
     }
 
-    private void FinishSaleHandler(object sender, EventArgs e)
+    private void FinishSaleHandler(object? sender, EventArgs e)
     {
         _cashDesk.FinishSale();
     }
 
-    private void DisableExpressModeHandler(object sender, EventArgs e)
+    private void DisableExpressModeHandler(object? sender, EventArgs e)
     {
         _cashDesk.DisableExpressMode();
     }
 
-    private void PayWithCardHandler(object sender, EventArgs e)
+    private void PayWithCardHandler(object? sender, EventArgs e)
     {
         _cashDesk.PayWithCard();
     }
 
-    private void PayWithCashHandler(object sender, EventArgs e)
+    private void PayWithCashHandler(object? sender, EventArgs e)
     {
         _cashDesk.PayWithCash();
     }
 
-    private void EnableExpressModeHandler(object sender, EventArgs e)
+    private void EnableExpressModeHandler(object? sender, EventArgs e)
     {
         _cashDesk.EnableExpressMode();
     }
-    
 }
