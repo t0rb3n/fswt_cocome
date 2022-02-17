@@ -179,7 +179,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
             {
                 throw new StoreException(e.Message);
             }
-        });
+        }).Wait();
     }
 
     public ProductOrderDTO GetProductOrder(long productOrderId)
