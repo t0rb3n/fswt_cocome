@@ -1,7 +1,9 @@
 ﻿using CashDesk.Classes.Enums;
 
 namespace CashDesk.Exceptions;
-
+/// <summary>
+/// This exception is thrown when the CashDesk is in a state that it shouldn't be in when we try to do something
+/// </summary>
 public class IllegalCashDeskStateException : Exception
 {
     private CashDeskState? _state;

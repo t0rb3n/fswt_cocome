@@ -1,12 +1,16 @@
-﻿
-
-using CashDesk.Classes.Enums;
+﻿using CashDesk.Classes.Enums;
 
 namespace CashDesk.Classes;
 
+/// <summary>
+/// The states the cashdesk is allowed to be in when a certain event is invoked. The event is defined by the
+/// prefix of the member: <c>StartSaleStates</c> maps to the StartSale event
+/// </summary>
 public abstract class CashDeskStates
 {
-    // New sale can be started anytime and thus aborted expect when we already paid by cash 
+    /// <summary>
+    /// New sale can be started anytime and thus aborted expect when we already paid by cash 
+    /// </summary>
     public static readonly HashSet<CashDeskState> StartSaleStates = new HashSet<CashDeskState>
     {
         CashDeskState.ExpectingSale,

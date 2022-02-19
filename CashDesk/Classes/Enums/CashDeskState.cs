@@ -1,27 +1,25 @@
 namespace CashDesk.Classes.Enums;
 
+/// <summary>
+/// The different possible states the cashdesk can be in
+/// </summary>
 public enum CashDeskState
 {
-    /** Initial state. */
+    /// <summary> The Initial state of the cashdesk. Waiting that the button "Start sale" is clicked.</summary>
     ExpectingSale,
 
-    /** After a sale has started ("New Sale" button pushed). */
+    /// <summary> After a sale has started ("New Sale" button pushed).</summary>
     ExpectingItems,
 
-    /**
-	 * After a sale has finished (all products have been scanned) and
-	 * "Finish Sale" button pushed.
-	 */
+    /// <summary> After a sale has finished (all products have been scanned) and  "Finish Sale" button was pushed.</summary>
     ExpectingPayment,
 
-    /** After the choice of cash payment was made. */
+    /// <summary> After the choice of cash payment was made.</summary>
     PayingByCash,
     
-    /** After the choice of credit card payment was made. */
+    /// <summary> After the choice of credit card payment was made..</summary>
     ExpectingCardInfo,
 
-    /** After the credit card was scanned. */
+    /// <summary> After the credit card was scanned.</summary>
     PayingByCreditCard
-    
 }
-

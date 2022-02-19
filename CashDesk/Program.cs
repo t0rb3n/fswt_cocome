@@ -13,7 +13,6 @@ using Tecan.Sila2.Client;
 using Tecan.Sila2.Client.ExecutionManagement;
 using Tecan.Sila2.Discovery;
 
-
 var connector = new ServerConnector(new DiscoveryExecutionManager());
 var discovery = new ServerDiscovery(connector);
 var servers = discovery.GetServers(TimeSpan.FromSeconds(10),
@@ -40,13 +39,11 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddSingleton<CardReaderServiceClient>();
         services.AddSingleton<IBankServer>(new BankServerClient(bankServer?.Channel, executionManagerFactory.CreateExecutionManager(bankServer)));
         
-        
-        services.AddSingleton<CashDesk.CashDesk>();
-
         /*
          * Event Listener and publisher
          */
-        
+        services.AddSingleton<CashDesk.CashDesk>();
+
         services.AddSingleton<CashDeskEventPublisher>();
         services.AddSingleton<CashDeskCoordinator>();
         services.AddHostedService<CashDeskEventHandler>();
