@@ -123,8 +123,8 @@ public static class DtoObject
         var result = new ProductOrderReply
         {
             ProductOrderId = productOrderDto.ProductOrderId,
-            DeliveryDate = Timestamp.FromDateTime(productOrderDto.DeliveryDate),
-            OrderingDate = Timestamp.FromDateTime(productOrderDto.OrderingDate)
+            DeliveryDate = Timestamp.FromDateTime(productOrderDto.DeliveryDate.ToUniversalTime()),
+            OrderingDate = Timestamp.FromDateTime(productOrderDto.OrderingDate.ToUniversalTime())
         };
 
         foreach (var orderDto in productOrderDto.Orders)

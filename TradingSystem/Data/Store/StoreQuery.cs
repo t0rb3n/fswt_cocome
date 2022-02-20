@@ -132,6 +132,25 @@ public class StoreQuery : IStoreQuery
         }
         return result;
     }
+    
+    public IList<ProductOrder> QueryAllOrders(long storeId, DatabaseContext dbc)
+    {
+        List<ProductOrder> result;
+        try
+        {
+            result = dbc.ProductOrders
+                .Where(order => order.Store.Id == storeId)
+                .Include(order => order.OrderEntries)
+                .ThenInclude(entry => entry.Product)
+                .ThenInclude(product => product.ProductSupplier)
+                .ToList();
+        }
+        catch (ArgumentNullException)
+        {
+            throw new ItemNotFoundException($"Product orders from store id '{storeId}' could not be found!");
+        }
+        return result;
+    }
 
     public StockItem QueryStockItem(long storeId, long barcode, DatabaseContext dbc)
     {
