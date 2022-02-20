@@ -8,7 +8,8 @@ import {ProductSupplierStockItemDTO} from '../../classes/ProductSupplierStockIte
 import {StoreService} from '../../services/store/store.service';
 import {LowStockItemDTODataSource} from './low-stock-table-datasource';
 import {OrderAmountDialogComponent} from '../order-amount-dialog/order-amount-dialog.component';
-import {OrderProductDTO} from '../../classes/OrderProductDTO'
+import {OrderRequest, OrderProductDTO, OrderRequestDTO} from '../../classes/OrderProductDTO'
+import { ProductSupplierDTO } from 'src/app/classes/ProductSupplierDTO';
 
 @Component({
   selector: 'app-low-stock-table',
@@ -37,9 +38,25 @@ export class LowStockTableComponent implements AfterViewInit {
 
   onOrderProductClick() {
 
-    const productsToOrder = this.dataSource.data.filter(row => row.orderAmount && row.orderAmount >= 1)
+    const productsToOrder = this.dataSource.data
+    .filter((row) => row.orderAmount && row.orderAmount >= 1)
+    .map((row) => {
+      return new OrderRequestDTO(
+        new ProductSupplierDTO (
+          row.productId,
+          row.barcode,
+          row.purchasePrice,
+          row.productName,
+          row.supplierId,
+          row.supplierName
+        ),
+        row.orderAmount!!
+      );
+    });
+  
+    let request = new OrderRequest(productsToOrder);
 
-    this.storeService.orderProducts(productsToOrder).subscribe(data => {
+    this.storeService.orderProducts(request).subscribe(data => {
       console.log(data);
     }, error => {
       console.log(error);
