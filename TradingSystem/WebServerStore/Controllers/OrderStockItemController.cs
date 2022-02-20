@@ -20,8 +20,7 @@ namespace WebServerStore.Controllers
         [HttpPost]
         public IActionResult Post(ProductOrderDTO productOrder)
         {
-            _logger.LogInformation("Hello");
-            
+            _logger.LogInformation("Please");
             _storeApp.OrderProducts(productOrder);
             return Ok();
         }

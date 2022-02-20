@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {ProductSupplierStockItemDTO} from "../../classes/ProductSupplierStockItemDTO";
 import {Observable} from "rxjs";
 import { ProductStockItemDTO } from '../../classes/ProductStockItemDTO';
-import { OrderProductDTO } from 'src/app/classes/OrderProductDTO';
+import { OrderRequest } from 'src/app/classes/OrderProductDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +32,7 @@ export class StoreService {
       }]);
   }
 
-  orderProducts(orderProducts: OrderProductDTO[]): Observable<any> {
+  orderProducts(orderProducts: OrderRequest): Observable<any> {
     return this.http.post('OrderStockItem', orderProducts);
   }
 }
