@@ -33,7 +33,7 @@ export class StoreService {
   }
 
   orderProducts(orderProducts: OrderRequest): Observable<any> {
-    return this.http.post('OrderStockItem', orderProducts);
+    return this.http.post('orderstockitem', orderProducts);
   }
 }
 
