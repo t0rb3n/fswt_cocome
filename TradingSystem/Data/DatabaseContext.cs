@@ -18,13 +18,21 @@ public sealed class DatabaseContext : DbContext
     public DbSet<ProductSupplier> ProductSuppliers { get; set; } = null!;
     public DbSet<Product> Products { get; set; } = null!;
 
+    //host=localhost;database=tradingsystem;username=dummy;password=dummy123
+    private string _connectingString;
+
     /// <summary>
     /// This constructor initializes the new DatabaseContext and checks the availability of the database.
     /// </summary>
     /// <exception cref="DatabaseNotAvailableException">If the database is not available.</exception>
-    public DatabaseContext()
+    public DatabaseContext(): 
+        this("host=ec2-54-155-194-191.eu-west-1.compute.amazonaws.com;database=d6v10jgjrtfjnt;username=mhxaavrkfwmegj;password=fc1cc9bdc3a621aa753d50896e87f00d2420354242cbd92b20331bf6cc1e16a4") 
+    {}
+    
+    public DatabaseContext(string connectingString)
     {
-        // Checks if the database is available.
+        _connectingString = connectingString;
+        
         if (!Database.CanConnect())
         {
             throw new DatabaseNotAvailableException(
@@ -38,8 +46,7 @@ public sealed class DatabaseContext : DbContext
     {
         // Sets connection to the database.
         optionsBuilder
-            .UseNpgsql("host=ec2-54-155-194-191.eu-west-1.compute.amazonaws.com;database=d6v10jgjrtfjnt;username=mhxaavrkfwmegj;password=fc1cc9bdc3a621aa753d50896e87f00d2420354242cbd92b20331bf6cc1e16a4")
-            //.UseNpgsql("host=localhost;database=tradingsystem;username=dummy;password=dummy123")
+            .UseNpgsql(_connectingString)
             .UseSnakeCaseNamingConvention();
     }
 }
