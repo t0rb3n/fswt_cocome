@@ -37,6 +37,11 @@ public class StoreQuery : IStoreQuery
                 .Include(item => item.Product.ProductSupplier)
                 .Select(item => item.Product)
                 .ToList();
+
+            if (result.Count == 0)
+            {
+                throw new ItemNotFoundException($"Products from store id '{storeId}' could not be found!");
+            }
         }
         catch (ArgumentNullException)
         {
@@ -53,6 +58,11 @@ public class StoreQuery : IStoreQuery
             result = dbc
                 .Products
                 .Find(productId)!;
+
+            if (result == null)
+            {
+                throw new ItemNotFoundException($"Product with id '{productId}' could not be found!");
+            }
         }
         catch (ArgumentNullException)
         {
@@ -71,6 +81,11 @@ public class StoreQuery : IStoreQuery
                 .Where(item => item.Store.Id == storeId && item.Amount < item.MinStock)
                 .Include(item => item.Product)
                 .ToList();
+
+            if (result.Count == 0)
+            {
+                throw new ItemNotFoundException($"Stock items from store id '{storeId}' could not be found!");
+            }
         }
         catch (ArgumentNullException)
         {
@@ -88,6 +103,11 @@ public class StoreQuery : IStoreQuery
                        .StockItems
                        .Where(item => item.Store.Id == storeId)
                        .ToList();
+            
+            if (result.Count == 0)
+            {
+                throw new ItemNotFoundException($"Stock items from store id '{storeId}' could not be found!");
+            }
         }
         catch (ArgumentNullException)
         {
@@ -107,6 +127,11 @@ public class StoreQuery : IStoreQuery
                 .Include(item => item.Product)
                 .ThenInclude(product => product.ProductSupplier)
                 .ToList();
+            
+            if (result.Count == 0)
+            {
+                throw new ItemNotFoundException($"Product stock items from store id '{storeId}' could not be found!");
+            }
         }
         catch (ArgumentNullException)
         {
@@ -130,6 +155,11 @@ public class StoreQuery : IStoreQuery
         {
             throw new ItemNotFoundException($"Product order with id '{orderId}' could not be found!");
         }
+        catch (InvalidOperationException)
+        {
+            throw new ItemNotFoundException($"Product order with id '{orderId}' could not be found!");
+        }
+        
         return result;
     }
     
@@ -144,6 +174,11 @@ public class StoreQuery : IStoreQuery
                 .ThenInclude(entry => entry.Product)
                 .ThenInclude(product => product.ProductSupplier)
                 .ToList();
+            
+            if (result.Count == 0)
+            {
+                throw new ItemNotFoundException($"Product orders from store id '{storeId}' could not be found!");
+            }
         }
         catch (ArgumentNullException)
         {
@@ -166,6 +201,11 @@ public class StoreQuery : IStoreQuery
         {
             throw new ItemNotFoundException($"Stock item with barcode '{barcode}' could not be found!");
         }
+        catch (InvalidOperationException)
+        {
+            throw new ItemNotFoundException($"Stock item with barcode '{barcode}' could not be found!");
+        }
+        
         return result;
     }
 
@@ -174,16 +214,27 @@ public class StoreQuery : IStoreQuery
         List<StockItem> result;
         try
         {
+            if (productIds.Length == 0)
+            {
+                throw new ArgumentNullException();
+            }
+            
             result = dbc
                 .StockItems
                 .Where(item => item.Store.Id == storeId && productIds.Contains(item.Product.Id))
                 .Include(item => item.Product)
                 .ToList();
+
+            if (result.Count != productIds.Length)
+            {
+                throw new ItemNotFoundException("One or more stock items in the product list could not be found!");
+            }
         }
         catch (ArgumentNullException)
         {
-            throw new ItemNotFoundException($"Stock items with barcode list could not be found!");
+            throw new ItemNotFoundException("Stock items could not be found because the productIds array was empty!");
         }
+        
         return result;
     }
 
@@ -201,6 +252,11 @@ public class StoreQuery : IStoreQuery
         {
             throw new ItemNotFoundException($"Stock item with id '{stockId}' could not be found!");
         }
+        catch (InvalidOperationException)
+        {
+            throw new ItemNotFoundException($"Stock item with id '{stockId}' could not be found!");
+        }
+        
         return result;
     }
 }

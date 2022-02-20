@@ -18,6 +18,11 @@ public class EnterpriseQuery : IEnterpriseQuery
             result = dbc
                 .Enterprises
                 .Find(enterpriseId)!;
+            
+            if (result == null)
+            {
+                throw new ItemNotFoundException($"Enterprise with the id '{enterpriseId}' could not be found!");
+            }
         }
         catch (ArgumentNullException)
         {
@@ -36,6 +41,11 @@ public class EnterpriseQuery : IEnterpriseQuery
                 .Stores
                 .Where(store => store.Enterprise.Id == enterpriseId)
                 .ToList();
+            
+            if (result.Count == 0)
+            {
+                throw new ItemNotFoundException($"Stores from enterprise id '{enterpriseId}' could not be found!");
+            }
         }
         catch (ArgumentNullException)
         {
@@ -57,6 +67,11 @@ public class EnterpriseQuery : IEnterpriseQuery
             dbc.Entry(result)
                 .Collection(enterprise => enterprise.ProductSuppliers)
                 .Load();
+            
+            if (result.ProductSuppliers.Count == 0)
+            {
+                throw new ItemNotFoundException($"Product suppliers from enterprise id '{enterpriseId}' could not be found!");
+            }
         }
         catch (ArgumentNullException)
         {
@@ -80,6 +95,11 @@ public class EnterpriseQuery : IEnterpriseQuery
                         e.Product.ProductSupplier.Id == productSupplier.Id)
                     && order.Store.Enterprise.Id == enterprise.Id)
                 .ToList();
+
+            if (result.Count == 0)
+            {
+                throw new ItemNotFoundException($"The average time could not be calculated because an item was not found by the query!");
+            }
             
             foreach (var order in result) meanTime += order.DeliveryDate.Ticks - order.OrderingDate.Ticks;
             
