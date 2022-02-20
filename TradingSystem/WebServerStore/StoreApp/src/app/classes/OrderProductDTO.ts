@@ -13,7 +13,7 @@ export class OrderProductDTO extends ProductSupplierStockItemDTO{
 
 export class OrderRequest {
     orders: OrderRequestDTO[];
-    
+
     constructor(orders : OrderRequestDTO[]){
         this.orders = orders;
     }
