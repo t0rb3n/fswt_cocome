@@ -31,27 +31,6 @@ public interface IEnterpriseApplication
     public IList<ProductSupplierDTO> GetEnterpriseProductSupplier();
     
     /// <summary>
-    /// Generates report of available stocks in the specified store.
-    /// </summary>
-    /// <param name="store">The store for which report should be generated.</param>
-    /// <returns>A <see cref="ReportDTO"/> containing stock information.</returns>
-    public ReportDTO GetStockReport(Data.Store.Store store);
-    
-    /// <summary>
-    /// Generates report of cumulated available stocks of specified enterprise.
-    /// </summary>
-    /// <param name="enterprise">The enterprise for which the report should be generated.</param>
-    /// <returns>A <see cref="ReportDTO"/> containing cumulated stock information.</returns>
-    public ReportDTO GetStockReport(Data.Enterprise.Enterprise enterprise);
-    
-    /// <summary>
-    /// Reports the mean time to delivery for each supplier of the specified enterprise.
-    /// </summary>
-    /// <param name="enterprise">the enterprise for which the report should be generated.</param>
-    /// <returns>A <see cref="ReportDTO"/> containing mean time to delivery information.</returns>
-    public ReportDTO GetMeanTimeToDeliveryReport(Data.Enterprise.Enterprise enterprise);
-    
-    /// <summary>
     /// Gets information of a specified store.
     /// </summary>
     /// <param name="storeId">The id of the specified store.</param>

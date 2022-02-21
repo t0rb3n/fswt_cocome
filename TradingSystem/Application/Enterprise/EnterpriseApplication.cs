@@ -8,7 +8,10 @@ using Data.Store;
 
 namespace Application.Enterprise;
 
-public class EnterpriseApplication : IEnterpriseApplication
+/// <summary>
+/// Class <c>EnterpriseApplication</c> implemented the interfaces of IEnterpriseApplication and IReporting.
+/// </summary>
+public class EnterpriseApplication : IEnterpriseApplication, IReporting
 {
     private readonly IStoreQuery _storeQuery = IDataFactory.GetInstance().GetStoreQuery();
     private readonly IEnterpriseQuery _enterpriseQuery = IDataFactory.GetInstance().GetEnterpriseQuery();
@@ -94,19 +97,75 @@ public class EnterpriseApplication : IEnterpriseApplication
         return result;
     }
 
-    public ReportDTO GetStockReport(Data.Store.Store store)
+    public StoreStockReportDTO GetStoreStockReport(long storeId)
     {
-        throw new NotImplementedException();
+        StoreStockReportDTO result;
+
+        using var dbc = new DatabaseContext();
+        using var transaction = dbc.Database.BeginTransaction();
+
+        try
+        {
+            // Makes the query to the database.
+            var store = _storeQuery.QueryStoreById(storeId, dbc);
+            var stockitems = _storeQuery.QueryAllProductSupplierStockItems(storeId, dbc);
+
+            result = new StoreStockReportDTO
+            {
+                StoreId = store.Id,
+                StoreName = store.Name,
+                Location = store.Location
+            };
+            // Converts Entity object to DTO object and adds to the result stockItem list.
+            result.StockItems.AddRange(stockitems.Select(EntryObject.ToProductStockItemDTO));
+        }
+        catch (ItemNotFoundException e)
+        {
+            Console.WriteLine(e);
+            throw new EnterpriseException(
+                "An unexpected error occurred while creating the store stock report!");
+        }
+
+        return result;
     }
 
-    public ReportDTO GetStockReport(Data.Enterprise.Enterprise enterprise)
+    public EnterpriseStockReportDTO GetEnterpriseStockReport(long enterpriseId)
     {
-        throw new NotImplementedException();
+        EnterpriseStockReportDTO result;
+
+        using var dbc = new DatabaseContext();
+        using var transaction = dbc.Database.BeginTransaction();
+
+        try
+        {
+            // Makes the query to the database.
+            var enterprise = _enterpriseQuery.QueryEnterpriseById(enterpriseId, dbc);
+            var stores =  _enterpriseQuery.QueryStores(enterpriseId, dbc);
+
+            result = new EnterpriseStockReportDTO
+            {
+                EnterpriseId = enterprise.Id,
+                EnterpriseName = enterprise.Name
+            };
+            // Creates a report for each store and add it to the StoreReport list.
+            foreach (var store in stores)
+            {
+                result.StoreReports.Add(GetStoreStockReport(store.Id));
+            }
+        }
+        catch (ItemNotFoundException e)
+        {
+            Console.WriteLine(e);
+            throw new EnterpriseException(
+                "An unexpected error occurred while creating the enterprise stock report!");
+        }
+
+        return result;
     }
 
-    public ReportDTO GetMeanTimeToDeliveryReport(Data.Enterprise.Enterprise enterprise)
+    public IList<SupplierMeanTimeReportDTO> GetMeanTimeToDeliveryReport(long enterpriseId)
     {
-        ReportDTO result = new();
+        var result = new List<SupplierMeanTimeReportDTO>();
         
         using var dbc = new DatabaseContext();
         using var transaction = dbc.Database.BeginTransaction();
@@ -117,10 +176,15 @@ public class EnterpriseApplication : IEnterpriseApplication
             var query = _enterpriseQuery.QueryProductSuppliers(_enterpriseId, dbc);
             // Determines for each supplier the  average time for its deliveries.
             foreach (var supplier in query)
-            { 
-                // Makes the query to the database.
-               var mean = _enterpriseQuery.QueryMeanTimeToDelivery(supplier, enterprise, dbc);
-               result.ReportText += $"Supplier: {supplier.Name} = {TimeSpan.FromTicks(mean)} ms\n";
+            {
+               // Makes the query to the database.
+               var mean = _enterpriseQuery.QueryMeanTimeToDelivery(supplier.Id, enterpriseId, dbc);
+               result.Add(new SupplierMeanTimeReportDTO
+               {
+                   SupplierId = supplier.Id,
+                   SupplierName = supplier.Name,
+                   MeanTime = TimeSpan.FromTicks(mean)
+               });
             }
 
             transaction.Commit();
@@ -129,7 +193,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         {
             Console.WriteLine(e);
             throw new EnterpriseException(
-                "An unexpected error occurred while calculating the average delivery time!");
+                "An unexpected error occurred while calculating the mean delivery time of a supplier!");
         }
 
         return result;
@@ -167,7 +231,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             // Makes the query to the database.
-            var query = _storeQuery.QueryLowStockItems(storeId, dbc);
+            var query = _storeQuery.QueryLowProductSupplierStockItems(storeId, dbc);
             // Converts Entity object to DTO object and adds to the result list.
             result.AddRange(query.Select(EntryObject.ToProductSupplierStockItemDTO));
             transaction.Commit();
@@ -191,7 +255,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             // Makes the query to the database.
-            var query = _storeQuery.QueryProducts(storeId, dbc);
+            var query = _storeQuery.QueryProductSuppliers(storeId, dbc);
             // Converts Entity object to DTO object and adds to the result list.
             result.AddRange(query.Select(EntryObject.ToProductSupplierDTO));
             transaction.Commit();
@@ -215,7 +279,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             // Makes the query to the database.
-            var query = _storeQuery.QueryAllProductStockItems(storeId, dbc);
+            var query = _storeQuery.QueryAllProductSupplierStockItems(storeId, dbc);
             // Converts Entity object to DTO object and adds to the result list.
             result.AddRange(query.Select(EntryObject.ToProductSupplierStockItemDTO));
             transaction.Commit();
@@ -281,7 +345,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             // Makes the query to the database.
-            var query = _storeQuery.QueryOrderById(productOrderId, dbc);
+            var query = _storeQuery.QueryProductOrderById(productOrderId, dbc);
             // Converts Entity object to DTO object.
             result = EntryObject.ToProductOrderDTO(query);
             transaction.Commit();
@@ -304,7 +368,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             // Makes the query to the database.
-            var query = _storeQuery.QueryAllOrders(storeId, dbc);
+            var query = _storeQuery.QueryAllProductOrders(storeId, dbc);
             // Converts Entity object to DTO object and adds to the result list.
             result.AddRange(query.Select(EntryObject.ToProductOrderDTO));
             transaction.Commit();
@@ -325,7 +389,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             // Makes the query to the database.
-            var result = _storeQuery.QueryOrderById(productOrder.ProductOrderId, dbc);
+            var result = _storeQuery.QueryProductOrderById(productOrder.ProductOrderId, dbc);
 
             // Checks if the product order has not been processed yet.
             if (result.DeliveryDate != DateTime.MinValue)
@@ -346,7 +410,7 @@ public class EnterpriseApplication : IEnterpriseApplication
             foreach (var oe in result.OrderEntries)
             {
                 // Makes the query to the database.
-                var item = _storeQuery.QueryStockItem(storeId, oe.Product.Barcode, dbc);
+                var item = _storeQuery.QueryProductStockItem(storeId, oe.Product.Barcode, dbc);
                 item.Amount += oe.Amount;
             }
             
@@ -368,7 +432,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             // Makes the query to the database.
-            var result = _storeQuery.QueryStockItemById(stockItemId, dbc);
+            var result = _storeQuery.QueryProductStockItemById(stockItemId, dbc);
             // Changes the sale price of the stock item.
             result.SalesPrice = newPrice;
             // Commits the new sale price to the database.
@@ -392,7 +456,7 @@ public class EnterpriseApplication : IEnterpriseApplication
             foreach (var product in saleDto.Products)
             {
                 // Makes the query to the database.
-                var query = _storeQuery.QueryStockItemById(product.StockItem.ItemId, dbc);
+                var query = _storeQuery.QueryProductStockItemById(product.StockItem.ItemId, dbc);
                 // TODO: What should happen if a stock item is no longer available?
                 // Withdraws the sold stock items in the store's warehouse as long as the stock is not at 0.
                 if (query.Amount > 0) query.Amount -= 1;
@@ -418,7 +482,7 @@ public class EnterpriseApplication : IEnterpriseApplication
         try
         {
             // Makes the query to the database.
-            var query = _storeQuery.QueryStockItem(storeId, productBarcode, dbc);
+            var query = _storeQuery.QueryProductStockItem(storeId, productBarcode, dbc);
             // Converts Entity object to DTO object.
             result = EntryObject.ToProductStockItemDTO(query);
             transaction.Commit();
