@@ -37,10 +37,10 @@ public interface IEnterpriseQuery
     /// <summary>
     /// Queries the mean time required by a supplier in this enterprise.
     /// </summary>
-    /// <param name="productSupplier">The supplier which delivers the products</param>
-    /// <param name="enterprise">The enterprise for which the products are delivered</param>
+    /// <param name="productSupplierId">The supplier id which delivers the products</param>
+    /// <param name="enterpriseId">The enterprise id for which the products are delivered</param>
     /// <param name="dbc">A database context to query.</param>
-    /// <returns>The mean time to delivery in milliseconds</returns>
-    /// <exception cref="ItemNotFoundException"></exception>
-    public long QueryMeanTimeToDelivery(ProductSupplier productSupplier, Enterprise enterprise, DatabaseContext dbc);
+    /// <returns>The mean time in milliseconds or 0 if the supplier has not yet delivered.</returns>
+    /// <exception cref="ItemNotFoundException">If no supplier or enterprise was found or by the query.</exception>
+    public long QueryMeanTimeToDelivery(long productSupplierId, long enterpriseId, DatabaseContext dbc);
 }
