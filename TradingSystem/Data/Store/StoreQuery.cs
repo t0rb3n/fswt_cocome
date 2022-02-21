@@ -26,7 +26,7 @@ public class StoreQuery : IStoreQuery
         return result;
     }
 
-    public IList<Product> QueryProducts(long storeId, DatabaseContext dbc)
+    public IList<Product> QueryProductSuppliers(long storeId, DatabaseContext dbc)
     {
         List<Product> result;
         try
@@ -71,7 +71,7 @@ public class StoreQuery : IStoreQuery
         return result;
     }
 
-    public IList<StockItem> QueryLowStockItems(long storeId, DatabaseContext dbc)
+    public IList<StockItem> QueryLowProductSupplierStockItems(long storeId, DatabaseContext dbc)
     {
         List<StockItem> result;
         try
@@ -95,7 +95,7 @@ public class StoreQuery : IStoreQuery
         return result;
     }
 
-    public IList<StockItem> QueryAllStockItems(long storeId, DatabaseContext dbc)
+    public IList<StockItem> QueryAllProductStockItems(long storeId, DatabaseContext dbc)
     {
         List<StockItem> result;
         try
@@ -103,6 +103,7 @@ public class StoreQuery : IStoreQuery
             result = dbc
                        .StockItems
                        .Where(item => item.Store.Id == storeId)
+                       .Include(item => item.Product)
                        .ToList();
             
             if (result.Count == 0)
@@ -117,7 +118,7 @@ public class StoreQuery : IStoreQuery
         return result;
     }
     
-    public IList<StockItem> QueryAllProductStockItems(long storeId, DatabaseContext dbc)
+    public IList<StockItem> QueryAllProductSupplierStockItems(long storeId, DatabaseContext dbc)
     {
         List<StockItem> result;
         try
@@ -141,7 +142,7 @@ public class StoreQuery : IStoreQuery
         return result;
     }
 
-    public ProductOrder QueryOrderById(long orderId, DatabaseContext dbc)
+    public ProductOrder QueryProductOrderById(long orderId, DatabaseContext dbc)
     {
         ProductOrder result;
         try
@@ -164,7 +165,7 @@ public class StoreQuery : IStoreQuery
         return result;
     }
     
-    public IList<ProductOrder> QueryAllOrders(long storeId, DatabaseContext dbc)
+    public IList<ProductOrder> QueryAllProductOrders(long storeId, DatabaseContext dbc)
     {
         List<ProductOrder> result;
         try
@@ -188,7 +189,7 @@ public class StoreQuery : IStoreQuery
         return result;
     }
 
-    public StockItem QueryStockItem(long storeId, long barcode, DatabaseContext dbc)
+    public StockItem QueryProductStockItem(long storeId, long barcode, DatabaseContext dbc)
     {
         StockItem result;
         try
@@ -210,7 +211,7 @@ public class StoreQuery : IStoreQuery
         return result;
     }
 
-    public IList<StockItem> QueryStockItems(long storeId, long[] productIds, DatabaseContext dbc)
+    public IList<StockItem> QueryProductStockItems(long storeId, long[] productIds, DatabaseContext dbc)
     {
         List<StockItem> result;
         try
@@ -239,7 +240,7 @@ public class StoreQuery : IStoreQuery
         return result;
     }
 
-    public StockItem QueryStockItemById(long stockId, DatabaseContext dbc)
+    public StockItem QueryProductStockItemById(long stockId, DatabaseContext dbc)
     {
         StockItem result;
         try

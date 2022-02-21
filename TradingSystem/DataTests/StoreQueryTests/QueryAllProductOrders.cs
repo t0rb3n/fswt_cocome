@@ -6,12 +6,12 @@ using Xunit;
 namespace DataTests.StoreQueryTests;
 
 [Collection("DataTestCollection")]
-public class QueryAllOrders
+public class QueryAllProductOrders
 {
     private readonly DatabaseFixture _fixture;
     private readonly IStoreQuery _storeQuery;
 
-    public QueryAllOrders(DatabaseFixture fixture)
+    public QueryAllProductOrders(DatabaseFixture fixture)
     {
         _fixture = fixture;
         _storeQuery = new StoreQuery();
@@ -21,7 +21,7 @@ public class QueryAllOrders
     public void Found_All_Orders()
     {
         const long storeId = 1;
-        var result = _storeQuery.QueryAllOrders(storeId, _fixture.Context);
+        var result = _storeQuery.QueryAllProductOrders(storeId, _fixture.Context);
         Assert.Equal(2, result.Count);
         
         // ProductOrder with Id 1
@@ -49,7 +49,7 @@ public class QueryAllOrders
     public void Found_No_Orders()
     {
         const long storeId = 3;
-        var action = () => _storeQuery.QueryAllOrders(storeId, _fixture.Context);
+        var action = () => _storeQuery.QueryAllProductOrders(storeId, _fixture.Context);
         var exception = Assert.Throws<ItemNotFoundException>(action);
         Assert.Equal($"Product orders from store id '{storeId}' could not be found!", exception.Message);
     }

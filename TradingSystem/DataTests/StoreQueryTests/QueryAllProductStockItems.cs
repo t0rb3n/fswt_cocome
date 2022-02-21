@@ -17,10 +17,9 @@ public class QueryAllProductStockItems
     }
     
     [Fact]
-    public void Found_All_Product_StockItems()
+    public void Found_All_StockItems()
     {
-        const long storeId = 1;
-        var result = _storeQuery.QueryAllProductStockItems(storeId, _fixture.Context);
+        var result = _storeQuery.QueryAllProductStockItems(1, _fixture.Context);
         Assert.Equal(5, result.Count);
         Assert.Collection(result,
             item => Assert.Equal(1, item.Id), 
@@ -29,24 +28,13 @@ public class QueryAllProductStockItems
             item => Assert.Equal(4, item.Id),
             item => Assert.Equal(5, item.Id)
         );
-        Assert.Collection(result,
-            item => Assert.Equal(1, item.Product.Id), 
-            item => Assert.Equal(2, item.Product.Id), 
-            item => Assert.Equal(3, item.Product.Id),
-            item => Assert.Equal(4, item.Product.Id),
-            item => Assert.Equal(5, item.Product.Id)
-        );
-        Assert.Contains(result, item => item.Product.ProductSupplier.Name == "Schegel");
-        Assert.Contains(result, item => item.Product.ProductSupplier.Name == "Kaufmann");
     }
     
     [Fact]
-    public void Found_No_Product_StockItems()
+    public void Found_No_StockItems()
     {
-        const long storeId = 23;
-        var action = () => _storeQuery.QueryAllProductStockItems(storeId, _fixture.Context);
+        var action = () => _storeQuery.QueryLowProductSupplierStockItems(3, _fixture.Context);
         var exception = Assert.Throws<ItemNotFoundException>(action);
-        Assert.Equal($"Product stock items from store id '{storeId}' could not be found!", 
-            exception.Message);
+        Assert.Equal("Stock items from store id '3' could not be found!", exception.Message);
     }
 }

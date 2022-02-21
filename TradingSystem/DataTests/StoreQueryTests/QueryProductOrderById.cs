@@ -6,12 +6,12 @@ using Xunit;
 namespace DataTests.StoreQueryTests;
 
 [Collection("DataTestCollection")]
-public class QueryOrderById
+public class QueryProductOrderById
 {
     private readonly DatabaseFixture _fixture;
     private readonly IStoreQuery _storeQuery;
 
-    public QueryOrderById(DatabaseFixture fixture)
+    public QueryProductOrderById(DatabaseFixture fixture)
     {
         _fixture = fixture;
         _storeQuery = new StoreQuery();
@@ -21,7 +21,7 @@ public class QueryOrderById
     public void Found_Order_By_Id_01()
     {
         const long orderId = 1;
-        var result = _storeQuery.QueryOrderById(orderId, _fixture.Context);
+        var result = _storeQuery.QueryProductOrderById(orderId, _fixture.Context);
         Assert.Equal(orderId, result.Id);
         Assert.Equal(DateTime.Parse("17/02/2022 12:15:45").ToUniversalTime(), result.OrderingDate);
         Assert.Equal(DateTime.Parse("19/02/2022 8:15:32").ToUniversalTime(), result.DeliveryDate);
@@ -36,7 +36,7 @@ public class QueryOrderById
     public void Found_Order_By_Id_02()
     {
         const long orderId = 2;
-        var result = _storeQuery.QueryOrderById(orderId, _fixture.Context);
+        var result = _storeQuery.QueryProductOrderById(orderId, _fixture.Context);
         Assert.Equal(orderId, result.Id);
         Assert.Equal(DateTime.Parse("17/02/2022 12:15:45").ToUniversalTime(), result.OrderingDate);
         Assert.Equal(DateTime.MinValue, result.DeliveryDate);
@@ -51,7 +51,7 @@ public class QueryOrderById
     public void Found_No_Order_By_Id()
     {
         const long orderId = 23;
-        var action = () => _storeQuery.QueryOrderById(orderId, _fixture.Context);
+        var action = () => _storeQuery.QueryProductOrderById(orderId, _fixture.Context);
         var exception = Assert.Throws<ItemNotFoundException>(action);
         Assert.Equal($"Product order with id '{orderId}' could not be found!", exception.Message);
     }

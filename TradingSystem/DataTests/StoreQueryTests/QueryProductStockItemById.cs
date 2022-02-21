@@ -5,12 +5,12 @@ using Xunit;
 namespace DataTests.StoreQueryTests;
 
 [Collection("DataTestCollection")]
-public class QueryStockItemById
+public class QueryProductStockItemById
 {
     private readonly DatabaseFixture _fixture;
     private readonly IStoreQuery _storeQuery;
 
-    public QueryStockItemById(DatabaseFixture fixture)
+    public QueryProductStockItemById(DatabaseFixture fixture)
     {
         _fixture = fixture;
         _storeQuery = new StoreQuery();
@@ -20,7 +20,7 @@ public class QueryStockItemById
     public void Found_StockItem_By_Id()
     {
         const long stockItemId = 1;
-        var result = _storeQuery.QueryStockItemById(stockItemId, _fixture.Context);
+        var result = _storeQuery.QueryProductStockItemById(stockItemId, _fixture.Context);
         Assert.Equal(1, result.Id);
         Assert.Equal(2.25, result.SalesPrice);
         Assert.Equal(1, result.Product.Id);
@@ -32,7 +32,7 @@ public class QueryStockItemById
     public void Found_No_StockItem_By_Id()
     {
         const long stockItemId = 0;
-        var action = () => _storeQuery.QueryStockItemById(stockItemId, _fixture.Context);
+        var action = () => _storeQuery.QueryProductStockItemById(stockItemId, _fixture.Context);
         var exception = Assert.Throws<ItemNotFoundException>(action);
         Assert.Equal($"Stock item with id '{stockItemId}' could not be found!", exception.Message);
     }

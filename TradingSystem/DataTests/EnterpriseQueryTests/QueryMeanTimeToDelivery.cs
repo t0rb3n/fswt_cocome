@@ -18,59 +18,47 @@ public class QueryMeanTimeToDelivery
     }
 
     [Fact]
-    public void Mean_Time_Success()
+    public void Mean_Time_Success_01()
     {
+        const long enterpriseId = 1;
+        const long supplierId = 1;
         const long excepted = 1583870000000;
-        var enterprise = new Enterprise
-        {
-            Id = 1,
-            Name = "CocomeSystem GmbH & Co. KG"
-        };
-        var supplier = new ProductSupplier
-        {
-            Id = 1,
-            Name = "Schegel"
-        };
-        var result = _enterpriseQuery.QueryMeanTimeToDelivery(supplier, enterprise, _fixture.Context);
+        
+        var result = _enterpriseQuery.QueryMeanTimeToDelivery(supplierId, enterpriseId, _fixture.Context);
+        Assert.Equal(excepted, result);
+    }
+    
+    [Fact]
+    public void Mean_Time_Success_02()
+    {
+        const long enterpriseId = 1;
+        const long supplierId = 2;
+        const long excepted = 0;
+        
+        var result = _enterpriseQuery.QueryMeanTimeToDelivery(supplierId, enterpriseId, _fixture.Context);
         Assert.Equal(excepted, result);
     }
     
     [Fact]
     public void Mean_Time_No_Success_01()
     {
-        var enterprise = new Enterprise
-        {
-            Id = 1,
-            Name = "CocomeSystem GmbH & Co. KG"
-        };
-        var supplier = new ProductSupplier
-        {
-            Id = 2,
-            Name = "Kaufmann"
-        };
+        const long enterpriseId = 1;
+        const long supplierId = 23;
         
-        Action action = () => _enterpriseQuery.QueryMeanTimeToDelivery(supplier, enterprise, _fixture.Context);
+        Action action = () => _enterpriseQuery.QueryMeanTimeToDelivery(supplierId, enterpriseId, _fixture.Context);
         var exception = Assert.Throws<ItemNotFoundException>(action);
-        Assert.Equal($"The average time could not be calculated because an item was not found by the query!",
+        Assert.Equal($"Suppliers with the id '{supplierId}' could not be found!",
             exception.Message);
     }
+    
     [Fact]
     public void Mean_Time_No_Success_02()
     {
-        var enterprise = new Enterprise
-        {
-            Id = 23,
-            Name = "No Enterprise System"
-        };
-        var supplier = new ProductSupplier
-        {
-            Id = 2,
-            Name = "Kaufmann"
-        };
-        
-        Action action = () => _enterpriseQuery.QueryMeanTimeToDelivery(supplier, enterprise, _fixture.Context);
+        const long enterpriseId = 23;
+        const long supplierId = 2;
+
+        Action action = () => _enterpriseQuery.QueryMeanTimeToDelivery(supplierId, enterpriseId, _fixture.Context);
         var exception = Assert.Throws<ItemNotFoundException>(action);
-        Assert.Equal($"The average time could not be calculated because an item was not found by the query!",
-            exception.Message);
+        Assert.Equal($"Enterprise with the id '{enterpriseId}' could not be found!", exception.Message);
     }
 }
