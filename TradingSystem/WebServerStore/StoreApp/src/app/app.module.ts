@@ -28,6 +28,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { LowStockTableComponent } from './component/low-stock-table/low-stock-table.component';
 import { OrderAmountDialogComponent } from './component/order-amount-dialog/order-amount-dialog.component';
+import { ReceiveOrderedProductsComponent } from './component/receive-ordered-products/receive-ordered-products.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { OrderAmountDialogComponent } from './component/order-amount-dialog/orde
     ChangePriceDialogComponent,
     LowStockTableComponent,
     OrderAmountDialogComponent,
+    ReceiveOrderedProductsComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -49,6 +51,7 @@ import { OrderAmountDialogComponent } from './component/order-amount-dialog/orde
       {path: 'counter', component: CounterComponent, data: {title: 'Counter'}},
       { path: 'products', component: ProducttableComponent, data: { title: 'Products in stock' } },
       { path: 'low-stock-items', component: LowStockTableComponent, data: { title: 'Products running out of stock' } },
+      { path: 'receive-ordered-products', component: ReceiveOrderedProductsComponent, data: { title: 'Receive ordered products' } },
     ]),
     NgbModule,
     BrowserAnimationsModule,

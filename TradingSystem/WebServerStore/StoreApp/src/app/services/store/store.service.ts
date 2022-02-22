@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {ProductSupplierStockItemDTO} from "../../classes/ProductSupplierStockItemDTO";
 import {Observable} from "rxjs";
 import { OrderRequest } from 'src/app/classes/OrderProductDTO';
+import { ProductOrderDTO } from 'src/app/classes/ProductOrderDTO';
 
 
 @Injectable({
@@ -32,8 +33,13 @@ export class StoreService {
       }]);
   }
 
+  //ToDo: change any to appropriate type
   orderProducts(orderProducts: OrderRequest): Observable<any> {
     return this.http.post('orderstockitem', orderProducts);
+  }
+
+  getAllOrders(): Observable<ProductOrderDTO[]>{
+    return this.http.get<ProductOrderDTO[]>('receiveorders');
   }
 }
 
