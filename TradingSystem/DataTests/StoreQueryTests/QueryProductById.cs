@@ -23,14 +23,14 @@ public class QueryProductById
         var result = _storeQuery.QueryProductById(productId, _fixture.Context);
         Assert.Equal(productId, result.Id);
         Assert.Equal(10000000, result.Barcode);
-        Assert.Equal("Feldsalat", result.Name);
-        Assert.Equal(1.5, result.PurchasePrice);
+        Assert.Equal("Funny-frisch Chipsfrisch", result.Name);
+        Assert.Equal(23.15, result.PurchasePrice);
     }
     
     [Fact]
     public void Found_No_Product_By_Id()
     {
-        const long productId = 23;
+        const long productId = -23;
         var action = () => _storeQuery.QueryProductById(productId, _fixture.Context);
         var exception = Assert.Throws<ItemNotFoundException>(action);
         Assert.Equal($"Product with id '{productId}' could not be found!", exception.Message);

@@ -21,11 +21,7 @@ public class QueryProductSuppliers
     {
         const long enterpriseId = 1;
         var result = _enterpriseQuery.QueryProductSuppliers(enterpriseId, _fixture.Context);
-        Assert.Equal(2,result.Count);
-        Assert.Collection(result,
-            supplier => Assert.Equal(1, supplier.Id),
-            supplier => Assert.Equal(2, supplier.Id) 
-        );
+        Assert.Equal(6,result.Count);
     }
     
     [Fact]

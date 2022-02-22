@@ -21,10 +21,11 @@ public class QueryStores
     {
         const long enterpriseId = 1;
         var result = _enterpriseQuery.QueryStores(enterpriseId, _fixture.Context);
-        Assert.Equal(2,result.Count);
+        Assert.Equal(3,result.Count);
         Assert.Collection(result,
             store => Assert.Equal(1, store.Id),
-            store => Assert.Equal(2, store.Id) 
+            store => Assert.Equal(2, store.Id),
+            store => Assert.Equal(3, store.Id) 
         );
     }
     

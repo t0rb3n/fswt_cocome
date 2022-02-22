@@ -20,10 +20,10 @@ public class QueryProductStockItem
     public void Found_StockItem()
     {
         const long storeId = 1;
-        const long barcode = 10000001;
+        const long barcode = 10000076;
         var result = _storeQuery.QueryProductStockItem(storeId, barcode, _fixture.Context);
-        Assert.Equal(2, result.Id);
-        Assert.Equal(2, result.Product.Id);
+        Assert.Equal(1, result.Id);
+        Assert.Equal(77, result.Product.Id);
         Assert.Equal(barcode, result.Product.Barcode);
     }
     
