@@ -1,0 +1,38 @@
+<ng-container *ngIf="($storeOrders | async) === null; else receiveOrder">
+    <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+  </ng-container>
+
+  <ng-template #receiveOrder>
+
+		<mat-tab-group *ngFor="">
+
+		</mat-tab-group>
+    <table mat-table class="full-width-table">
+        
+    	<ng-container matColumnDef="ProductName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ProductName</th>
+        <td mat-cell *matCellDef="let row;">{{row.productName}}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="Supplier">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Supplier</th>
+        <td mat-cell *matCellDef="let row">{{row.supplierName}}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="PurchasePrice">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Purchase Price</th>
+        <td mat-cell *matCellDef="let row">{{row.purchasePrice}}</td>
+      </ng-container>
+    
+      <ng-container matColumnDef="Amount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount in stock</th>
+        <td mat-cell *matCellDef="let row">{{row.stockItem.amount}}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="OrderedAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Ordered amount</th>
+        <td mat-cell *matCellDef="let row">{{row.orderAmount}}</td>
+      </ng-container>
+    </table>
+
+  </ng-template>
