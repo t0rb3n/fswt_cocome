@@ -1,23 +1,29 @@
 using System.Net.NetworkInformation;
 using CashDesk;
+using CashDesk.Application.CashDesk;
+using CashDesk.Application.CashDesk.EventHandler;
+using CashDesk.Application.Interfaces;
 using CashDesk.BankServer;
 using CashDesk.BarcodeScannerService;
 using CashDesk.CardReaderService;
 using CashDesk.CashboxService;
 using CashDesk.DisplayController;
+using CashDesk.Infrastructure.Services;
+using CashDesk.Infrastructure.Sila.BankServer;
+using CashDesk.Infrastructure.Sila.DisplayController;
+using CashDesk.Infrastructure.Sila.PrintingService;
 using CashDesk.PrintingService;
-using CashDesk.Sila.DisplayController;
-using CashDesk.Sila.PrintingService;
 using GrpcModule.Services.Store;
 using Tecan.Sila2.Client;
 using Tecan.Sila2.Client.ExecutionManagement;
 using Tecan.Sila2.Discovery;
 
+
 var connector = new ServerConnector(new DiscoveryExecutionManager());
 var discovery = new ServerDiscovery(connector);
 var servers = discovery.GetServers(TimeSpan.FromSeconds(10),
     n => n.NetworkInterfaceType == NetworkInterfaceType.Loopback);
-var terminalServer = servers.First(s => s.Info.Type == "Terminal");
+var terminalServer = servers.First(s => s.Info.Type == "Terminal"); //TODO try catch?
 var bankServer = servers.FirstOrDefault(s => s.Info.Type == "BankServer");
 var executionManagerFactory = new ExecutionManagerFactory(Enumerable.Empty<IClientRequestInterceptor>());
 var terminalServerExecutionManager = executionManagerFactory.CreateExecutionManager(terminalServer);
@@ -38,18 +44,19 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddSingleton<BarcodeScannerServiceClient>();
         services.AddSingleton<CardReaderServiceClient>();
         services.AddSingleton<IBankServer>(new BankServerClient(bankServer?.Channel, executionManagerFactory.CreateExecutionManager(bankServer)));
-        
-        /*
-         * Event Listener and publisher
-         */
-        services.AddSingleton<CashDesk.CashDesk>();
 
-        services.AddSingleton<CashDeskEventPublisher>();
-        services.AddSingleton<CashDeskCoordinator>();
+        services.AddSingleton<ICashDeskEvents, CashDeskEventPublisher>();
+        services.AddSingleton<ICoordinatorEvents, CashDeskCoordinator>();
         services.AddHostedService<CashDeskEventHandler>();
         
-        services.AddSingleton<DisplayControllerEventHandler>();
-        services.AddSingleton<PrinterControllerEventHandler>();
+        services.AddSingleton<ICashDesk, CashDesk.Application.CashDesk.CashDesk>();
+        services.AddSingleton<IDisplayEventHandler, DisplayEventHandler>();
+        services.AddSingleton<IPrinterEventHandler, PrinterEventHandler>();
+        services.AddSingleton<IStoreGrpcService, StoreGrpcService>();
+        services.AddSingleton<IBankService, BankService>();
+
+        
+
         
         services.AddGrpcClient<StoreService.StoreServiceClient>(options =>
         {
@@ -65,6 +72,8 @@ var builder = Host.CreateDefaultBuilder(args)
             // -> handler.ClientCertificates.Add(LoadCertificate);
             return handler;
         });
+        
+
     });
 
 var app = builder.Build();

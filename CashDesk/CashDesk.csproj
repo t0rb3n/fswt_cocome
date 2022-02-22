@@ -21,10 +21,5 @@
         <Protobuf Include="Protos/Services/enterprise.proto" ProtoRoot="Protos/" />
         <Protobuf Include="Protos/Services/store.proto" ProtoRoot="Protos/" />
     </ItemGroup>
-    
-    <ItemGroup>
-        <Folder Include="Interfaces" />
-        <Folder Include="Sila" />
-    </ItemGroup>
 
 </Project>
