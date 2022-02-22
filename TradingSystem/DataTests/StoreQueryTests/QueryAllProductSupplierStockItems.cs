@@ -21,21 +21,7 @@ public class QueryAllProductSupplierStockItems
     {
         const long storeId = 1;
         var result = _storeQuery.QueryAllProductSupplierStockItems(storeId, _fixture.Context);
-        Assert.Equal(5, result.Count);
-        Assert.Collection(result,
-            item => Assert.Equal(1, item.Id), 
-            item => Assert.Equal(2, item.Id), 
-            item => Assert.Equal(3, item.Id),
-            item => Assert.Equal(4, item.Id),
-            item => Assert.Equal(5, item.Id)
-        );
-        Assert.Collection(result,
-            item => Assert.Equal(1, item.Product.Id), 
-            item => Assert.Equal(2, item.Product.Id), 
-            item => Assert.Equal(3, item.Product.Id),
-            item => Assert.Equal(4, item.Product.Id),
-            item => Assert.Equal(5, item.Product.Id)
-        );
+        Assert.Equal(63, result.Count);
         Assert.Contains(result, item => item.Product.ProductSupplier.Name == "Schegel");
         Assert.Contains(result, item => item.Product.ProductSupplier.Name == "Kaufmann");
     }

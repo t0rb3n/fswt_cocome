@@ -21,7 +21,7 @@ public class QueryProductSuppliers
     {
         const long storeId = 1;
         var result = _storeQuery.QueryProductSuppliers(storeId, _fixture.Context);
-        Assert.Equal(5, result.Count);
+        Assert.Equal(63, result.Count);
         Assert.Contains(result, product => product.ProductSupplier.Name == "Schegel");
         Assert.Contains(result, product => product.ProductSupplier.Name == "Kaufmann");
     }

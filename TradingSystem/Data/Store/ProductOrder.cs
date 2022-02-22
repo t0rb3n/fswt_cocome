@@ -41,7 +41,7 @@ public class ProductOrder
     /// <value>Property <c>DeliveryDate</c> represents the delivery date for this order.</value>
     public DateTime DeliveryDate
     {
-        get => _deliveryDate.ToLocalTime();
+        get => _deliveryDate == DateTime.MinValue ? _deliveryDate : _deliveryDate.ToLocalTime();
         set => _deliveryDate = value;
     }
 
@@ -51,7 +51,7 @@ public class ProductOrder
     /// <value>Property <c>OrderingDate</c> represents the creation date for this order.</value>
     public DateTime OrderingDate
     {
-        get => _orderingDate.ToLocalTime();
+        get => _orderingDate == DateTime.MinValue ? _orderingDate : _orderingDate.ToLocalTime();
         set => _orderingDate = value;
     }
 

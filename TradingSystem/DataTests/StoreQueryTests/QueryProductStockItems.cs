@@ -21,13 +21,13 @@ public class QueryProductStockItems
     public void Found_StockItems()
     {
         const long storeId = 1;
-        long[] productIds = { 1,2,3 };
+        long[] productIds = { 77, 111, 140 };
         var result = _storeQuery.QueryProductStockItems(storeId, productIds, _fixture.Context);
         Assert.Equal(3, result.Count);
         Assert.Collection(result,
-            item => Assert.Equal(1, item.Product.Id), 
-            item => Assert.Equal(2, item.Product.Id), 
-            item => Assert.Equal(3, item.Product.Id)
+            item => Assert.Equal(77, item.Product.Id), 
+            item => Assert.Equal(111, item.Product.Id), 
+            item => Assert.Equal(140, item.Product.Id)
             );
     }
     

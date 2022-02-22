@@ -22,7 +22,7 @@ public class QueryStoreById
         const long storeId = 1;
         var result = _storeQuery.QueryStoreById(storeId, _fixture.Context);
         Assert.Equal(1, result.Id);
-        Assert.Equal("Cocome", result.Name);
+        Assert.Equal("Cocome WI", result.Name);
         Assert.Equal("Wiesbaden", result.Location);
         Assert.Equal(1, result.Enterprise.Id);
         Assert.Equal("CocomeSystem GmbH & Co. KG", result.Enterprise.Name);

@@ -22,10 +22,10 @@ public class QueryProductStockItemById
         const long stockItemId = 1;
         var result = _storeQuery.QueryProductStockItemById(stockItemId, _fixture.Context);
         Assert.Equal(1, result.Id);
-        Assert.Equal(2.25, result.SalesPrice);
-        Assert.Equal(1, result.Product.Id);
-        Assert.Equal(1.5, result.Product.PurchasePrice);
-        Assert.Equal("Feldsalat", result.Product.Name);
+        Assert.Equal(39.19, result.SalesPrice);
+        Assert.Equal(77, result.Product.Id);
+        Assert.Equal(27.99, result.Product.PurchasePrice);
+        Assert.Equal("Hot Dog", result.Product.Name);
     }
     
     [Fact]
