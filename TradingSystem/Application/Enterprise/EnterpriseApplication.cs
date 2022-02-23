@@ -73,7 +73,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         return result;
     }
     
-    public IList<ProductSupplierDTO> GetEnterpriseProductSupplier()
+    public IList<ProductSupplierDTO> GetEnterpriseProductSuppliers()
     {
         List<ProductSupplierDTO> result = new();
         using var dbc = new DatabaseContext();
@@ -118,6 +118,8 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
             };
             // Converts Entity object to DTO object and adds to the result stockItem list.
             result.StockItems.AddRange(stockitems.Select(EntryObject.ToProductSupplierStockItemDTO));
+            
+            transaction.Commit();
         }
         catch (ItemNotFoundException e)
         {
@@ -152,6 +154,8 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
             {
                 result.StoreReports.Add(GetStoreStockReport(store.Id));
             }
+            
+            transaction.Commit();
         }
         catch (ItemNotFoundException e)
         {
@@ -199,7 +203,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         return result;
     }
 
-    public StoreEnterpriseDTO GetStore(long storeId)
+    public StoreEnterpriseDTO GetStoreEnterprise(long storeId)
     {
         StoreEnterpriseDTO result;
         using var dbc = new DatabaseContext();
@@ -222,7 +226,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         return result;
     }
 
-    public IList<ProductSupplierStockItemDTO> GetProductsLowStockItems(long storeId)
+    public IList<ProductSupplierStockItemDTO> GetLowProductSupplierStockItems(long storeId)
     {
         List<ProductSupplierStockItemDTO> result = new();
         using var dbc = new DatabaseContext();
@@ -305,6 +309,10 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
             {
                 Id = 0
             };
+            if (productOrder.Orders.Count == 0)
+            {
+                throw new EnterpriseException("Product order contains no order entries!");
+            }
             // Adds each order in the product order Entity object.
             foreach (var order in productOrder.Orders)
             {
@@ -321,9 +329,14 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
 
             // Makes the query to the database.
             poe.Store = _storeQuery.QueryStoreById(storeId, dbc);
-            poe.OrderingDate = productOrder.OrderingDate;
+            if (productOrder.OrderingDate == DateTime.MinValue)
+            {
+                throw new EnterpriseException("Order date was not set!");
+            }
+            // Converts nanosecond of order date in microsecond for the postgresql database
+            poe.OrderingDate = new DateTime(productOrder.OrderingDate.Ticks / 10 * 10).ToUniversalTime();
             // Adds product order to the database.
-            dbc.ProductOrders.Attach(poe);
+            dbc.ProductOrders.Add(poe);
             // Commits product order to the database.
             dbc.SaveChanges();
             transaction.Commit();
@@ -398,13 +411,14 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
             }
 
             // Checks if the product order belongs to this store.
-            if (result.Store.Id != storeId)
+            if (!dbc.Stores.Any(store => store.Id == storeId))
             {
                 throw new EnterpriseException("Product order can not be executed from this store!");
             }
             
-            // Sets the delivery date
-            result.DeliveryDate = productOrder.DeliveryDate;
+            // Sets the delivery date and
+            // Converts nanosecond of delivery date in microsecond for the postgresql database
+            result.DeliveryDate = new DateTime(productOrder.DeliveryDate.Ticks / 10 * 10).ToUniversalTime();
 
             // Adds the received stock to the inventory of the specified store.
             foreach (var oe in result.OrderEntries)
@@ -453,6 +467,10 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
 
         try
         {
+            if (saleDto.Products.Count == 0)
+            {
+                throw new EnterpriseException("The sale does not include product sales!");
+            }
             foreach (var product in saleDto.Products)
             {
                 // Makes the query to the database.

@@ -26,7 +26,7 @@ public interface IEnterpriseQuery
     public IList<Store.Store> QueryStores(long enterpriseId, DatabaseContext dbc);
     
     /// <summary>
-    /// Queries for all product suppliers that a enterprise has and adds the store reference.
+    /// Queries for all product suppliers that a enterprise has.
     /// </summary>
     /// <param name="enterpriseId">A unique id of the enterprise.</param>
     /// <param name="dbc">A database context to query.</param>

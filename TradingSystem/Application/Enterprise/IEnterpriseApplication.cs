@@ -28,7 +28,7 @@ public interface IEnterpriseApplication
     /// </summary>
     /// <returns>A list of product supplier in the given enterprise.</returns>
     /// <exception cref="EnterpriseException">If no product supplier were found for this enterprise.</exception>
-    public IList<ProductSupplierDTO> GetEnterpriseProductSupplier();
+    public IList<ProductSupplierDTO> GetEnterpriseProductSuppliers();
     
     /// <summary>
     /// Gets information of a specified store.
@@ -36,15 +36,15 @@ public interface IEnterpriseApplication
     /// <param name="storeId">The id of the specified store.</param>
     /// <returns>Store and enterprise information from this specified store.</returns>
     /// <exception cref="EnterpriseException">If no specified store was found.</exception>
-    public StoreEnterpriseDTO GetStore(long storeId);
+    public StoreEnterpriseDTO GetStoreEnterprise(long storeId);
     
     /// <summary>
     /// Determines low stock items of a specified store.
     /// </summary>
     /// <param name="storeId">The id of the specified store.</param>
-    /// <returns>A list of products and their stock item from this specified store.</returns>
+    /// <returns>A list of products with supplier and their stock item from this specified store.</returns>
     /// <exception cref="EnterpriseException">If no low stock items from the specified store were found.</exception>
-    public IList<ProductSupplierStockItemDTO> GetProductsLowStockItems(long storeId);
+    public IList<ProductSupplierStockItemDTO> GetLowProductSupplierStockItems(long storeId);
 
     /// <summary>
     /// Determines all products of the specified store and the supplier for each of them.
