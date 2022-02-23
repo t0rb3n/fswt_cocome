@@ -25,7 +25,7 @@ public class QueryProductOrderById
         Assert.Equal(orderId, result.Id);
         Assert.Equal(DateTime.Parse("2022/02/17 10:16:53").ToLocalTime(), result.OrderingDate);
         Assert.Equal(DateTime.MinValue, result.DeliveryDate);
-        Assert.Equal(12,result.OrderEntries.Count);
+        Assert.Equal(3,result.OrderEntries.Count);
         Assert.Contains(result.OrderEntries, order => order.Product.ProductSupplier.Name == "Lutz GmbH");
     }
     
@@ -37,7 +37,7 @@ public class QueryProductOrderById
         Assert.Equal(orderId, result.Id);
         Assert.Equal(DateTime.Parse("2022/02/02 20:35:24").ToLocalTime(), result.OrderingDate);
         Assert.Equal(DateTime.Parse("2022/02/25 05:29:59-00").ToLocalTime(), result.DeliveryDate);
-        Assert.Equal(9,result.OrderEntries.Count);
+        Assert.Equal(12,result.OrderEntries.Count);
         Assert.Contains(result.OrderEntries, order => order.Product.ProductSupplier.Name == "Scheffler GmbH");
     }
     
