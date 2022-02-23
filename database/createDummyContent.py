@@ -23,8 +23,8 @@ product_names = ['Feldsalat', 'Fleischwurst', 'Ferrero Nutella Schokocreme', 'St
                 ,'Clementinen', 'KÖLLN Müsli', 'Perwoll Waschmittel', 'Jagdwurst', 'Toilettenpapier', 'VARTA Batterien', 'Apfelsaft', 'SELTERS Mineralwasser'
                 ,'Rotkohl', 'Endiviensalat', 'Paprika', 'Bio-Tafeläpfel', 'Rinderhackfleisch', 'Wolfsbarsch', 'Puten-Oberkeule', 'Weizenbrot', 'Hot Dog'
                 ,'HEISSE TASSE Instant-Suppe', 'Martini', 'HENKELL Sekt', 'Deutsche Kartoffeln', 'TEEKANNE Tee Waldbeere', 'Pringles', 'ZOTT Monte Schoko']
-productStockitems = list()
-supplierProducts = list()
+products = list()
+productStockitem = list()
 
 random.seed(322)
 
@@ -57,7 +57,6 @@ def insert_products():
     writeline_to_file('\n-- Product values')
     product_len = len(product_names)
     barcode = 10000000
-    product_id = 0
 
     for supplier in supplier_names:
 
@@ -71,10 +70,7 @@ def insert_products():
             writeline_to_file(f"INSERT INTO products (barcode, purchase_price, name, product_supplier_id) VALUES ({barcode}, {price}, '{name}', {supplier_id});")
             
             barcode += 1
-            productStockitems.append([barcode, price])
-
-            product_id += 1
-            supplierProducts.append([supplier_id, product_id])
+            products.append([barcode, price, supplier_id])
 
         print('Supplier', supplier, 'were added', sample_len, 'product dummy samples')
 
@@ -89,11 +85,14 @@ def insert_stock_items():
     writeline_to_file('\n-- StockItem values')
     
     for store_id in range(1, len(store_locations) + 1):
-        sample_len = random.randint(1, len(productStockitems) + 1)
-        for barcode, price in random.sample(productStockitems, sample_len):
+        sample_len = random.randint(1, len(products) + 1)
+        for barcode, price, supplier_id in random.sample(products, sample_len):
             sale_price = round(price + (price*0.4), 2)
             amount = random.randint(STOCK_AMOUNT_MIN, STOCK_AMOUNT_MAX)
-            product_id = productStockitems.index([barcode, price]) + 1
+            product_id = products.index([barcode, price, supplier_id]) + 1
+
+            productStockitem.append([store_id, product_id, supplier_id])
+
             writeline_to_file(f"INSERT INTO stock_items (sales_price, amount, min_stock, max_stock, store_id, product_id) VALUES ({sale_price}, {amount}, {STOCK_MIN}, {STOCK_MAX}, {store_id}, {product_id});")
         
         print('Store', store_id, 'were inserted', sample_len, 'stock item dummy samples')
@@ -121,19 +120,26 @@ def insert_product_orders():
 
 def insert_order_entries():
     writeline_to_file('\n-- OrderEntry values')
+    product_order_id = 0
 
-    for product_order_id in range(1,10):
-        for name in random.sample(supplier_names, 1):
+    for store_id in range(1, len(store_locations) + 1):
 
-            supplier_id = supplier_names.index(name) + 1
-            entries = [oe for oe in supplierProducts if supplier_id == oe[0]]
-            sample_len = random.randint(1, len(entries))
-        
-            for product in random.sample(entries, sample_len):
-                amount = random.randint(ORDER_AMOUNT_MIN, ORDER_AMOUNT_MAX)
-                writeline_to_file(f"INSERT INTO order_entries (amount, product_id, product_order_id) VALUES ({amount}, {product[1]}, {product_order_id});")
+        for product_order in range(0,3):
 
-            print('ProductOrder', product_order_id, 'contains', sample_len, 'products from', name)
+            product_order_id += 1
+
+            for name in random.sample(supplier_names, 1):
+
+                supplier_id = supplier_names.index(name) + 1
+                orderEntries = [ps for ps in productStockitem if ps[0] == store_id and ps[2] == supplier_id]
+                sample_len = random.randint(1, len(orderEntries))
+            
+                for product in random.sample(orderEntries, sample_len):
+                    amount = random.randint(ORDER_AMOUNT_MIN, ORDER_AMOUNT_MAX)
+                    writeline_to_file(f"INSERT INTO order_entries (amount, product_id, product_order_id) VALUES ({amount}, {product[1]}, {product_order_id});")
+
+                print('ProductOrder', product_order_id, 'contains', sample_len, 'products from', name)
+            
 
 init_file()
 writeline_to_file('START TRANSACTION;')

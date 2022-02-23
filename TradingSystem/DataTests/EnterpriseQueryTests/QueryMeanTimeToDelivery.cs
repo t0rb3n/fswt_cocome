@@ -21,8 +21,8 @@ public class QueryMeanTimeToDelivery
     public void Mean_Time_Success_01()
     {
         const long enterpriseId = 1;
-        const long supplierId = 1;
-        const long excepted = 0;
+        const long supplierId = 1; //Schegel
+        var excepted = DateTime.Parse("2022-02-27 16:16:32").Ticks - DateTime.Parse("2022-02-19 17:10:12").Ticks;
         
         var result = _enterpriseQuery.QueryMeanTimeToDelivery(supplierId, enterpriseId, _fixture.Context);
         Assert.Equal(excepted, result);
@@ -33,8 +33,7 @@ public class QueryMeanTimeToDelivery
     {
         const long enterpriseId = 1;
         const long supplierId = 2; //Kaufmann
-        var excepted = ((DateTime.Parse("2022-02-27 16:16:32").Ticks - DateTime.Parse("2022-02-19 17:10:12").Ticks) +
-                        (DateTime.Parse("2022-02-14 01:49:59").Ticks - DateTime.Parse("2022-02-05 19:58:42").Ticks)) / 2;
+        const long excepted = 0;
 
         var result = _enterpriseQuery.QueryMeanTimeToDelivery(supplierId, enterpriseId, _fixture.Context);
         Assert.Equal(excepted, result);
