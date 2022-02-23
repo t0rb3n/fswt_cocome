@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Application.Mappers;
 using Application.Store;
 using Grpc.Core;
@@ -41,11 +42,17 @@ public class StoreGrpcService : StoreService.StoreServiceBase
         {
             product = _storeApplication.GetProductStockItem(request.Barcode);
         }
+        catch (StoreException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
             throw new RpcException(
-                new Status(StatusCode.NotFound, "Grpc call GetProductStockItem failed!"));
+                new Status(StatusCode.Internal, "Grpc call GetProductStockItem failed!"));
         }
         
         _logger.LogInformation("Get product {id}", product.ProductId);
@@ -66,9 +73,15 @@ public class StoreGrpcService : StoreService.StoreServiceBase
         {
             _storeApplication.BookSale(GrpcObject.ToSaleDTO(request));
         }
+        catch (StoreException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call BookSales failed!"));
         }

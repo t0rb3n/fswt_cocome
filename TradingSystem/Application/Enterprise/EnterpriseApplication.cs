@@ -16,6 +16,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     private readonly IStoreQuery _storeQuery = IDataFactory.GetInstance().GetStoreQuery();
     private readonly IEnterpriseQuery _enterpriseQuery = IDataFactory.GetInstance().GetEnterpriseQuery();
     private readonly long _enterpriseId;
+    private readonly string conn = "host=localhost:5433;database=test;username=dummy;password=dummy123";
 
     /// <summary>
     /// This constructor initializes a new enterprise application.
@@ -29,7 +30,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public EnterpriseDTO GetEnterprise()
     {
         EnterpriseDTO result;
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
@@ -52,7 +53,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<StoreDTO> GetEnterpriseStores()
     {
         List<StoreDTO> result = new();
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
@@ -76,7 +77,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<ProductSupplierDTO> GetEnterpriseProductSuppliers()
     {
         List<ProductSupplierDTO> result = new();
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
@@ -101,7 +102,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     {
         StoreStockReportDTO result;
 
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -135,7 +136,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     {
         EnterpriseStockReportDTO result;
 
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -171,7 +172,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     {
         var result = new List<SupplierMeanTimeReportDTO>();
         
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
@@ -206,7 +207,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public StoreEnterpriseDTO GetStoreEnterprise(long storeId)
     {
         StoreEnterpriseDTO result;
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -229,7 +230,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<ProductSupplierStockItemDTO> GetLowProductSupplierStockItems(long storeId)
     {
         List<ProductSupplierStockItemDTO> result = new();
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -253,7 +254,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<ProductSupplierDTO> GetAllProductSuppliers(long storeId)
     {
         List<ProductSupplierDTO> result = new();
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
@@ -277,7 +278,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<ProductSupplierStockItemDTO> GetAllProductSupplierStockItems(long storeId)
     {
         List<ProductSupplierStockItemDTO> result = new();
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -300,15 +301,12 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
 
     public void OrderProducts(ProductOrderDTO productOrder, long storeId)
     {
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
         {
-            var poe = new ProductOrder
-            {
-                Id = 0
-            };
+            var poe = new ProductOrder {Id = 0};
             if (productOrder.Orders.Count == 0)
             {
                 throw new EnterpriseException("Product order contains no order entries!");
@@ -352,7 +350,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public ProductOrderDTO GetProductOrder(long productOrderId)
     {
         ProductOrderDTO result;
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -375,7 +373,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<ProductOrderDTO> GetAllProductOrders(long storeId)
     {
         List<ProductOrderDTO> result = new();
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -397,7 +395,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
 
     public void RollInReceivedProductOrder(ProductOrderDTO productOrder, long storeId)
     {
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
         try
         {
@@ -441,7 +439,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
 
     public void ChangePrice(long stockItemId, double newPrice)
     {
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
         try
         {
@@ -462,7 +460,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     
     public void MakeBookSale(SaleDTO saleDto)
     {
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -494,7 +492,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public ProductStockItemDTO GetProductStockItem(long productBarcode, long storeId)
     {
         ProductStockItemDTO result;
-        using var dbc = new DatabaseContext();
+        using var dbc = new DatabaseContext(conn);
         using var transaction = dbc.Database.BeginTransaction();
 
         try

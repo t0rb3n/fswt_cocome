@@ -9,7 +9,7 @@ service EnterpriseService {
   // Gets information about a store.
   rpc GetStore(StoreRequest) returns (StoreEnterpriseReply) {};
   // Gets all low stock items from a specific store.
-  rpc GetProductsLowStockItems(StoreRequest) returns (stream ProductSupplierStockItemReply) {};
+  rpc GetLowProductSupplierStockItems(StoreRequest) returns (stream ProductSupplierStockItemReply) {};
   // Gets all products with suppliers from a specific store.
   rpc GetAllProductSuppliers(StoreRequest) returns (stream ProductSupplierReply) {};
   // Gets all products with suppliers and stock items from a specific store.

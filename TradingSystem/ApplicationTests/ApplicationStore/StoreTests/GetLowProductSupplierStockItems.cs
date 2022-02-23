@@ -1,8 +1,9 @@
+using System;
 using Application.Exceptions;
 using Application.Store;
 using Xunit;
 
-namespace ApplicationTests.ApplicationEnterprise.EnterpriseTests;
+namespace ApplicationTests.ApplicationStore.StoreTests;
 
 [Collection("ApplicationTestCollection")]
 public class GetLowProductSupplierStockItems
@@ -17,7 +18,6 @@ public class GetLowProductSupplierStockItems
     [Fact]
     public void Success_Get_Low_Product_Supplier_StockItems()
     {
-        const long storeId = 1;
         ProductSupplierStockItemDTO expecetedDto = new()
         {
             ProductId = 140,
@@ -36,20 +36,19 @@ public class GetLowProductSupplierStockItems
             }
         };
         var result = 
-            _fixture.EnterpriseApplication.GetLowProductSupplierStockItems(storeId);
-        // Success when enterprise tests are run separately
-        // Assert.Equal(13, result.Count);
-        Assert.Equal(12, result.Count);
+            _fixture.StoreApplication.GetLowProductSupplierStockItems();
+        Assert.Equal(13, result.Count);
         Assert.Contains(result, item => item.Equals(expecetedDto));
     }
 
     [Fact]
     public void Failure_Get_Low_Product_Supplier_StockItems()
     {
-        const long storeId = -1;
-        var action = () => _fixture.EnterpriseApplication.GetLowProductSupplierStockItems(storeId);
-        var exception = Assert.Throws<EnterpriseException>(action);
-        Assert.Equal("An unexpected error occurred while receiving the product stock item list!", 
+        var action = () => _fixture.StoreApplicationFailure.GetLowProductSupplierStockItems();
+        var exception = Assert.Throws<StoreException>(action);
+        Assert.Equal(
+            "One or more errors occurred. (An unexpected error occurred while receiving the product stock item list!)", 
             exception.Message);
     }
+    
 }

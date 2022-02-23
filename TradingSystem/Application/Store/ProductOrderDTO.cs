@@ -39,7 +39,7 @@ public class ProductOrderDTO
     /// <value>Property <c>DeliveryDate</c> represents the delivery date for ProductOrder objects.</value>
     public DateTime DeliveryDate
     {
-        get => deliveryDate;
+        get => deliveryDate == DateTime.MinValue ? deliveryDate : deliveryDate.ToLocalTime();
         set => deliveryDate = value;
     }
 
@@ -49,7 +49,7 @@ public class ProductOrderDTO
     /// <value>Property <c>OrderingDate</c> represents the creation date for ProductOrder objects.</value>
     public DateTime OrderingDate
     {
-        get => orderingDate;
+        get => orderingDate == DateTime.MinValue ? orderingDate : orderingDate.ToLocalTime();
         set => orderingDate = value;
     }
 

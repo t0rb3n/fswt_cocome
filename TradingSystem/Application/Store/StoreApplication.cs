@@ -37,6 +37,12 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         }
         catch (RpcException e)
         {
+            //TODO: Looger
+            if (e.StatusCode == StatusCode.NotFound)
+            {
+                throw new StoreException(e.Status.Detail);
+            }
+
             throw new StoreException(e.Message);
         }
 
@@ -44,143 +50,213 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         return GrpcObject.ToStoreEnterpriseDTO(reply);
     }
     
-    public IList<ProductSupplierStockItemDTO> GetProductsLowStockItems()
+    public IList<ProductSupplierStockItemDTO> GetLowProductSupplierStockItems()
     {
-        return Task.Run(async () =>
+        try
         {
-            List<ProductSupplierStockItemDTO> result = new();
-            
-            try
+            return Task.Run(async () =>
             {
-                // Calls the method stream from the enterprise server.
-                using var call = _client.GetProductsLowStockItems(new StoreRequest {StoreId = _storeId});
-                
+                List<ProductSupplierStockItemDTO> result = new();
 
-                await foreach(var productStockItem in call.ResponseStream.ReadAllAsync())
+                try
                 {
+                    // Calls the method stream from the enterprise server.
+                    using var call = _client.GetLowProductSupplierStockItems(new StoreRequest {StoreId = _storeId});
 
-                    // Converts reply object to DTO object and adds to result list.
-                    result.Add(GrpcObject.ToProductSupplierStockItemDTO(productStockItem));
+
+                    await foreach (var productStockItem in call.ResponseStream.ReadAllAsync())
+                    {
+
+                        // Converts reply object to DTO object and adds to result list.
+                        result.Add(GrpcObject.ToProductSupplierStockItemDTO(productStockItem));
+                    }
                 }
-            }
-            catch (RpcException e)
-            {
-                throw new StoreException(e.Message);
-            }
+                catch (RpcException e)
+                {
+                    //TODO: Looger
+                    if (e.StatusCode == StatusCode.NotFound)
+                    {
+                        throw new StoreException(e.Status.Detail);
+                    }
+
+                    throw new StoreException(e.Message);
+                }
+                //TODO: Looger
+                //Console.WriteLine("List<ProductStockItemDTO> size: " + result.Count);
+                return result;
+            }).Result;
             
-            Console.WriteLine("List<ProductStockItemDTO> size: " + result.Count);
-            return result;
-        }).Result;
+        } 
+        catch (Exception e) 
+        {
+            //TODO: Looger
+            throw new StoreException(e.Message);
+        }
     }
 
     public IList<ProductSupplierDTO> GetAllProductSuppliers()
     {
-        return Task.Run(async () =>
+        try
         {
-            List<ProductSupplierDTO> result = new();
-
-            try
+            return Task.Run(async () =>
             {
-                // Calls the method stream from the enterprise server.
-                using var call = _client.GetAllProductSuppliers(new StoreRequest {StoreId = _storeId});
+                List<ProductSupplierDTO> result = new();
 
-                await foreach (var productSupplier in call.ResponseStream.ReadAllAsync())
+                try
                 {
-                    // Converts reply object to DTO object and adds to result list.
-                    result.Add(GrpcObject.ToProductSupplierDTO(productSupplier));
+                    // Calls the method stream from the enterprise server.
+                    using var call = _client.GetAllProductSuppliers(new StoreRequest {StoreId = _storeId});
+
+                    await foreach (var productSupplier in call.ResponseStream.ReadAllAsync())
+                    {
+                        // Converts reply object to DTO object and adds to result list.
+                        result.Add(GrpcObject.ToProductSupplierDTO(productSupplier));
+                    }
                 }
-            }
-            catch (RpcException e)
-            {
-                throw new StoreException(e.Message);
-            }
-            
-            Console.WriteLine("List<ProductSupplierDTO> size: " + result.Count);
-            return result;
-        }).Result;
+                catch (RpcException e)
+                {
+                    //TODO: Looger
+                    if (e.StatusCode == StatusCode.NotFound)
+                    {
+                        throw new StoreException(e.Status.Detail);
+                    }
+
+                    throw new StoreException(e.Message);
+                }
+                //TODO: Logger
+                //Console.WriteLine("List<ProductSupplierDTO> size: " + result.Count);
+                return result;
+            }).Result;
+        } 
+        catch (Exception e) 
+        {
+            //TODO: Looger
+            throw new StoreException(e.Message);
+        }
     }
 
     public IList<ProductSupplierStockItemDTO> GetAllProductSupplierStockItems()
     {
-        return Task.Run(async () =>
+        try 
         {
-            List<ProductSupplierStockItemDTO> result = new();
-            
-            try
+            return Task.Run(async () =>
             {
-                // Calls the method stream from the enterprise server.
-                using var call = _client.GetAllProductSupplierStockItems(new StoreRequest {StoreId = _storeId});
-
-                await foreach (var productSupplierStockItem in call.ResponseStream.ReadAllAsync())
+                List<ProductSupplierStockItemDTO> result = new();
+                
+                try
                 {
-                    // Converts reply object to DTO object and adds to result list.
-                    result.Add(GrpcObject.ToProductSupplierStockItemDTO(productSupplierStockItem));
+                    // Calls the method stream from the enterprise server.
+                    using var call = _client.GetAllProductSupplierStockItems(new StoreRequest {StoreId = _storeId});
+
+                    await foreach (var productSupplierStockItem in call.ResponseStream.ReadAllAsync())
+                    {
+                        // Converts reply object to DTO object and adds to result list.
+                        result.Add(GrpcObject.ToProductSupplierStockItemDTO(productSupplierStockItem));
+                    }
                 }
-            }
-            catch (RpcException e)
-            {
-                throw new StoreException(e.Message);
-            }
-            
-            Console.WriteLine("List<ProductSupplierStockItemDTO> size: " + result.Count);
-            return result;
-        }).Result;
+                catch (RpcException e)
+                {
+                    //TODO: Looger
+                    if (e.StatusCode == StatusCode.NotFound)
+                    {
+                        throw new StoreException(e.Status.Detail);
+                    }
+
+                    throw new StoreException(e.Message);
+                }
+                //TODO: Logger
+                //Console.WriteLine("List<ProductSupplierStockItemDTO> size: " + result.Count);
+                return result;
+            }).Result;
+        } 
+        catch (Exception e) 
+        {
+            //TODO: Looger
+            throw new StoreException(e.Message);
+        }
     }
     
     public void OrderProducts(ProductOrderDTO productOrder)
     {
-        Task.Run(async () =>
+        try
         {
-            // A list for each order of a supplier.
-            var supplierOrders = new Dictionary<long, List<OrderDTO>>();
-
-            // Sorts the order by supplier and adds them to supplierOrders.
-            foreach (var order in productOrder.Orders)
+            Task.Run(async () =>
             {
-                var supplierId = order.ProductSupplier.SupplierId;
-                if (!supplierOrders.ContainsKey(supplierId))
+                // A list for each order of a supplier.
+                var supplierOrders = new Dictionary<long, List<OrderDTO>>();
+                
+                if (productOrder.Orders.Count == 0)
                 {
-                    supplierOrders.Add(supplierId, new List<OrderDTO>());
+                    throw new StoreException("Product order contains no order entries!");
                 }
-                supplierOrders[supplierId].Add(order);
-            }
-
-            // Creates a list for the product orders.
-            var productOrders = new List<ProductOrderDTO>();
-            
-            // Adds each supplier order in productOrders and sets the order date.
-            foreach (var orderList in supplierOrders.Values)
-            {
-                productOrders.Add(new ProductOrderDTO
+                
+                // Sorts the order by supplier and adds them to supplierOrders.
+                foreach (var order in productOrder.Orders)
                 {
-                    OrderingDate = DateTime.UtcNow,
-                    Orders = orderList
-                });
-            }
-
-            try
-            {
-                // Calls the method from the enterprise server.
-                using var call = _client.OrderProducts();
-
-                foreach (var makeOrder in productOrders)
-                {
-                    // Converts product order DTO object to reply object and streams to the enterprise server.
-                    await call.RequestStream.WriteAsync(
-                        DtoObject.ToProductOrderRequest(makeOrder, _storeId));
-                    Console.WriteLine($"Send order with a size from: {makeOrder.Orders.Count}");
+                    var supplierId = order.ProductSupplier.SupplierId;
+                    if (!supplierOrders.ContainsKey(supplierId))
+                    {
+                        supplierOrders.Add(supplierId, new List<OrderDTO>());
+                    }
+                    supplierOrders[supplierId].Add(order);
                 }
 
-                // Gets the response form the enterprise server when the stream is finished.
-                await call.RequestStream.CompleteAsync();
-                var response = await call;
-                Console.WriteLine($"response: {response.Success} {response.Msg}");
-            }
-            catch (RpcException e)
-            {
-                throw new StoreException(e.Message);
-            }
-        }).Wait();
+                // Creates a list for the product orders.
+                var productOrders = new List<ProductOrderDTO>();
+                
+                // Adds each supplier order in productOrders and sets the order date.
+                foreach (var orderList in supplierOrders.Values)
+                {
+                    productOrders.Add(new ProductOrderDTO
+                    {
+                        OrderingDate = DateTime.Now,
+                        DeliveryDate = DateTime.MinValue,
+                        Orders = orderList
+                    });
+                }
+
+                try
+                {
+                    // Calls the method from the enterprise server.
+                    using var call = _client.OrderProducts();
+
+                    foreach (var makeOrder in productOrders)
+                    {
+                        // Converts product order DTO object to reply object and streams to the enterprise server.
+                        await call.RequestStream.WriteAsync(
+                            DtoObject.ToProductOrderRequest(makeOrder, _storeId));
+                        //TODO: Looger
+                        //Console.WriteLine($"Send order with a size from: {makeOrder.Orders.Count}");
+                    }
+
+                    // Gets the response form the enterprise server when the stream is finished.
+                    await call.RequestStream.CompleteAsync();
+                    var response = await call;
+                    //TODO: Looger
+                    //Console.WriteLine($"response: {response.Success} {response.Msg}");
+                }
+                catch (RpcException e)
+                {
+                    //TODO: Looger
+                    if (e.StatusCode == StatusCode.InvalidArgument)
+                    {
+                        throw new StoreException(e.Status.Detail);
+                    }
+
+                    throw new StoreException(e.Message);
+                }
+                catch (Exception e) 
+                {
+                    //TODO: Looger
+                    throw new StoreException(e.Message);
+                }
+            }).Wait();
+        } 
+        catch (Exception e) 
+        {
+            //TODO: Looger
+            throw new StoreException(e.Message);
+        }
     }
 
     public ProductOrderDTO GetProductOrder(long productOrderId)
@@ -197,6 +273,12 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         }
         catch (RpcException e)
         {
+            //TODO: Looger
+            if (e.StatusCode == StatusCode.NotFound)
+            {
+                throw new StoreException(e.Status.Detail);
+            }
+
             throw new StoreException(e.Message);
         }
         
@@ -206,29 +288,43 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
     public IList<ProductOrderDTO> GetAllProductOrders()
     {
-        return Task.Run(async () =>
+        try
         {
-            List<ProductOrderDTO> result = new();
-            
-            try
+            return Task.Run(async () =>
             {
-                // Calls the method stream from the enterprise server.
-                using var call = _client.GetAllProductOrders(new StoreRequest {StoreId = _storeId});
-
-                await foreach (var productOrder in call.ResponseStream.ReadAllAsync())
+                List<ProductOrderDTO> result = new();
+                
+                try
                 {
-                    // Converts reply object to DTO object and adds to result list.
-                    result.Add(GrpcObject.ToProductOrderDTO(productOrder));
+                    // Calls the method stream from the enterprise server.
+                    using var call = _client.GetAllProductOrders(new StoreRequest {StoreId = _storeId});
+
+                    await foreach (var productOrder in call.ResponseStream.ReadAllAsync())
+                    {
+                        // Converts reply object to DTO object and adds to result list.
+                        result.Add(GrpcObject.ToProductOrderDTO(productOrder));
+                    }
                 }
-            }
-            catch (RpcException e)
-            {
-                throw new StoreException(e.Message);
-            }
-            
-            Console.WriteLine("List<ProductOrderDTO> size: " + result.Count);
-            return result;
-        }).Result;
+                catch (RpcException e)
+                {
+                    //TODO: Looger
+                    if (e.StatusCode == StatusCode.NotFound)
+                    {
+                        throw new StoreException(e.Status.Detail);
+                    }
+
+                    throw new StoreException(e.Message);
+                }
+                //TODO: Logger
+                //Console.WriteLine("List<ProductOrderDTO> size: " + result.Count);
+                return result;
+            }).Result;
+        } 
+        catch (Exception e) 
+        {
+            //TODO: Looger
+            throw new StoreException(e.Message);
+        }
     }
     
     public void RollInReceivedProductOrder(long productOrderId)
@@ -242,10 +338,17 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                 StoreId = _storeId,
                 DeliveryDate = Timestamp.FromDateTime(DateTime.UtcNow)
             });
-            Console.WriteLine($"response: {response.Success} {response.Msg}");
+            //TODO: Looger
+            //Console.WriteLine($"response: {response.Success} {response.Msg}");
         }
         catch (RpcException e)
         {
+            //TODO: Looger
+            if (e.StatusCode == StatusCode.NotFound)
+            {
+                throw new StoreException(e.Status.Detail);
+            }
+
             throw new StoreException(e.Message);
         }
     }
@@ -260,10 +363,17 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                 ItemId = stockItemId,
                 NewPrice = newPrice
             });
-            Console.WriteLine($"response: {response.Success} {response.Msg}");
+            //TODO: Logger
+            //Console.WriteLine($"response: {response.Success} {response.Msg}");
         }
         catch (RpcException e)
         {
+            //TODO: Looger
+            if (e.StatusCode == StatusCode.NotFound)
+            {
+                throw new StoreException(e.Status.Detail);
+            }
+
             throw new StoreException(e.Message);
         }
     }
@@ -275,10 +385,17 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
             // Calls the method from the enterprise server and 
             // converts DTO object to reply object.
             var response = _client.makeBookSales(DtoObject.ToSaleRequest(saleDto));
-            Console.WriteLine($"response: {response.Success} {response.Msg}");
+            //TODO: Looger
+            //Console.WriteLine($"response: {response.Success} {response.Msg}");
         }
         catch (RpcException e)
         {
+            //TODO: Looger
+            if (e.StatusCode == StatusCode.NotFound)
+            {
+                throw new StoreException(e.Status.Detail);
+            }
+
             throw new StoreException(e.Message);
         }
     }
@@ -298,6 +415,12 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         }
         catch (RpcException e)
         {
+            //TODO: Looger
+            if (e.StatusCode == StatusCode.NotFound)
+            {
+                throw new StoreException(e.Status.Detail);
+            }
+
             throw new StoreException(e.Message);
         }
         

@@ -20,7 +20,7 @@ namespace WebServerStore.Controllers
         [HttpGet]
         public IEnumerable<ProductSupplierStockItemDTO> Get()
         {
-            return _storeApp.GetProductsLowStockItems().ToArray();
+            return _storeApp.GetLowProductSupplierStockItems().ToArray();
         }
     }
 }
