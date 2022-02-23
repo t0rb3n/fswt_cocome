@@ -39,7 +39,7 @@ public class GetEnterpriseStores
     [Fact]
     public void Failure_Get_Enterprise_Stores()
     {
-        var action = () => _fixture.EnterpriseApplicationFailed.GetEnterpriseStores();
+        var action = () => _fixture.EnterpriseApplicationFailure.GetEnterpriseStores();
         var exception = Assert.Throws<EnterpriseException>(action);
         Assert.Equal("An unexpected error occurred while receiving the store list!", exception.Message);
     }

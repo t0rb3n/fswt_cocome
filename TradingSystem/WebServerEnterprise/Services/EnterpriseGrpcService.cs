@@ -1,4 +1,5 @@
 using Application.Enterprise;
+using Application.Exceptions;
 using Application.Mappers;
 using Application.Store;
 using Grpc.Core;
@@ -46,11 +47,17 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
             reply = DtoObject.ToStoreEnterpriseReply(result);
             _logger.LogInformation("get Store : {id}", result.StoreId);
         }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
             throw new RpcException(
-                new Status(StatusCode.NotFound, "Grpc call GetStore failed!"));
+                new Status(StatusCode.Internal, "Grpc call GetStore failed!"));
         }
         
         return Task.FromResult(reply);
@@ -65,7 +72,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
     /// <param name="context">Context for a server-side call.</param>
     /// <returns>The successfully completed task.</returns>
     /// <exception cref="RpcException">If enterprise interface failed.</exception>
-    public override Task GetProductsLowStockItems(StoreRequest request,
+    public override Task GetLowProductSupplierStockItems(StoreRequest request,
         IServerStreamWriter<ProductSupplierStockItemReply> responseStream, ServerCallContext context)
     {
         IList<ProductSupplierStockItemDTO> result;
@@ -74,11 +81,17 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         {
             result = _enterpriseApplication.GetLowProductSupplierStockItems(request.StoreId);
         }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
             throw new RpcException(
-                new Status(StatusCode.NotFound, "Grpc call GetProductsLowStockItems failed!"));
+                new Status(StatusCode.Internal, "Grpc call GetLowProductSupplierStockItems failed!"));
         }
 
         _logger.LogInformation("List<ProductStockItemDTO> size: {size}", result.Count);
@@ -109,11 +122,17 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         {
             result = _enterpriseApplication.GetAllProductSuppliers(request.StoreId);
         }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
             throw new RpcException(
-                new Status(StatusCode.NotFound, "Grpc call GetAllProductSuppliers failed!"));
+                new Status(StatusCode.Internal, "Grpc call GetAllProductSuppliers failed!"));
         }
 
         _logger.LogInformation("List<ProductSupplierDTO> size: {size}", result.Count);
@@ -146,13 +165,19 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         {
             result = _enterpriseApplication.GetAllProductSupplierStockItems(request.StoreId);
         }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
             throw new RpcException(
-                new Status(StatusCode.NotFound, "Grpc call GetAllProductSupplierStockItems failed!"));
+                new Status(StatusCode.Internal, "Grpc call GetAllProductSupplierStockItems failed!"));
         }
-
+        
         _logger.LogInformation("List<ProductSupplierStockItemDTO> size: {size}", result.Count);
 
         foreach (var productSupplierStockItemDto in result)
@@ -163,72 +188,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         return Task.CompletedTask;
     }
-
-    /// <summary>
-    /// Provides the Enterprise <see cref="EnterpriseApplication.GetProductOrder"/> method as a
-    /// grpc call to the clients.
-    /// </summary>
-    /// <param name="request">The message from the client.</param>
-    /// <param name="context">Context for a server-side call.</param>
-    /// <returns>
-    /// A successfully completed task with the result of <see cref="ProductOrderReply"/> object.
-    /// </returns>
-    /// <exception cref="RpcException">If enterprise interface failed.</exception>
-    public override Task<ProductOrderReply> GetProductOrder(ProductOrderRequest request, ServerCallContext context)
-    {
-        ProductOrderDTO result;
-
-        try
-        {
-            result = _enterpriseApplication.GetProductOrder(request.ProductOrderId);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw new RpcException(
-                new Status(StatusCode.NotFound, "Grpc call GetProductOrder failed!"));
-        }
-        
-        _logger.LogInformation("Get ProductOrder: {id}", result.ProductOrderId);
-        // Converts DTO object to reply object and adds the result to the task.
-        return Task.FromResult(DtoObject.ToProductOrderReply(result));
-    }
-
-    /// <summary>
-    /// Provides the Enterprise <see cref="EnterpriseApplication.GetAllProductOrders"/> method as a
-    /// grpc call to the clients.
-    /// </summary>
-    /// <param name="request">The message from the client.</param>
-    /// <param name="responseStream">A writable stream to send messages to the client.</param>
-    /// <param name="context">Context for a server-side call.</param>
-    /// <returns>The successfully completed task.</returns>
-    /// <exception cref="RpcException">If enterprise interface failed.</exception>
-    public override Task GetAllProductOrders(StoreRequest request, IServerStreamWriter<ProductOrderReply> responseStream, ServerCallContext context)
-    {
-        IList<ProductOrderDTO> result;
-
-        try
-        {
-            result = _enterpriseApplication.GetAllProductOrders(request.StoreId);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw new RpcException(
-                new Status(StatusCode.NotFound, "Grpc call GetAllProductOrders failed!"));
-        }
-
-        _logger.LogInformation("List<ProductOrderDTO> size: {size}", result.Count);
-
-        foreach (var productOderDto in result)
-        {
-            // Converts DTO object to reply object and sends to the client.
-            responseStream.WriteAsync(DtoObject.ToProductOrderReply(productOderDto));
-        }
-
-        return Task.CompletedTask;
-    }
-
+    
     /// <summary>
     /// Provides the Enterprise <see cref="EnterpriseApplication.OrderProducts"/> method as a
     /// grpc call to the clients.
@@ -261,9 +221,15 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
                 _enterpriseApplication.OrderProducts(orderRequest, order.StoreId);
             }
         }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.InvalidArgument, e.Message));
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call OrderProducts failed!"));
         }
@@ -273,6 +239,83 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
             Success = true,
             Msg = "All fine!"
         };
+    }
+
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.GetProductOrder"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>
+    /// A successfully completed task with the result of <see cref="ProductOrderReply"/> object.
+    /// </returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
+    public override Task<ProductOrderReply> GetProductOrder(ProductOrderRequest request, ServerCallContext context)
+    {
+        ProductOrderDTO result;
+
+        try
+        {
+            result = _enterpriseApplication.GetProductOrder(request.ProductOrderId);
+        }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.Internal, "Grpc call GetProductOrder failed!"));
+        }
+        
+        _logger.LogInformation("Get ProductOrder: {id}", result.ProductOrderId);
+        // Converts DTO object to reply object and adds the result to the task.
+        return Task.FromResult(DtoObject.ToProductOrderReply(result));
+    }
+
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.GetAllProductOrders"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="responseStream">A writable stream to send messages to the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>The successfully completed task.</returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
+    public override Task GetAllProductOrders(StoreRequest request, IServerStreamWriter<ProductOrderReply> responseStream, ServerCallContext context)
+    {
+        IList<ProductOrderDTO> result;
+
+        try
+        {
+            result = _enterpriseApplication.GetAllProductOrders(request.StoreId);
+        }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.Internal, "Grpc call GetAllProductOrders failed!"));
+        }
+
+        _logger.LogInformation("List<ProductOrderDTO> size: {size}", result.Count);
+
+        foreach (var productOderDto in result)
+        {
+            // Converts DTO object to reply object and sends to the client.
+            responseStream.WriteAsync(DtoObject.ToProductOrderReply(productOderDto));
+        }
+
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -294,9 +337,15 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
             result.DeliveryDate = request.DeliveryDate.ToDateTime();
             _enterpriseApplication.RollInReceivedProductOrder(result, request.StoreId);
         }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call RollInReceivedProductOrder failed!"));
         }
@@ -323,9 +372,15 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         {
             _enterpriseApplication.ChangePrice(request.ItemId, request.NewPrice);
         }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call ChangePrice failed!"));
         }
@@ -348,9 +403,15 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         {
             _enterpriseApplication.MakeBookSale(GrpcObject.ToSaleDTO(request));
         }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call makeBookSales failed!"));
         }
@@ -380,11 +441,17 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         {
             result = _enterpriseApplication.GetProductStockItem(request.Barcode, request.StoreId);
         }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
             throw new RpcException(
-                new Status(StatusCode.NotFound, "Grpc call GetProductStockItem failed!"));
+                new Status(StatusCode.Internal, "Grpc call GetProductStockItem failed!"));
         }
         
         _logger.LogInformation("Get ProductStockItem {id}", result.ProductId);

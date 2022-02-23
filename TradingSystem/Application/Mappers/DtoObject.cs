@@ -55,7 +55,7 @@ public static class DtoObject
             ProductId = productStockItemDto.ProductId,
             Barcode = productStockItemDto.Barcode,
             ProductName = productStockItemDto.ProductName,
-            PurchasePrice = productStockItemDto.ProductId,
+            PurchasePrice = productStockItemDto.PurchasePrice,
             StockItem = { ToStockItemReply(productStockItemDto.StockItem) }
         };
     }
@@ -146,8 +146,8 @@ public static class DtoObject
         var result = new ProductOrderRequest
         {
             StoreId = storeId,
-            OrderingDate = Timestamp.FromDateTime(productOrderDto.OrderingDate),
-            DeliveryDate = Timestamp.FromDateTime(DateTime.UnixEpoch)
+            OrderingDate = Timestamp.FromDateTime(productOrderDto.OrderingDate.ToUniversalTime()),
+            DeliveryDate = Timestamp.FromDateTime(productOrderDto.DeliveryDate.ToUniversalTime())
         };
 
         foreach (var orderDto in productOrderDto.Orders)
@@ -167,7 +167,7 @@ public static class DtoObject
     {
         var result = new SaleRequest
         {
-            Date = saleDto.Date.ToTimestamp()
+            Date = Timestamp.FromDateTime(saleDto.Date.ToUniversalTime())
         };
 
         foreach (var product in saleDto.Products)

@@ -54,7 +54,7 @@ public class GetEnterpriseProductSuppliers
     [Fact]
     public void Failure_Get_Enterprise_Product_Suppliers()
     {
-        var action = () => _fixture.EnterpriseApplicationFailed.GetEnterpriseProductSuppliers();
+        var action = () => _fixture.EnterpriseApplicationFailure.GetEnterpriseProductSuppliers();
         var exception = Assert.Throws<EnterpriseException>(action);
         Assert.Equal("An unexpected error occurred while receiving the product supplier list!", 
             exception.Message);

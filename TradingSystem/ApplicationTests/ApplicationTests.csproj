@@ -28,15 +28,5 @@
       <ProjectReference Include="..\Application\Application.csproj" />
       <ProjectReference Include="..\WebServerEnterprise\WebServerEnterprise.csproj" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="ApplicationStore\CashDeskConnectorTests" />
-      <Folder Include="ApplicationStore\StoreTests" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Compile Remove="ApplicationStore\StoreTests\GetLowProductSupplierStockItems.cs" />
-      <Compile Remove="ApplicationStore\StoreTests\GetStore.cs" />
-    </ItemGroup>
 
 </Project>

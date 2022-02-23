@@ -1,6 +1,5 @@
 using Application.Enterprise;
 using Application.Exceptions;
-using Application.Store;
 using Xunit;
 
 namespace ApplicationTests.ApplicationEnterprise.EnterpriseTests;
@@ -18,7 +17,6 @@ public class GetEnterprise
     [Fact]
     public void Success_Get_Enterprise()
     {
-        const long enterpriseId = 1;
         EnterpriseDTO expecetedDto = new()
         {
             EnterpriseId = 1,
@@ -32,7 +30,7 @@ public class GetEnterprise
     [Fact]
     public void Failure_Get_Enterprise()
     {
-        var action = () => _fixture.EnterpriseApplicationFailed.GetEnterprise();
+        var action = () => _fixture.EnterpriseApplicationFailure.GetEnterprise();
         var exception = Assert.Throws<EnterpriseException>(action);
         Assert.Equal("Enterprise could not be found!", exception.Message);
     }
