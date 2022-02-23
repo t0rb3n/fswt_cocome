@@ -27,7 +27,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
     }
 
     /// <summary>
-    /// Provides the Enterprise <see cref="EnterpriseApplication.GetStore"/> method as a grpc call to the clients.
+    /// Provides the Enterprise <see cref="EnterpriseApplication.GetStoreEnterprise"/> method as a grpc call to the clients.
     /// </summary>
     /// <param name="request">The message from the client.</param>
     /// <param name="context">Context for a server-side call.</param>
@@ -41,7 +41,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         try
         {
-            var result = _enterpriseApplication.GetStore(request.StoreId);
+            var result = _enterpriseApplication.GetStoreEnterprise(request.StoreId);
             // Converts DTO object to reply object.
             reply = DtoObject.ToStoreEnterpriseReply(result);
             _logger.LogInformation("get Store : {id}", result.StoreId);
@@ -57,7 +57,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
     }
 
     /// <summary>
-    /// Provides the Enterprise <see cref="EnterpriseApplication.GetProductsLowStockItems"/> method as a
+    /// Provides the Enterprise <see cref="EnterpriseApplication.GetLowProductSupplierStockItems"/> method as a
     /// grpc call to the clients.
     /// </summary>
     /// <param name="request">The message from the client.</param>
@@ -72,7 +72,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         try
         {
-            result = _enterpriseApplication.GetProductsLowStockItems(request.StoreId);
+            result = _enterpriseApplication.GetLowProductSupplierStockItems(request.StoreId);
         }
         catch (Exception e)
         {
