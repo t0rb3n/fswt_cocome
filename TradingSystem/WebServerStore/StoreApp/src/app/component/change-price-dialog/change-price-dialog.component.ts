@@ -19,7 +19,6 @@ export class ChangePriceDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<ChangePriceDialogComponent>,
     private storeService: StoreService,
     private snackBar: MatSnackBar) {
-    console.log(data)
   }
 
   ngOnInit(): void {

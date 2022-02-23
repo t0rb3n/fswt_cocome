@@ -10,7 +10,8 @@ const PROXY_CONFIG = [
       "/lowstorestockitem",
       "/orderstockitem",
       "/config",
-      "/receiveorders"
+      "/receiveorders",
+      "/acceptorder",
    ],
     target: target,
     secure: false

@@ -41,5 +41,10 @@ export class StoreService {
   getAllOrders(): Observable<ProductOrderDTO[]>{
     return this.http.get<ProductOrderDTO[]>('receiveorders');
   }
+
+  acceptOrder(productOrderId: number): Observable<any> {
+    console.log(productOrderId)
+    return this.http.post('acceptorder', productOrderId);
+  }
 }
 

@@ -18,7 +18,6 @@ export class ProductSupplierDTO extends ProductDTO{
         this.barcode = barcode; 
         this.purchasePrice = purchasePrice;
         this.productName = productName;
-
         this.supplierId = supplierId;
         this.supplierName = supplierName;
     }
