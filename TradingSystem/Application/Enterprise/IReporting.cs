@@ -4,6 +4,7 @@ namespace Application.Enterprise;
 /// The interface IReporting provides report methods for the web enterprise application component.
 /// </summary>
 public interface IReporting
+
 {
     /// <summary>
     /// Creates report of available stocks in the specified store.

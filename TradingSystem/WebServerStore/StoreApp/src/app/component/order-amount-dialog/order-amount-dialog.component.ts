@@ -25,13 +25,13 @@ export class OrderAmountDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.amountForm.addValidators(Validators.max(this.data.stockItem.maxStock))
-    this.max = this.data.stockItem.maxStock
+    this.max = this.data.stockItem.maxStock-this.data.stockItem.amount
+    this.amountForm.addValidators(Validators.max(this.max))
   }
 
   onSubmit() {
     if (!this.amountForm.valid) return;
-
+    
     this.dialogRef.close({ data: this.amountForm.value });
   }
 }

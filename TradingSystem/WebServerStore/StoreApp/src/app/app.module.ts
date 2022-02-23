@@ -12,6 +12,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatTabsModule, MatTabGroup, MatTabLabel} from '@angular/material/tabs';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import { NavigationComponent } from './component/navigation/navigation.component';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -29,6 +31,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { LowStockTableComponent } from './component/low-stock-table/low-stock-table.component';
 import { OrderAmountDialogComponent } from './component/order-amount-dialog/order-amount-dialog.component';
 import { ReceiveOrderedProductsComponent } from './component/receive-ordered-products/receive-ordered-products.component';
+
 
 @NgModule({
   declarations: [
@@ -71,7 +74,9 @@ import { ReceiveOrderedProductsComponent } from './component/receive-ordered-pro
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatProgressBarModule,
+    MatTabsModule,
   ],
   providers: [
     { provide: "BASE_API_URL", useFactory: getBaseUrl, deps: [] }

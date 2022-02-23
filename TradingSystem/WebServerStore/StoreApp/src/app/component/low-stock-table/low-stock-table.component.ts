@@ -34,7 +34,6 @@ export class LowStockTableComponent implements AfterViewInit {
     this.table.dataSource = this.dataSource;
   }
 
-
   onOrderProductClick() {
 
     const productsToOrder = this.dataSource.data
