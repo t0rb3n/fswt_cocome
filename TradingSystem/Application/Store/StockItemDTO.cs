@@ -86,4 +86,30 @@ public class StockItemDTO
         return $"Id: {itemId}, Amount: {amount}, minStock: {minStock}, " +
                $"maxStock: {maxStock}, salePrice: {salesPrice.ToString("F2")} €\n";
     }
+
+    /// <summary>
+    /// This method determines whether two StockItemDTO have the same properties.
+    /// </summary>
+    /// <param name="obj">Is the object to be compared to the current object.</param>
+    /// <returns>True if StockItemDTO are equals otherwise false.</returns>
+    public override bool Equals(object? obj)
+    {
+        var item = obj as StockItemDTO;
+        
+        if (item == null)
+        {
+            return false;
+        }
+
+        return itemId.Equals(item.itemId) &&
+               salesPrice.Equals(item.salesPrice) &&
+               amount.Equals(item.amount) &&
+               minStock.Equals(item.minStock) &&
+               maxStock.Equals(item.maxStock);
+    }
+
+    public override int GetHashCode()
+    {
+        return itemId.GetHashCode();
+    }
 }

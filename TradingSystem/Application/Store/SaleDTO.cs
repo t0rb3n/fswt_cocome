@@ -47,4 +47,27 @@ public class SaleDTO
     {
         return $"Sales date: {date}, Number of products: {products.Count}";
     }
+    
+    /// <summary>
+    /// This method determines whether two SaleDTO have the same properties.
+    /// </summary>
+    /// <param name="obj">Is the object to be compared to the current object.</param>
+    /// <returns>True if SaleDTO are equals otherwise false.</returns>
+    public override bool Equals(object? obj)
+    {
+        var item = obj as SaleDTO;
+        
+        if (item == null)
+        {
+            return false;
+        }
+
+        return date.Equals(item.date) &&
+               products.Equals(item.products);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(date, products);
+    }
 }

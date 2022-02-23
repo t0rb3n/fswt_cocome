@@ -72,4 +72,29 @@ public class ProductOrderDTO
     {
         return $"Id: {productOrderId}, orderDate: {orderingDate}, deliverDate: {deliveryDate}";
     }
+    
+    /// <summary>
+    /// This method determines whether two ProductOrderDTO have the same properties.
+    /// </summary>
+    /// <param name="obj">Is the object to be compared to the current object.</param>
+    /// <returns>True if ProductOrderDTO are equals otherwise false.</returns>
+    public override bool Equals(object? obj)
+    {
+        var item = obj as ProductOrderDTO;
+        
+        if (item == null)
+        {
+            return false;
+        }
+
+        return productOrderId.Equals(item.productOrderId) &&
+               deliveryDate.Equals(item.deliveryDate) &&
+               orderingDate.Equals(item.orderingDate) &&
+               orders.SequenceEqual(item.orders);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(productOrderId, orderingDate, deliveryDate);
+    }
 }

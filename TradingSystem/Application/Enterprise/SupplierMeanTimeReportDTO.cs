@@ -62,4 +62,28 @@ public class SupplierMeanTimeReportDTO
     {
         return $"Id: {supplierId}, Supplier: {supplierName}, MeanTime: {meanTime}";
     }
+    
+    /// <summary>
+    /// This method determines whether two SupplierMeanTimeReportDTO have the same properties.
+    /// </summary>
+    /// <param name="obj">Is the object to be compared to the current object.</param>
+    /// <returns>True if SupplierMeanTimeReportDTO are equals otherwise false.</returns>
+    public override bool Equals(object? obj)
+    {
+        var item = obj as SupplierMeanTimeReportDTO;
+
+        if (item == null)
+        {
+            return false;
+        }
+
+        return supplierId.Equals(item.supplierId) &&
+               supplierName.Equals(item.supplierName) &&
+               meanTime.Equals(item.meanTime);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(supplierId, meanTime);
+    }
 }
