@@ -74,4 +74,29 @@ public class ProductDTO
     {
         return $"Id: {productId}, Barcode: {barcode}, Name: {productName}, purPrice: {purchasePrice.ToString("F2")} €";
     }
+    
+    /// <summary>
+    /// This method determines whether two ProductDTO have the same properties.
+    /// </summary>
+    /// <param name="obj">Is the object to be compared to the current object.</param>
+    /// <returns>True if ProductDTO are equals otherwise false.</returns>
+    public override bool Equals(object? obj)
+    {
+        var item = obj as ProductDTO;
+        
+        if (item == null)
+        {
+            return false;
+        }
+
+        return productId.Equals(item.productId) &&
+               barcode.Equals(item.barcode) &&
+               purchasePrice.Equals(item.purchasePrice) &&
+               productName.Equals(item.productName);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(productId);
+    }
 }

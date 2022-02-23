@@ -50,4 +50,27 @@ public class EnterpriseDTO
     {
         return $"Id: {enterpriseId}, Enterprise: {enterpriseName}";
     }
+    
+    /// <summary>
+    /// This method determines whether two EnterpriseDTO have the same properties.
+    /// </summary>
+    /// <param name="obj">Is the object to be compared to the current object.</param>
+    /// <returns>True if EnterpriseDTOs are equals otherwise false.</returns>
+    public override bool Equals(object? obj)
+    {
+        var item = obj as EnterpriseDTO;
+
+        if (item == null)
+        {
+            return false;
+        }
+
+        return enterpriseId.Equals(item.enterpriseId) &&
+               enterpriseName.Equals(item.enterpriseName);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(enterpriseId);
+    }
 }

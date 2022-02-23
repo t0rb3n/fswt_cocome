@@ -27,7 +27,7 @@ public class StoreStockReportDTO : StoreDTO
     /// <summary>
     /// Provides get and set methods for StockItems property.
     /// </summary>
-    /// <value>Property <c>StockItems</c> represents a list of <see cref="ProductStockItemDTO"/>.</value>
+    /// <value>Property <c>StockItems</c> represents a list of <see cref="ProductSupplierStockItemDTO"/>.</value>
     /// <exception cref="ArgumentNullException">If set StockItems with null.</exception>
     public List<ProductSupplierStockItemDTO> StockItems
     {
@@ -47,5 +47,30 @@ public class StoreStockReportDTO : StoreDTO
             printList += $"\t{item}\n";
         }
         return $"Id: {storeId}, Store: {storeName}, Location: {location}\n{printList}";
+    }
+    
+    /// <summary>
+    /// This method determines whether two StoreStockReportDTO have the same properties.
+    /// </summary>
+    /// <param name="obj">Is the object to be compared to the current object.</param>
+    /// <returns>True if StoreStockReportDTO are equals otherwise false.</returns>
+    public override bool Equals(object? obj)
+    {
+        var item = obj as StoreStockReportDTO;
+
+        if (item == null)
+        {
+            return false;
+        }
+
+        return storeId.Equals(item.storeId) &&
+               storeName.Equals(item.storeName) &&
+               location.Equals(item.location) &&
+               stockItem.Equals(item.stockItem);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(storeId, location, stockItem);
     }
 }

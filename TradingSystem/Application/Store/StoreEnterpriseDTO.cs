@@ -42,4 +42,29 @@ public class StoreEnterpriseDTO : StoreDTO
     {
         return $"Id: {storeId}, Name: {storeName}, Loc: {location}, Enterprise: {enterprise.EnterpriseName}";
     }
+    
+    /// <summary>
+    /// This method determines whether two StoreEnterpriseDTO have the same properties.
+    /// </summary>
+    /// <param name="obj">Is the object to be compared to the current object.</param>
+    /// <returns>True if StoreEnterpriseDTO are equals otherwise false.</returns>
+    public override bool Equals(object? obj)
+    {
+        var item = obj as StoreEnterpriseDTO;
+
+        if (item == null)
+        {
+            return false;
+        }
+
+        return storeId.Equals(item.storeId) &&
+               storeName.Equals(item.storeName) &&
+               location.Equals(item.location) &&
+               enterprise.Equals(item.enterprise);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(storeId, enterprise.EnterpriseId);
+    }
 }

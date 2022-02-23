@@ -46,4 +46,28 @@ public class EnterpriseStockReportDTO : EnterpriseDTO
         }
         return $"Id: {enterpriseId}, Enterprise: {enterpriseName}\n\n{printList}";
     }
+    
+    /// <summary>
+    /// This method determines whether two EnterpriseStockReportDTO have the same properties.
+    /// </summary>
+    /// <param name="obj">Is the object to be compared to the current object.</param>
+    /// <returns>True if EnterpriseStockReportDTO are equals otherwise false.</returns>
+    public override bool Equals(object? obj)
+    {
+        var item = obj as EnterpriseStockReportDTO;
+
+        if (item == null)
+        {
+            return false;
+        }
+
+        return enterpriseId.Equals(item.enterpriseId) &&
+               enterpriseName.Equals(item.enterpriseName) &&
+               storeReports.SequenceEqual(item.storeReports);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(enterpriseId, storeReports);
+    }
 }

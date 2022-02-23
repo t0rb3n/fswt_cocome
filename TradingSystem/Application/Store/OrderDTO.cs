@@ -62,4 +62,28 @@ public class OrderDTO
     {
         return $"Id: {orderId}, amount: {amount}, \n\tproductSupplier: {productSupplier}";
     }
+    
+    /// <summary>
+    /// This method determines whether two OrderDTO have the same properties.
+    /// </summary>
+    /// <param name="obj">Is the object to be compared to the current object.</param>
+    /// <returns>True if OrderDTO are equals otherwise false.</returns>
+    public override bool Equals(object? obj)
+    {
+        var item = obj as OrderDTO;
+        
+        if (item == null)
+        {
+            return false;
+        }
+
+        return orderId.Equals(item.orderId) &&
+               amount.Equals(item.amount) &&
+               productSupplier.Equals(item.productSupplier);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(orderId, amount);
+    }
 }
