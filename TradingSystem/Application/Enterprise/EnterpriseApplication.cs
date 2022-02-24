@@ -392,6 +392,29 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         
         return result;
     }
+    
+    public IList<ProductOrderDTO> GetAllOpenProductOrders(long storeId)
+    {
+        List<ProductOrderDTO> result = new();
+        using var dbc = new DatabaseContext(conn);
+        using var transaction = dbc.Database.BeginTransaction();
+
+        try
+        {
+            // Makes the query to the database.
+            var query = _storeQuery.QueryAllOpenProductOrders(storeId, dbc);
+            // Converts Entity object to DTO object and adds to the result list.
+            result.AddRange(query.Select(EntryObject.ToProductOrderDTO));
+            transaction.Commit();
+        }
+        catch (ItemNotFoundException e)
+        {
+            Console.WriteLine(e);
+            throw new EnterpriseException("Open product orders could not be found!");
+        }
+        
+        return result;
+    }
 
     public void RollInReceivedProductOrder(ProductOrderDTO productOrder, long storeId)
     {
