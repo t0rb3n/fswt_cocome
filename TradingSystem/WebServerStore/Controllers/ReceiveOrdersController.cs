@@ -20,7 +20,7 @@ namespace WebServerStore.Controllers
         [HttpGet]
         public IEnumerable<ProductOrderDTO> Get()
         {
-            return _storeApp.GetAllProductOrders().ToArray();
+            return _storeApp.GetAllOpenProductOrders().ToArray();
         }
     }
 }

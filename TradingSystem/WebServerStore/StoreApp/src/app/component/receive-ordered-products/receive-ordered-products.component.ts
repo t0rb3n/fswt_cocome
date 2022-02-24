@@ -18,7 +18,7 @@ export class ReceiveOrderedProductsComponent {
   displayedColumns = ['ProductName', 'Supplier', 'PurchasePrice', 'OrderedAmount', 'Barcode'];
 
   constructor(private storeService: StoreService, private snackBar: MatSnackBar) { 
-    this.$storeOrders = this.storeService.getAllOrders();
+    this.$storeOrders = this.storeService.getAllOpenOrders();
     this.$storeOrders.subscribe( data => {
       this.storeOrders = data;
     })

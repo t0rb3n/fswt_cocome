@@ -38,7 +38,7 @@ export class StoreService {
     return this.http.post('orderstockitem', orderProducts);
   }
 
-  getAllOrders(): Observable<ProductOrderDTO[]>{
+  getAllOpenOrders(): Observable<ProductOrderDTO[]>{
     return this.http.get<ProductOrderDTO[]>('receiveorders');
   }
 
