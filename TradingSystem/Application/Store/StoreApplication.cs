@@ -4,6 +4,7 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using GrpcModule.Messages;
 using GrpcModule.Services.Enterprise;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Store;
 
@@ -12,16 +13,20 @@ namespace Application.Store;
 /// </summary>
 public class StoreApplication : IStoreApplication, ICashDeskConnector
 {
+    private readonly ILogger<StoreApplication> _logger;
     private readonly EnterpriseService.EnterpriseServiceClient _client;
     private readonly long _storeId;
-
+    
     /// <summary>
     /// This constructor initializes a new store application.
     /// </summary>
+    /// <param name="logger">Logger for store application events.</param>
     /// <param name="client">A Grpc client for calling methods of the enterprise server.</param>
     /// <param name="storeId">The id of your store.</param>
-    public StoreApplication(EnterpriseService.EnterpriseServiceClient client, long storeId)
+    public StoreApplication(ILogger<StoreApplication> logger, EnterpriseService.EnterpriseServiceClient client, 
+        long storeId)
     {
+        _logger = logger;
         _client = client;
         _storeId = storeId;
     }
@@ -37,7 +42,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         }
         catch (RpcException e)
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             if (e.StatusCode == StatusCode.NotFound)
             {
                 throw new StoreException(e.Status.Detail);
@@ -45,6 +50,8 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
             throw new StoreException(e.Message);
         }
+        _logger.LogInformation("GetStore: Has received ({name}) store information from the enterprise server.",
+            reply.StoreName);
 
         // Converts reply object to DTO object.
         return GrpcObject.ToStoreEnterpriseDTO(reply);
@@ -73,7 +80,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                 }
                 catch (RpcException e)
                 {
-                    //TODO: Looger
+                    _logger.LogError("StoreApplication: {msg}.", e.Message);
                     if (e.StatusCode == StatusCode.NotFound)
                     {
                         throw new StoreException(e.Status.Detail);
@@ -81,15 +88,16 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
                     throw new StoreException(e.Message);
                 }
-                //TODO: Looger
-                //Console.WriteLine("List<ProductStockItemDTO> size: " + result.Count);
+                _logger.LogInformation(
+                    "GetLowProductSupplierStockItems: Has received {size} ProductSupplierStockItemDTO from the enterprise server.",
+                    result.Count);
                 return result;
             }).Result;
             
         } 
         catch (Exception e) 
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             throw new StoreException(e.Message);
         }
     }
@@ -115,7 +123,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                 }
                 catch (RpcException e)
                 {
-                    //TODO: Looger
+                    _logger.LogError("StoreApplication: {msg}.", e.Message);
                     if (e.StatusCode == StatusCode.NotFound)
                     {
                         throw new StoreException(e.Status.Detail);
@@ -123,14 +131,15 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
                     throw new StoreException(e.Message);
                 }
-                //TODO: Logger
-                //Console.WriteLine("List<ProductSupplierDTO> size: " + result.Count);
+                _logger.LogInformation(
+                    "GetAllProductSuppliers: Has received {size} ProductSupplierDTO from the enterprise server.",
+                    result.Count);
                 return result;
             }).Result;
         } 
         catch (Exception e) 
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             throw new StoreException(e.Message);
         }
     }
@@ -156,7 +165,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                 }
                 catch (RpcException e)
                 {
-                    //TODO: Looger
+                    _logger.LogError("StoreApplication: {msg}.", e.Message);
                     if (e.StatusCode == StatusCode.NotFound)
                     {
                         throw new StoreException(e.Status.Detail);
@@ -164,14 +173,15 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
                     throw new StoreException(e.Message);
                 }
-                //TODO: Logger
-                //Console.WriteLine("List<ProductSupplierStockItemDTO> size: " + result.Count);
+                _logger.LogInformation(
+                    "GetAllProductSupplierStockItems: Has received {size} ProductSupplierStockItemDTO from the enterprise server.",
+                    result.Count);
                 return result;
             }).Result;
         } 
         catch (Exception e) 
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             throw new StoreException(e.Message);
         }
     }
@@ -225,19 +235,23 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                         // Converts product order DTO object to reply object and streams to the enterprise server.
                         await call.RequestStream.WriteAsync(
                             DtoObject.ToProductOrderRequest(makeOrder, _storeId));
-                        //TODO: Looger
-                        //Console.WriteLine($"Send order with a size from: {makeOrder.Orders.Count}");
+                        
+                        _logger.LogInformation(
+                            "OrderProducts: Has sent an order with {size} items to the enterprise server.",
+                            makeOrder.Orders.Count);
                     }
 
                     // Gets the response form the enterprise server when the stream is finished.
                     await call.RequestStream.CompleteAsync();
                     var response = await call;
-                    //TODO: Looger
-                    //Console.WriteLine($"response: {response.Success} {response.Msg}");
+                    
+                    _logger.LogInformation(
+                        "OrderProducts: Has received a response from the enterprise server with the following content ({0}, {1}).",
+                        response.Success, response.Msg);
                 }
                 catch (RpcException e)
                 {
-                    //TODO: Looger
+                    _logger.LogError("StoreApplication: {msg}.", e.Message);
                     if (e.StatusCode == StatusCode.InvalidArgument)
                     {
                         throw new StoreException(e.Status.Detail);
@@ -247,14 +261,14 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                 }
                 catch (Exception e) 
                 {
-                    //TODO: Looger
+                    _logger.LogError("StoreApplication: {msg}.", e.Message);
                     throw new StoreException(e.Message);
                 }
             }).Wait();
         } 
         catch (Exception e) 
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             throw new StoreException(e.Message);
         }
     }
@@ -273,7 +287,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         }
         catch (RpcException e)
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             if (e.StatusCode == StatusCode.NotFound)
             {
                 throw new StoreException(e.Status.Detail);
@@ -281,6 +295,9 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
             throw new StoreException(e.Message);
         }
+
+        _logger.LogInformation("GetProductOrder: Has received the order {0} from the enterprise server.",
+            reply.ProductOrderId);
         
         // Converts reply object to DTO object.
         return GrpcObject.ToProductOrderDTO(reply);
@@ -307,7 +324,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                 }
                 catch (RpcException e)
                 {
-                    //TODO: Looger
+                    _logger.LogError("StoreApplication: {msg}.", e.Message);
                     if (e.StatusCode == StatusCode.NotFound)
                     {
                         throw new StoreException(e.Status.Detail);
@@ -315,14 +332,16 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
                     throw new StoreException(e.Message);
                 }
-                //TODO: Logger
-                //Console.WriteLine("List<ProductOrderDTO> size: " + result.Count);
+                _logger.LogInformation(
+                    "GetAllProductOrders: Has received {size} ProductOrderDTO from the enterprise server.",
+                    result.Count);
+                
                 return result;
             }).Result;
         } 
         catch (Exception e) 
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             throw new StoreException(e.Message);
         }
     }
@@ -348,7 +367,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                 }
                 catch (RpcException e)
                 {
-                    //TODO: Looger
+                    _logger.LogError("StoreApplication: {msg}.", e.Message);
                     if (e.StatusCode == StatusCode.NotFound)
                     {
                         throw new StoreException(e.Status.Detail);
@@ -356,14 +375,17 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
                     throw new StoreException(e.Message);
                 }
-                //TODO: Logger
-                //Console.WriteLine("List<ProductOrderDTO> size: " + result.Count);
+                
+                _logger.LogInformation(
+                    "GetAllOpenProductOrders: Has received {size} ProductOrderDTO from the enterprise server.",
+                    result.Count);
+                
                 return result;
             }).Result;
         } 
         catch (Exception e) 
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             throw new StoreException(e.Message);
         }
     }
@@ -379,12 +401,14 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                 StoreId = _storeId,
                 DeliveryDate = Timestamp.FromDateTime(DateTime.UtcNow)
             });
-            //TODO: Looger
-            //Console.WriteLine($"response: {response.Success} {response.Msg}");
+            
+            _logger.LogInformation(
+                "RollInReceivedProductOrder: Has received a response from the enterprise server with the following content ({0}, {1}).",
+                response.Success, response.Msg);
         }
         catch (RpcException e)
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             if (e.StatusCode == StatusCode.NotFound)
             {
                 throw new StoreException(e.Status.Detail);
@@ -404,12 +428,14 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
                 ItemId = stockItemId,
                 NewPrice = newPrice
             });
-            //TODO: Logger
-            //Console.WriteLine($"response: {response.Success} {response.Msg}");
+            
+            _logger.LogInformation(
+                "ChangePrice: Has received a response from the enterprise server with the following content ({0}, {1}).",
+                response.Success, response.Msg);
         }
         catch (RpcException e)
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             if (e.StatusCode == StatusCode.NotFound)
             {
                 throw new StoreException(e.Status.Detail);
@@ -426,12 +452,14 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
             // Calls the method from the enterprise server and 
             // converts DTO object to reply object.
             var response = _client.makeBookSales(DtoObject.ToSaleRequest(saleDto));
-            //TODO: Looger
-            //Console.WriteLine($"response: {response.Success} {response.Msg}");
+            
+            _logger.LogInformation(
+                "BookSale: Has received a response from the enterprise server with the following content ({0}, {1}).",
+                response.Success, response.Msg);
         }
         catch (RpcException e)
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             if (e.StatusCode == StatusCode.NotFound)
             {
                 throw new StoreException(e.Status.Detail);
@@ -456,7 +484,7 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         }
         catch (RpcException e)
         {
-            //TODO: Looger
+            _logger.LogError("StoreApplication: {msg}.", e.Message);
             if (e.StatusCode == StatusCode.NotFound)
             {
                 throw new StoreException(e.Status.Detail);
@@ -464,6 +492,9 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
 
             throw new StoreException(e.Message);
         }
+        
+        _logger.LogInformation("GetProductStockItem: Has received product {0}({1}) from the enterprise server.",
+            reply.ProductName, reply.ProductId);
         
         // Converts reply object to DTO object.
         return GrpcObject.ToProductStockItemDTO(reply);

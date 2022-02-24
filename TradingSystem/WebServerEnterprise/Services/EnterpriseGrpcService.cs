@@ -45,20 +45,22 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
             var result = _enterpriseApplication.GetStoreEnterprise(request.StoreId);
             // Converts DTO object to reply object.
             reply = DtoObject.ToStoreEnterpriseReply(result);
-            _logger.LogInformation("get Store : {id}", result.StoreId);
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.NotFound, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call GetStore failed!"));
         }
+        
+        _logger.LogInformation("GetStore: Has sent store information ({name}) to the store server.",
+            reply.StoreName);
         
         return Task.FromResult(reply);
     }
@@ -83,24 +85,25 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.NotFound, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call GetLowProductSupplierStockItems failed!"));
         }
-
-        _logger.LogInformation("List<ProductStockItemDTO> size: {size}", result.Count);
 
         foreach (var productSupplierStockItemDto in result)
         {
             responseStream.WriteAsync(DtoObject.ToProductSupplierStockItemReply(productSupplierStockItemDto));
         }
 
+        _logger.LogInformation("GetLowProductSupplierStockItems: {size} ProductSupplierStockItemDTO were sent to the store server.",
+            result.Count);
+        
         return Task.CompletedTask;
     }
 
@@ -124,24 +127,25 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.NotFound, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call GetAllProductSuppliers failed!"));
         }
-
-        _logger.LogInformation("List<ProductSupplierDTO> size: {size}", result.Count);
 
         foreach (var productSupplierDto in result)
         {
             // Converts DTO object to reply object and sends to the client.
             responseStream.WriteAsync(DtoObject.ToProductSupplierReply(productSupplierDto));
         }
+        
+        _logger.LogInformation("GetAllProductSuppliers: {size} ProductSupplierDTO were sent to the store server.",
+            result.Count);
 
         return Task.CompletedTask;
     }
@@ -167,24 +171,25 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.NotFound, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call GetAllProductSupplierStockItems failed!"));
         }
-        
-        _logger.LogInformation("List<ProductSupplierStockItemDTO> size: {size}", result.Count);
 
         foreach (var productSupplierStockItemDto in result)
         {
             // Converts DTO object to reply object and sends to the client.
             responseStream.WriteAsync(DtoObject.ToProductSupplierStockItemReply(productSupplierStockItemDto));
         }
+        
+        _logger.LogInformation("GetAllProductSupplierStockItems: {size} ProductSupplierStockItemDTO were sent to the store server.",
+            result.Count);
 
         return Task.CompletedTask;
     }
@@ -209,8 +214,9 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
             {
                 requests.Add(productOrder);
             }
-            
-            _logger.LogInformation("Received order with {size} products", requests.Count);
+
+            _logger.LogInformation("OrderProducts: Order with {size} products received from the store server.", 
+                requests.Count);
 
             // Processes each order from client.
             foreach (var order in requests)
@@ -223,13 +229,13 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.InvalidArgument, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call OrderProducts failed!"));
         }
@@ -237,7 +243,7 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         return new MessageReply
         {
             Success = true,
-            Msg = "All fine!"
+            Msg = $"Product order with {requests.Count} products was ordered successfully."
         };
     }
 
@@ -261,18 +267,20 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.NotFound, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call GetProductOrder failed!"));
         }
         
-        _logger.LogInformation("Get ProductOrder: {id}", result.ProductOrderId);
+        _logger.LogInformation("OrderProducts: Has sent order information ({id}) to the store server.",
+            result.ProductOrderId);
+        
         // Converts DTO object to reply object and adds the result to the task.
         return Task.FromResult(DtoObject.ToProductOrderReply(result));
     }
@@ -296,24 +304,25 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.NotFound, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call GetAllProductOrders failed!"));
         }
-
-        _logger.LogInformation("List<ProductOrderDTO> size: {size}", result.Count);
-
+        
         foreach (var productOderDto in result)
         {
             // Converts DTO object to reply object and sends to the client.
             responseStream.WriteAsync(DtoObject.ToProductOrderReply(productOderDto));
         }
+        
+        _logger.LogInformation("GetAllProductOrders: {size} ProductOrderDTO were sent to the store server.",
+            result.Count);
 
         return Task.CompletedTask;
     }
@@ -338,24 +347,25 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.NotFound, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call GetAllOpenProductOrders failed!"));
         }
-
-        _logger.LogInformation("List<ProductOrderDTO> size: {size}", result.Count);
 
         foreach (var productOderDto in result)
         {
             // Converts DTO object to reply object and sends to the client.
             responseStream.WriteAsync(DtoObject.ToProductOrderReply(productOderDto));
         }
+        
+        _logger.LogInformation("GetAllOpenProductOrders: {size} ProductOrderDTO were sent to the store server.",
+            result.Count);
 
         return Task.CompletedTask;
     }
@@ -381,22 +391,23 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.NotFound, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call RollInReceivedProductOrder failed!"));
         }
         
-        _logger.LogInformation("Received ProductOrder: {id}", request.ProductOrderId);
+        _logger.LogInformation("RollInReceivedProductOrder: Product order {id} has been processed.", request.ProductOrderId);
+        
         return Task.FromResult(new MessageReply
         {
             Success = true,
-            Msg = "All fine!"
+            Msg = $"Product order {request.ProductOrderId} has been successfully processed."
         });
     }
 
@@ -416,19 +427,25 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.NotFound, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call ChangePrice failed!"));
         }
         
-        _logger.LogInformation("changed price from stockItem: {id}", request.ItemId);
-        return Task.FromResult(new MessageReply());
+        
+        _logger.LogInformation("ChangePrice: Stock item {id} the price was adjusted.", request.ItemId);
+        
+        return Task.FromResult(new MessageReply()
+        {
+            Success = true,
+            Msg = $"Stock position {request.ItemId} the price was successfully updated"
+        });
     }
 
     /// <summary>
@@ -443,26 +460,27 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
     {
         try
         {
+            _logger.LogInformation("makeBookSales: Sale with {size} products received from the store server.", 
+                request.Products.Count);
             _enterpriseApplication.MakeBookSale(GrpcObject.ToSaleDTO(request));
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.NotFound, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call makeBookSales failed!"));
         }
-        
-        _logger.LogInformation("Received sale request");
+
         return Task.FromResult(new MessageReply
         {
             Success = true,
-            Msg = "All fine!"
+            Msg = $"Booking with {request.Products.Count} sales was successfully processed."
         });
     }
 
@@ -485,18 +503,20 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
         }
         catch (EnterpriseException e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.NotFound, e.Message));
         }
         catch (Exception e)
         {
-            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            _logger.LogError("EnterpriseGrpcService: {msg}.", e.Message);
             throw new RpcException(
                 new Status(StatusCode.Internal, "Grpc call GetProductStockItem failed!"));
         }
+
+        _logger.LogInformation("GetProductStockItem: Has sent product information ({name}) to the store server.",
+            result.ProductName);
         
-        _logger.LogInformation("Get ProductStockItem {id}", result.ProductId);
         return Task.FromResult(DtoObject.ToProductStockItemReply(result));
     }
 }

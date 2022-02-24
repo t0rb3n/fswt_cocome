@@ -40,6 +40,8 @@ public class StoreGrpcService : StoreService.StoreServiceBase
 
         try
         {
+            _logger.LogInformation("GetProductStockItem: Cash desk request for product ({barcode}).",
+                request.Barcode);
             product = _storeApplication.GetProductStockItem(request.Barcode);
         }
         catch (StoreException e)
@@ -55,7 +57,9 @@ public class StoreGrpcService : StoreService.StoreServiceBase
                 new Status(StatusCode.Internal, "Grpc call GetProductStockItem failed!"));
         }
         
-        _logger.LogInformation("Get product {id}", product.ProductId);
+        _logger.LogInformation("GetProductStockItem: Product ({barcode}) was found and sent to cash desk.",
+            product.Barcode);
+        
         // Converts DTO object to reply object and adds the result to the task.
         return Task.FromResult(DtoObject.ToProductStockItemReply(product));
     }
@@ -86,12 +90,13 @@ public class StoreGrpcService : StoreService.StoreServiceBase
                 new Status(StatusCode.Internal, "Grpc call BookSales failed!"));
         }
         
-        _logger.LogInformation("book {date} sale", request.Date);
+        _logger.LogInformation("BookSales: Booking from {0} with {1} sales was processed.",
+            request.Date, request.Products.Count);
         // Converts DTO object to reply object and adds the result to the task.
         return Task.FromResult(new MessageReply
         {
             Success = true,
-            Msg = "All fine!"
+            Msg = $"Booking from {request.Date} was successful."
         });
     }
 }

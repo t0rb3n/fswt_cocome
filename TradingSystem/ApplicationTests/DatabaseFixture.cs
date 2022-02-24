@@ -4,12 +4,15 @@ using System.Net.Http;
 using Application.Enterprise;
 using Application.Store;
 using Data;
+using Data.Enterprise;
+using Data.Store;
 using Grpc.Net.Client;
 using GrpcModule.Services.Enterprise;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using WebServerEnterprise.Services;
 using Xunit;
 
@@ -37,8 +40,19 @@ public class DatabaseFixture : IDisposable
         // Inserts all test data from db_content.sql
         Context.Database.ExecuteSqlRaw(File.ReadAllText(testData));
 
-        EnterpriseApplication = new EnterpriseApplication(1);
-        EnterpriseApplicationFailure = new EnterpriseApplication(-1);
+        var enterpriseQuery = new EnterpriseQuery();
+        var storeQuery = new StoreQuery();
+        
+        var enterpriseLogger = LoggerFactory.Create(options => 
+        {
+            options.AddConsole();
+            options.AddDebug();
+        }).CreateLogger<EnterpriseApplication>();
+
+        EnterpriseApplication = 
+            new EnterpriseApplication(enterpriseQuery, storeQuery, enterpriseLogger, 1, ConnectionString);
+        EnterpriseApplicationFailure = 
+            new EnterpriseApplication(enterpriseQuery, storeQuery, enterpriseLogger, -1, ConnectionString);
 
         // Creates Grpc enterprise service test server.
         var builder = WebApplication.CreateBuilder();
@@ -55,6 +69,12 @@ public class DatabaseFixture : IDisposable
             () => "Communication with gRPC endpoints must be made through a gRPC client."
         );
         _webApplication.StartAsync();
+        
+        var storeLogger = LoggerFactory.Create(options => 
+        {
+            options.AddConsole();
+            options.AddDebug();
+        }).CreateLogger<StoreApplication>();
 
         var httpHandler = new HttpClientHandler();
         httpHandler.ServerCertificateCustomValidationCallback =
@@ -62,8 +82,8 @@ public class DatabaseFixture : IDisposable
         var channel = GrpcChannel.ForAddress("https://localhost:3000/", new GrpcChannelOptions{HttpHandler = httpHandler});
         var client = new EnterpriseService.EnterpriseServiceClient(channel);
         
-        StoreApplication = new StoreApplication(client, 1);
-        StoreApplicationFailure = new StoreApplication(client, -1);
+        StoreApplication = new StoreApplication(storeLogger, client, 1);
+        StoreApplicationFailure = new StoreApplication(storeLogger, client, -1);
     }
 
     public void Dispose()

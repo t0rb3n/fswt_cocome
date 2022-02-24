@@ -49,7 +49,6 @@ public class RollInReceivedProductOrder
     public void Failure_Received_Product_Order_02()
     {
         const long productOrderId = 6;
-        const long storeId = 42;
         var receivedProductOrder = _fixture.StoreApplication.GetProductOrder(productOrderId);
         var action = () => 
             _fixture.StoreApplicationFailure.RollInReceivedProductOrder(receivedProductOrder.ProductOrderId);

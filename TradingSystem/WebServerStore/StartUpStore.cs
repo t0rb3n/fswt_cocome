@@ -5,7 +5,6 @@ using GrpcModule.Services.Enterprise;
 using WebServerStore.Services;
 
 namespace WebServerStore;
-//TODO clean up
 public class StartUpStore
 {
     public static void Main(string[] args)
@@ -17,6 +16,12 @@ public class StartUpStore
         }
 
         var storeId = Convert.ToInt64(args[0]);
+        
+        var storeLogger = LoggerFactory.Create(options => 
+        {
+            options.AddConsole();
+            options.AddDebug();
+        }).CreateLogger<StoreApplication>();
 
         var httpHandler = new HttpClientHandler();
         httpHandler.ServerCertificateCustomValidationCallback =
@@ -24,15 +29,18 @@ public class StartUpStore
         
         var client = new EnterpriseService.EnterpriseServiceClient(
             GrpcChannel.ForAddress("https://localhost:7046/grpc",
-            new GrpcChannelOptions {HttpHandler = httpHandler}));
-
-        var application = new StoreApplication(client, storeId);
+                new GrpcChannelOptions {HttpHandler = httpHandler}));
+        
+        var application = new StoreApplication(storeLogger, client, storeId);
+        
         var builder = WebApplication.CreateBuilder(args);
 
-        var store = new StoreEnterpriseDTO();
         try
         {
-            store = application.GetStore();
+            var store = application.GetStore();
+            builder.Configuration["ServerInfo:EnterpriseName"] = store.Enterprise.EnterpriseName;
+            builder.Configuration["ServerInfo:StoreName"] = store.StoreName;
+            builder.Configuration["ServerInfo:StoreLocation"] = store.Location;
         }
         catch (RpcException e)
         {
@@ -40,11 +48,7 @@ public class StartUpStore
                 $"{e.GetType()}: Grpc client can't connect to EnterpriseService. Please make sure that WebServerEnterprise is running");
             Environment.Exit(0);
         }
-
-        builder.Configuration["ServerInfo:EnterpriseName"] = store.Enterprise.EnterpriseName;
-        builder.Configuration["ServerInfo:StoreName"] = store.StoreName;
-        builder.Configuration["ServerInfo:StoreLocation"] = store.Location;
-
+        
         // Add services to the container.
         builder.Services.AddGrpc();
         builder.Services.AddControllersWithViews().AddNewtonsoftJson();
