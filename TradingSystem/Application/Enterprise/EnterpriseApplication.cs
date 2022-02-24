@@ -5,6 +5,7 @@ using Data;
 using Data.Enterprise;
 using Data.Exceptions;
 using Data.Store;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Enterprise;
 
@@ -13,24 +14,34 @@ namespace Application.Enterprise;
 /// </summary>
 public class EnterpriseApplication : IEnterpriseApplication, IReporting
 {
-    private readonly IStoreQuery _storeQuery = IDataFactory.GetInstance().GetStoreQuery();
-    private readonly IEnterpriseQuery _enterpriseQuery = IDataFactory.GetInstance().GetEnterpriseQuery();
+    private readonly IStoreQuery _storeQuery;
+    private readonly IEnterpriseQuery _enterpriseQuery;
+    private readonly ILogger<EnterpriseApplication> _logger;
     private readonly long _enterpriseId;
-    private readonly string conn = "host=localhost:5433;database=test;username=dummy;password=dummy123";
+    private readonly string _connectionString;
 
     /// <summary>
     /// This constructor initializes a new enterprise application.
     /// </summary>
+    /// <param name="enterpriseQuery">For enterprise queries in the database.</param>
+    /// <param name="storeQuery">For store queries in the database.</param>
+    /// <param name="logger">Logger for enterprise application events.</param>
     /// <param name="enterpriseId">The id of your enterprise.</param>
-    public EnterpriseApplication(long enterpriseId)
+    /// <param name="connectionString">Connection string for the database.</param>
+    public EnterpriseApplication(IEnterpriseQuery enterpriseQuery, IStoreQuery storeQuery, 
+        ILogger<EnterpriseApplication> logger, long enterpriseId, string connectionString)
     {
+        _enterpriseQuery = enterpriseQuery;
+        _storeQuery = storeQuery;
+        _logger = logger;
         _enterpriseId = enterpriseId;
+        _connectionString = connectionString;
     }
 
     public EnterpriseDTO GetEnterprise()
     {
         EnterpriseDTO result;
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
@@ -43,9 +54,12 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException("Enterprise could not be found!");
         }
+        
+        _logger.LogInformation("GetEnterprise: Has received ({name}) enterprise information from the database.",
+            result.EnterpriseName);
 
         return result;
     }
@@ -53,7 +67,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<StoreDTO> GetEnterpriseStores()
     {
         List<StoreDTO> result = new();
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
@@ -66,10 +80,13 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException(
                 "An unexpected error occurred while receiving the store list!");
         }
+        
+        _logger.LogInformation("GetEnterpriseStores: Has received {size} stores information from the database.",
+            result.Count);
 
         return result;
     }
@@ -77,7 +94,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<ProductSupplierDTO> GetEnterpriseProductSuppliers()
     {
         List<ProductSupplierDTO> result = new();
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
@@ -90,10 +107,13 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException(
                 "An unexpected error occurred while receiving the product supplier list!");
         }
+        
+        _logger.LogInformation("GetEnterpriseProductSuppliers: Has received {size} supplier information from the database.",
+            result.Count);
 
         return result;
     }
@@ -102,7 +122,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     {
         StoreStockReportDTO result;
 
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -124,10 +144,12 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException(
                 "An unexpected error occurred while creating the store stock report!");
         }
+        
+        _logger.LogInformation("GetStoreStockReport: Report created on store {name}.", result.StoreName);
 
         return result;
     }
@@ -136,7 +158,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     {
         EnterpriseStockReportDTO result;
 
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -160,10 +182,13 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException(
                 "An unexpected error occurred while creating the enterprise stock report!");
         }
+        
+        _logger.LogInformation("GetEnterpriseStockReport: Report created on enterprise {name}.", 
+            result.EnterpriseName);
 
         return result;
     }
@@ -172,7 +197,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     {
         var result = new List<SupplierMeanTimeReportDTO>();
         
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
@@ -196,18 +221,21 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException(
                 "An unexpected error occurred while calculating the mean delivery time of a supplier!");
         }
 
+        _logger.LogInformation("GetMeanTimeToDeliveryReport: Report created on {size} product supplier.", 
+            result.Count);
+        
         return result;
     }
 
     public StoreEnterpriseDTO GetStoreEnterprise(long storeId)
     {
         StoreEnterpriseDTO result;
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -220,9 +248,12 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException("Store could not be found!");
         }
+        
+        _logger.LogInformation("GetStoreEnterprise: Has received ({name}) store information from the database.",
+            result.StoreName);
 
         return result;
     }
@@ -230,7 +261,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<ProductSupplierStockItemDTO> GetLowProductSupplierStockItems(long storeId)
     {
         List<ProductSupplierStockItemDTO> result = new();
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -243,10 +274,13 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException(
                 "An unexpected error occurred while receiving the product stock item list!");
         }
+        
+        _logger.LogInformation("GetLowProductSupplierStockItems: Has received {size} ProductSupplierStockItemDTO from the database.",
+            result.Count);
 
         return result;
     }
@@ -254,7 +288,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<ProductSupplierDTO> GetAllProductSuppliers(long storeId)
     {
         List<ProductSupplierDTO> result = new();
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
@@ -267,10 +301,13 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException(
                 "An unexpected error occurred while receiving the product supplier list!");
         }
+        
+        _logger.LogInformation("GetAllProductSuppliers: Has received {size} ProductSupplierDTO from the database.",
+            result.Count);
 
         return result;
     }
@@ -278,7 +315,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<ProductSupplierStockItemDTO> GetAllProductSupplierStockItems(long storeId)
     {
         List<ProductSupplierStockItemDTO> result = new();
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -291,17 +328,20 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException(
                 "An unexpected error occurred while receiving the product supplier stock item list!");
         }
+        
+        _logger.LogInformation("GetAllProductSupplierStockItems: Has received {size} ProductSupplierStockItemDTO from the database.",
+            result.Count);
         
         return result;
     }
 
     public void OrderProducts(ProductOrderDTO productOrder, long storeId)
     {
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
         
         try
@@ -338,10 +378,13 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
             // Commits product order to the database.
             dbc.SaveChanges();
             transaction.Commit();
+            
+            _logger.LogInformation("OrderProducts: Added new product order with {0} items from {1} to database.",
+                poe.OrderEntries.Count, poe.OrderingDate);
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException(
                 "An unexpected error occurred while executing the order!");
         }
@@ -350,7 +393,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public ProductOrderDTO GetProductOrder(long productOrderId)
     {
         ProductOrderDTO result;
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -363,9 +406,12 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException("Product order could not be found!");
         }
+        
+        _logger.LogInformation("GetProductOrder: Has received product order {id} ProductOrderDTO from the database.",
+            productOrderId);
         
         return result;
     }
@@ -373,7 +419,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<ProductOrderDTO> GetAllProductOrders(long storeId)
     {
         List<ProductOrderDTO> result = new();
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -386,9 +432,12 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException("Product orders could not be found!");
         }
+        
+        _logger.LogInformation("GetAllProductOrders: Has received {size} ProductOrderDTO from the database.",
+            result.Count);
         
         return result;
     }
@@ -396,7 +445,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     public IList<ProductOrderDTO> GetAllOpenProductOrders(long storeId)
     {
         List<ProductOrderDTO> result = new();
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -409,16 +458,19 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException("Open product orders could not be found!");
         }
+        
+        _logger.LogInformation("GetAllOpenProductOrders: Has received {size} ProductOrderDTO from the database.",
+            result.Count);
         
         return result;
     }
 
     public void RollInReceivedProductOrder(ProductOrderDTO productOrder, long storeId)
     {
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
         try
         {
@@ -455,14 +507,17 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException("Product order could not be found!");
         }
+        
+        _logger.LogInformation("RollInReceivedProductOrder: Product order {id} has been completed and stock replenished.",
+            productOrder.ProductOrderId);
     }
 
     public void ChangePrice(long stockItemId, double newPrice)
     {
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
         try
         {
@@ -476,14 +531,17 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException("An unexpected error occurred while changing the price!");
         }
+        
+        _logger.LogInformation("ChangePrice: The new price for the stock item {id} has been set in the database.",
+            stockItemId);
     }
     
     public void MakeBookSale(SaleDTO saleDto)
     {
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -507,15 +565,18 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException("An unexpected error occurred while booking the stock items!");
         }
+        
+        _logger.LogInformation("MakeBookSale: Has booked the sale {date} from the store server.",
+            saleDto.Date);
     }
 
     public ProductStockItemDTO GetProductStockItem(long productBarcode, long storeId)
     {
         ProductStockItemDTO result;
-        using var dbc = new DatabaseContext(conn);
+        using var dbc = new DatabaseContext(_connectionString);
         using var transaction = dbc.Database.BeginTransaction();
 
         try
@@ -528,9 +589,12 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
         }
         catch (ItemNotFoundException e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("EnterpriseApplication: {msg}", e.Message);
             throw new EnterpriseException("Product stock item could not be found!");
         }
+
+        _logger.LogInformation("GetProductStockItem: Has received ProductStockItemDTO ({barcode}) from the database.",
+            productBarcode);
         
         return result;
     }
