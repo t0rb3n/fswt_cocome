@@ -16,7 +16,7 @@ public class EnterpriseApplication : IEnterpriseApplication, IReporting
     private readonly IStoreQuery _storeQuery = IDataFactory.GetInstance().GetStoreQuery();
     private readonly IEnterpriseQuery _enterpriseQuery = IDataFactory.GetInstance().GetEnterpriseQuery();
     private readonly long _enterpriseId;
-    private readonly string conn = "host=localhost:5433;database=test;username=dummy;password=dummy123";
+    private readonly string conn = "host=ec2-54-155-194-191.eu-west-1.compute.amazonaws.com;database=d6v10jgjrtfjnt;username=mhxaavrkfwmegj;password=fc1cc9bdc3a621aa753d50896e87f00d2420354242cbd92b20331bf6cc1e16a4";
 
     /// <summary>
     /// This constructor initializes a new enterprise application.
