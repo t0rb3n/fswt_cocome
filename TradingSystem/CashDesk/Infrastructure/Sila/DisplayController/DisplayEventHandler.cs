@@ -15,7 +15,7 @@ public class DisplayEventHandler : IDisplayEventHandler
     /// <summary>
     /// The display we want to control and show text on.
     /// </summary>
-    private DisplayControllerClient _displayClient;
+    private readonly DisplayControllerClient _displayClient;
 
     /// <summary>
     /// This constructor initiates the logger, the <see cref="CashDesk"/>, the <see cref="DisplayControllerClient"/>,
@@ -45,6 +45,7 @@ public class DisplayEventHandler : IDisplayEventHandler
         cashDesk.SaleSuccess += SaleSuccessHandler;
         cashDesk.BarcodeInvalid += BarcodeInvalidHandler;
         cashDesk.ProductNotFound += ProductNotFoundHandler;
+        cashDesk.OutOfStock += OutOfStockHandler;
 
         bankService.PaymentModeRejected += PaymentModeRejectedHandler;
 
@@ -58,105 +59,59 @@ public class DisplayEventHandler : IDisplayEventHandler
 
     public void StartSaleHandler(object? sender, EventArgs e)
     {
-        try
-        {
-            _displayClient.SetDisplayText("New Sale");
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError("Could not communicate with the display with reason {Reason}", exception.Message);
-        }
+        SetText("New Sale");
     }
 
     public void ChangeRunningTotalHandler(object? sender, ChangeRunningTotalArgs args)
     {
-        try
-        {
-            _displayClient.SetDisplayText($"{args.ProductName}: {args.Price}\nTotal: {args.Total} ");
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError("Could not communicate with the display with reason {Reason}", exception.Message);
-        }
+        SetText($"{args.ProductName}: {args.Price} €\nTotal: {args.Total.ToString("0.00")}€ ");
     }
-    
+
     public void PayWithCardHandler(object? sender, EventArgs e)
     {
-        try
-        {
-            _displayClient.SetDisplayText("Waiting for the card...");
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError("Could not communicate with the display with reason {Reason}", exception.Message);
-        }
+        SetText("Waiting for the card...");
     }
 
     public void SaleSuccessHandler(object? sender, EventArgs e)
     {
-        try
-        {
-            _displayClient.SetDisplayText("Thank you for shopping with us. Goodbye");
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError("Could not communicate with the display with reason {Reason}", exception.Message);
-        }
+        SetText("Thank you for shopping with us. Goodbye");
     }
 
     public void PaymentModeRejectedHandler(object? sender, string reason)
     {
-        try
-        {
-            _displayClient.SetDisplayText(reason);
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError("Could not communicate with the display with reason {Reason}", exception.Message);
-        }
+        SetText(reason);
     }
 
     public void DisableExpressModeHandler(object? sender, EventArgs e)
     {
-        try
-        {
-            _displayClient.SetDisplayText("Express mode disabled.");
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError("Could not communicate with the display with reason {Reason}", exception.Message);
-        }
+        SetText("Express mode disabled.");
     }
 
     public void EnableExpressModeHandler(object? sender, EventArgs e)
     {
-        try
-        {
-            _displayClient.SetDisplayText("Express mode enabled.");
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError("Could not communicate with the display with reason {Reason}", exception.Message);
-        }
+        SetText("Express mode enabled.");
     }
 
     public void BarcodeInvalidHandler(object? sender, string barcode)
     {
-        try
-        {
-            _displayClient.SetDisplayText($"Barcode {barcode} has to be a number");
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError("Could not communicate with the display with reason {Reason}", exception.Message);
-        }
+        SetText($"Barcode {barcode} has to be a number");
     }
 
     public void ProductNotFoundHandler(object? sender, long barcode)
     {
+        SetText($"Product with {barcode} does not exist in this store.");
+    }
+
+    public void OutOfStockHandler(object? sender, string productName)
+    {
+        SetText($"The product \"{productName}\" does not exist in this store anymore (amount = 0).");
+    }
+
+    private void SetText(string text)
+    {
         try
         {
-            _displayClient.SetDisplayText($"Product with {barcode} does not exist in this store.");
+            _displayClient.SetDisplayText(text);
         }
         catch (Exception exception)
         {

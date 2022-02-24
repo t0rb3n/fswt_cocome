@@ -70,4 +70,10 @@ public interface IDisplayEventHandler
     /// <param name="sender">The object this invocation originates from.</param>
     /// <param name="barcode">The barcode to the product that wasn't found.</param>
     void ProductNotFoundHandler(object? sender, long barcode);
+    /// <summary>
+    /// The handler method for the <c>OutOfStock</c> event. 
+    /// </summary>
+    /// <param name="sender">The object this invocation originates from.</param>
+    /// <param name="productName">The name of the product that does not exist in this store</param>
+    void OutOfStockHandler(object? sender, string productName);
 }

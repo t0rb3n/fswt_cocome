@@ -31,6 +31,7 @@ public class CashDesk : ICashDesk
     public event System.EventHandler? SaleSuccess;
     public event EventHandler<long>? ProductNotFound;
     public event EventHandler<string>? BarcodeInvalid;
+    public event EventHandler<string>? OutOfStock;
 
 
     public CashDesk(
@@ -88,7 +89,16 @@ public class CashDesk : ICashDesk
             try
             {
                 ProductStockItemReply productStockItem = _storeClient.GetProductWithStockItem(parsedBarcode);
-                AddItemToSale(productStockItem);
+                
+                if (IsItemOutOfStock(productStockItem))
+                {
+                    OnOutOfStock(productStockItem);
+                }
+                else
+                {
+                    AddItemToSale(productStockItem);
+
+                }
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
             {
@@ -254,6 +264,20 @@ public class CashDesk : ICashDesk
         });
     }
 
+/// <summary>
+/// A method to determine if the product we are trying to add to the sale would lower the actual
+/// amount of this StockItem below zero. Should be handled by the backend though.
+/// </summary>
+/// <param name="productStockItem">The item whose amount we have to check</param>
+/// <returns>True if the amount of this item already in our cart is greater than or same than the amount that
+/// is left in the database of the store; otherwise, false</returns>
+    private bool IsItemOutOfStock(ProductStockItemReply productStockItem)
+    {
+        var availableAmount = productStockItem.StockItem[0].Amount;
+        var amountInCart = _saleProducts.FindAll(item => item.ProductId == productStockItem.ProductId).Count;
+
+        return amountInCart >= availableAmount;
+    }
 
     /*
      * Event Methods
@@ -283,7 +307,6 @@ public class CashDesk : ICashDesk
         SaleRegistered?.Invoke(this, args);
     }
 
-    
 
     /*
      * Error Event Methods
@@ -305,6 +328,16 @@ public class CashDesk : ICashDesk
     private void OnBarcodeInvalid(string barcode)
     {
         BarcodeInvalid?.Invoke(this, barcode);
+    }
+
+    /// <summary>
+    /// Invokes the OutOfStock Event
+    /// </summary>
+    /// <param name="product">The product that should not exist</param>
+    private void OnOutOfStock(ProductStockItemReply product)
+    {
+        _logger.LogInformation("Got Product that is out of stock...");
+        OutOfStock?.Invoke(this, product.ProductName);
     }
 
 

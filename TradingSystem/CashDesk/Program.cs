@@ -14,6 +14,7 @@ using CashDesk.Infrastructure.Sila.DisplayController;
 using CashDesk.Infrastructure.Sila.PrintingService;
 using CashDesk.PrintingService;
 using GrpcModule.Services.Store;
+using Tecan.Sila2;
 using Tecan.Sila2.Client;
 using Tecan.Sila2.Client.ExecutionManagement;
 using Tecan.Sila2.Discovery;
@@ -23,8 +24,19 @@ var connector = new ServerConnector(new DiscoveryExecutionManager());
 var discovery = new ServerDiscovery(connector);
 var servers = discovery.GetServers(TimeSpan.FromSeconds(10),
     n => n.NetworkInterfaceType == NetworkInterfaceType.Loopback);
-var terminalServer = servers.First(s => s.Info.Type == "Terminal"); //TODO try catch?
-var bankServer = servers.FirstOrDefault(s => s.Info.Type == "BankServer");
+ServerData terminalServer;
+ServerData bankServer;
+try
+{
+    terminalServer = servers.First(s => s.Info.Type == "Terminal");
+    bankServer = servers.FirstOrDefault(s => s.Info.Type == "BankServer");
+}
+catch (InvalidOperationException)
+{
+    Console.WriteLine("Banking or Terminal server appears to be offline.");
+    throw;
+}
+
 var executionManagerFactory = new ExecutionManagerFactory(Enumerable.Empty<IClientRequestInterceptor>());
 var terminalServerExecutionManager = executionManagerFactory.CreateExecutionManager(terminalServer);
 
@@ -54,9 +66,6 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IPrinterEventHandler, PrinterEventHandler>();
         services.AddSingleton<IStoreGrpcService, StoreGrpcService>();
         services.AddSingleton<IBankService, BankService>();
-
-        
-
         
         services.AddGrpcClient<StoreService.StoreServiceClient>(options =>
         {
@@ -72,8 +81,6 @@ var builder = Host.CreateDefaultBuilder(args)
             // -> handler.ClientCertificates.Add(LoadCertificate);
             return handler;
         });
-        
-
     });
 
 var app = builder.Build();

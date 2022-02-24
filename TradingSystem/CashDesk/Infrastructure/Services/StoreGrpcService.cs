@@ -28,12 +28,13 @@ public class StoreGrpcService : IStoreGrpcService
             Barcode = barcode, StoreId = 1 // TODO change this
         });
     }
+
     /// <summary>
     /// Make a request to let the store know about a sale that just happened
     /// </summary>
     /// <param name="sale">The Sale object with all products of this sale</param>
-    public async void BookSales(SaleRequest sale)
+    public void BookSales(SaleRequest sale)
     {
-        await _storeClient.BookSalesAsync(sale); //TODO handle error
+        _storeClient.BookSalesAsync(sale);
     }
 }

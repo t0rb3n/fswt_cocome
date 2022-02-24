@@ -17,6 +17,7 @@ public sealed class CashDeskEventPublisher : ICashDeskEvents
     public event EventHandler<string>? AddItemToSale;
 
     private readonly ILogger<CashDeskEventPublisher> _logger;
+    private CancellationTokenSource _cancellationTokenSource = null;
 
     /// <summary>
     /// The client used to listen to the cashbox buttons
@@ -47,7 +48,7 @@ public sealed class CashDeskEventPublisher : ICashDeskEvents
         _barcodeClient = barcodeClient;
     }
 
-
+    
     public async Task StartListeningToTerminal()
     {
         var cashboxButtons = _cashboxClient.ListenToCashdeskButtons();
@@ -55,14 +56,16 @@ public sealed class CashDeskEventPublisher : ICashDeskEvents
         {
             if (!cashboxButtons.IntermediateValues.TryRead(out
                     var button)) continue;
-            _logger.LogInformation("Got button {Btn}", button);
+            
             switch (button)
             {
                 case CashboxButton.StartNewSale:
+                    StopBarcodeReader();
                     OnStartSaleEvent(EventArgs.Empty);
                     StartListeningToBarcodes();
                     break;
                 case CashboxButton.FinishSale:
+                    StopBarcodeReader();
                     OnFinishSale(EventArgs.Empty);
                     break;
                 case CashboxButton.DisableExpressMode:
@@ -87,13 +90,37 @@ public sealed class CashDeskEventPublisher : ICashDeskEvents
     private async void StartListeningToBarcodes()
     {
         _logger.LogInformation("Start listening to barcode reader ...");
+
+        _cancellationTokenSource = new CancellationTokenSource();
+        var cancelToken = _cancellationTokenSource.Token;
+        
         var barcodes = _barcodeClient.ListenToBarcodes();
 
-        while (await barcodes.IntermediateValues.WaitToReadAsync())
+        try
         {
-            if (!barcodes.IntermediateValues.TryRead(out var barcode)) continue;
+            while (await barcodes.IntermediateValues.WaitToReadAsync(cancelToken))
+            {
+                if (!barcodes.IntermediateValues.TryRead(out var barcode)) continue;
 
-            OnAddItemToSaleEvent(barcode); 
+                OnAddItemToSaleEvent(barcode);
+            }
+        }
+        catch (OperationCanceledException e)
+        {
+            _logger.LogInformation("Canceling old barcode listener");
+        }
+        finally
+        {
+            _cancellationTokenSource.Dispose();
+        }
+
+    }
+
+    private void StopBarcodeReader()
+    {
+        if (_cancellationTokenSource != null)
+        {
+            _cancellationTokenSource.Cancel();
         }
     }
 

@@ -10,7 +10,8 @@ public interface ICashDesk
     event EventHandler? SaleSuccess;
     event EventHandler<long>? ProductNotFound;
     event EventHandler<string>? BarcodeInvalid;
-    
+    event EventHandler<string>? OutOfStock; 
+
     /// <summary>
     /// Start point when the "Start Sale" Button was clicked. Checks that the state is legal and resets everything.
     /// </summary>

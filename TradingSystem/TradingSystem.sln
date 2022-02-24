@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTests", "DataTests\Data
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationTests", "ApplicationTests\ApplicationTests.csproj", "{DEFFD648-D48C-46B3-9C97-9DF58AAD673F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashDesk", "CashDesk\CashDesk.csproj", "{490AED12-B711-4B14-8E81-57D15FE88EC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{DEFFD648-D48C-46B3-9C97-9DF58AAD673F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEFFD648-D48C-46B3-9C97-9DF58AAD673F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEFFD648-D48C-46B3-9C97-9DF58AAD673F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{490AED12-B711-4B14-8E81-57D15FE88EC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{490AED12-B711-4B14-8E81-57D15FE88EC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{490AED12-B711-4B14-8E81-57D15FE88EC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{490AED12-B711-4B14-8E81-57D15FE88EC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
