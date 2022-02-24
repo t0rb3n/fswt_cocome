@@ -61,6 +61,13 @@ public interface IStoreApplication
     public IList<ProductOrderDTO> GetAllProductOrders();
     
     /// <summary>
+    /// Returns all open product orders that this owns store.
+    /// </summary>
+    /// <returns>A list of open product orders with their order entries, supplier and product.</returns>
+    /// <exception cref="StoreException">If the rpc call failed.</exception>
+    public IList<ProductOrderDTO> GetAllOpenProductOrders();
+    
+    /// <summary>
     /// Updates stocks after order delivery. Adds amount of ordered items to the stock items of the store.
     /// Sets delivery date to date of method execution.
     /// </summary>

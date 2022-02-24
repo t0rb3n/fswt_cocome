@@ -20,6 +20,8 @@ service EnterpriseService {
   rpc GetProductOrder(ProductOrderRequest) returns (ProductOrderReply) {};
   // Gets all product orders from a specific store.
   rpc GetAllProductOrders(StoreRequest) returns (stream ProductOrderReply) {};
+  // Gets all open product orders from a specific store.
+  rpc GetAllOpenProductOrders(StoreRequest) returns (stream ProductOrderReply) {};
   // Completes a product order from a specific store.
   rpc RollInReceivedProductOrder(ProductOrderRequest) returns (MessageReply) {};
   // Changes the sale price from a specific stock item.

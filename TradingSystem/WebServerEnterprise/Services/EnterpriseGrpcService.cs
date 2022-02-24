@@ -317,6 +317,48 @@ public class EnterpriseGrpcService : EnterpriseService.EnterpriseServiceBase
 
         return Task.CompletedTask;
     }
+    
+    /// <summary>
+    /// Provides the Enterprise <see cref="EnterpriseApplication.GetAllOpenProductOrders"/> method as a
+    /// grpc call to the clients.
+    /// </summary>
+    /// <param name="request">The message from the client.</param>
+    /// <param name="responseStream">A writable stream to send messages to the client.</param>
+    /// <param name="context">Context for a server-side call.</param>
+    /// <returns>The successfully completed task.</returns>
+    /// <exception cref="RpcException">If enterprise interface failed.</exception>
+    public override Task GetAllOpenProductOrders(StoreRequest request, 
+        IServerStreamWriter<ProductOrderReply> responseStream, ServerCallContext context)
+    {
+        IList<ProductOrderDTO> result;
+
+        try
+        {
+            result = _enterpriseApplication.GetAllOpenProductOrders(request.StoreId);
+        }
+        catch (EnterpriseException e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.NotFound, e.Message));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("EnterpriseGrpcService: {msg}", e.Message);
+            throw new RpcException(
+                new Status(StatusCode.Internal, "Grpc call GetAllOpenProductOrders failed!"));
+        }
+
+        _logger.LogInformation("List<ProductOrderDTO> size: {size}", result.Count);
+
+        foreach (var productOderDto in result)
+        {
+            // Converts DTO object to reply object and sends to the client.
+            responseStream.WriteAsync(DtoObject.ToProductOrderReply(productOderDto));
+        }
+
+        return Task.CompletedTask;
+    }
 
     /// <summary>
     /// Provides the Enterprise <see cref="EnterpriseApplication.RollInReceivedProductOrder"/> method as a

@@ -327,6 +327,47 @@ public class StoreApplication : IStoreApplication, ICashDeskConnector
         }
     }
     
+    public IList<ProductOrderDTO> GetAllOpenProductOrders()
+    {
+        try
+        {
+            return Task.Run(async () =>
+            {
+                List<ProductOrderDTO> result = new();
+                
+                try
+                {
+                    // Calls the method stream from the enterprise server.
+                    using var call = _client.GetAllOpenProductOrders(new StoreRequest {StoreId = _storeId});
+
+                    await foreach (var productOrder in call.ResponseStream.ReadAllAsync())
+                    {
+                        // Converts reply object to DTO object and adds to result list.
+                        result.Add(GrpcObject.ToProductOrderDTO(productOrder));
+                    }
+                }
+                catch (RpcException e)
+                {
+                    //TODO: Looger
+                    if (e.StatusCode == StatusCode.NotFound)
+                    {
+                        throw new StoreException(e.Status.Detail);
+                    }
+
+                    throw new StoreException(e.Message);
+                }
+                //TODO: Logger
+                //Console.WriteLine("List<ProductOrderDTO> size: " + result.Count);
+                return result;
+            }).Result;
+        } 
+        catch (Exception e) 
+        {
+            //TODO: Looger
+            throw new StoreException(e.Message);
+        }
+    }
+    
     public void RollInReceivedProductOrder(long productOrderId)
     {
         try
