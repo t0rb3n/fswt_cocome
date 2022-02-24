@@ -6,7 +6,6 @@ import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './views/home/home.component';
-import { CounterComponent } from './component/counter/counter.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './component/navigation/navigation.component';
 import {MatSidenavModule} from "@angular/material/sidenav";
@@ -31,7 +30,6 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
   declarations: [
     AppComponent,
     HomeComponent,
-    CounterComponent,
     NavigationComponent,
     ReportComponent,
   ],

@@ -6,8 +6,6 @@ import { RouterModule } from '@angular/router';
 import { getBaseUrl } from "../main";
 import { AppComponent } from './app.component';
 import { HomeComponent } from './views/home/home.component';
-import { CounterComponent } from './component/counter/counter.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatToolbarModule} from "@angular/material/toolbar";
@@ -37,7 +35,6 @@ import { ReceiveOrderedProductsComponent } from './component/receive-ordered-pro
   declarations: [
     AppComponent,
     HomeComponent,
-    CounterComponent,
     NavigationComponent,
     ProducttableComponent,
     ChangePriceDialogComponent,
@@ -51,12 +48,10 @@ import { ReceiveOrderedProductsComponent } from './component/receive-ordered-pro
     FormsModule,
     RouterModule.forRoot([
       {path: '', component: HomeComponent, data: {title: 'Home'}, pathMatch: 'full'},
-      {path: 'counter', component: CounterComponent, data: {title: 'Counter'}},
       { path: 'products', component: ProducttableComponent, data: { title: 'Products in stock' } },
       { path: 'low-stock-items', component: LowStockTableComponent, data: { title: 'Products running out of stock' } },
       { path: 'receive-ordered-products', component: ReceiveOrderedProductsComponent, data: { title: 'Receive ordered products' } },
     ]),
-    NgbModule,
     BrowserAnimationsModule,
     MatToolbarModule,
     MatCheckboxModule,

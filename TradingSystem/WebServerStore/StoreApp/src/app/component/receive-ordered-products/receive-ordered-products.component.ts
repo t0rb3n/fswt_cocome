@@ -14,20 +14,21 @@ export class ReceiveOrderedProductsComponent {
   @ViewChild(MatTable) table!: MatTable<ProductOrderDTO>;
   storeOrders: ProductOrderDTO[] = [];
   $storeOrders: Observable<ProductOrderDTO[]>;
-  
+  noData: boolean = false;
+
   displayedColumns = ['ProductName', 'Supplier', 'PurchasePrice', 'OrderedAmount', 'Barcode'];
 
-  constructor(private storeService: StoreService, private snackBar: MatSnackBar) { 
+  constructor(private storeService: StoreService, private snackBar: MatSnackBar) {
     this.$storeOrders = this.storeService.getAllOpenOrders();
     this.$storeOrders.subscribe( data => {
       this.storeOrders = data;
-    })
+    }, error => this.noData = true)
   }
 
   onReceiveOrderClick(productOrderId: number) {
     this.storeService.acceptOrder(productOrderId).subscribe(
       () => {
-        this.snackBar.open("Received order succesfully!", "✖", { panelClass: ['success'] });
+        this.snackBar.open("Received order successfully!", "✖", { panelClass: ['success'] });
         this.storeOrders = this.storeOrders.filter(order => order.productOrderId !== productOrderId);
       },
       error => {

@@ -19,6 +19,7 @@ export class ProductSupplierStockItemDTODataSource extends DataSource<ProductSup
   paginator: MatPaginator | undefined;
   sort: MatSort | undefined;
   length: number = 0;
+  isLoading = true;
 
   constructor(private storeService: StoreService) {
     super();
@@ -33,20 +34,26 @@ export class ProductSupplierStockItemDTODataSource extends DataSource<ProductSup
     if (this.paginator && this.sort) {
       // Combine everything that affects the rendered data into one update
       // stream for the data-table to consume.
+
       return merge(this.paginator.page, this.sort.sortChange)
         .pipe(
           startWith({}),
           switchMap(() => {
-            return this.storeService.getStockItems(
-            ).pipe(catchError(() => observableOf(null)));
+
+            return this.storeService
+              .getStockItems()
+              .pipe(catchError(() => observableOf(null)));
           }),
           map(data => {
-             // hacky way to do it but works
+              // hacky way to do it but works
+              this.isLoading = false;
               this.length = data!!.length;
               if (data === null) {
                 return [];
               }
-              this.data = this.getPagedData(this.getSortedData([...data]));
+
+
+            this.data = this.getPagedData(this.getSortedData([...data]));
 
               return this.data;
             }
