@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Application.Store;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -7,54 +8,61 @@ using WebServerStore.Services;
 namespace WebServerStore;
 public class StartUpStore
 {
+    private static void GetStoreInfo(IServiceCollection service, IConfiguration config)
+    {
+        try
+        {
+            var app = service.BuildServiceProvider().GetService<StoreApplication>();
+            var storeInfo = app!.GetStore();
+            config["ServerInfo:EnterpriseName"] = storeInfo.Enterprise.EnterpriseName;
+            config["ServerInfo:StoreName"] = storeInfo.StoreName;
+            config["ServerInfo:StoreLocation"] = storeInfo.Location;
+        }
+        catch (StoreException e)
+        {
+            Console.WriteLine(e);
+            Environment.Exit(1);
+        }
+    }
     public static void Main(string[] args)
     {
-        Console.WriteLine("StartUp Arguments:");
-        foreach (var arg in args)
+        if (args.Length == 0)
         {
-            Console.WriteLine($"\t{arg}");
+            Console.WriteLine("The store id is missing!");
+            Environment.Exit(1);
         }
 
         var storeId = Convert.ToInt64(args[0]);
         
-        var storeLogger = LoggerFactory.Create(options => 
-        {
-            options.AddConsole();
-            options.AddDebug();
-        }).CreateLogger<StoreApplication>();
-
-        var httpHandler = new HttpClientHandler();
-        httpHandler.ServerCertificateCustomValidationCallback =
-            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-        
-        var client = new EnterpriseService.EnterpriseServiceClient(
-            GrpcChannel.ForAddress("https://localhost:7046/grpc",
-                new GrpcChannelOptions {HttpHandler = httpHandler}));
-        
-        var application = new StoreApplication(storeLogger, client, storeId);
-        
         var builder = WebApplication.CreateBuilder(args);
-
-        try
-        {
-            var store = application.GetStore();
-            builder.Configuration["ServerInfo:EnterpriseName"] = store.Enterprise.EnterpriseName;
-            builder.Configuration["ServerInfo:StoreName"] = store.StoreName;
-            builder.Configuration["ServerInfo:StoreLocation"] = store.Location;
-        }
-        catch (RpcException e)
-        {
-            Console.WriteLine(
-                $"{e.GetType()}: Grpc client can't connect to EnterpriseService. Please make sure that WebServerEnterprise is running");
-            Environment.Exit(0);
-        }
         
         // Add services to the container.
         builder.Services.AddGrpc();
         builder.Services.AddControllersWithViews().AddNewtonsoftJson();
-        builder.Services.AddSingleton<IStoreApplication>(application);
-        builder.Services.AddSingleton<ICashDeskConnector>(application);
+        
+        builder.Services.AddGrpcClient<EnterpriseService.EnterpriseServiceClient>(options =>
+        {
+            options.Address = new Uri("https://localhost:7046/grpc");
+        }).ConfigurePrimaryHttpMessageHandler(() =>
+        {
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            return handler;
+        });
+        
+        builder.Services.AddSingleton<StoreApplication>(provider => new StoreApplication(
+            provider.GetRequiredService<ILogger<StoreApplication>>(),
+            provider.GetRequiredService<EnterpriseService.EnterpriseServiceClient>(),
+            storeId));
+        
+        builder.Services.AddSingleton<IStoreApplication>(provider => 
+            provider.GetRequiredService<StoreApplication>());
+        builder.Services.AddSingleton<ICashDeskConnector>(provider => 
+            provider.GetRequiredService<StoreApplication>());
 
+        GetStoreInfo(builder.Services, builder.Configuration);
+        
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.

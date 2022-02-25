@@ -1,4 +1,5 @@
 using Application.Enterprise;
+using Application.Exceptions;
 using Data.Enterprise;
 using Data.Exceptions;
 using Data.Store;
@@ -7,21 +8,34 @@ using WebServerEnterprise.Services;
 namespace WebServerEnterprise;
 public class StartUpEnterprise
 {
+    private static void GetEnterpriseInfo(IServiceCollection service, IConfiguration config)
+    {
+        try
+        {
+            var app = service.BuildServiceProvider().GetService<EnterpriseApplication>();
+            var appInfo = app!.GetEnterprise();
+            config["ServerInfo:EnterpriseName"] = appInfo.EnterpriseName;
+        }
+        catch (DatabaseNotAvailableException e)
+        {
+            Console.WriteLine(e);
+            Environment.Exit(1);
+        }
+        catch (EnterpriseException e)
+        {
+            Console.WriteLine(e);
+            Environment.Exit(1);
+        }
+    }
     public static void Main(string[] args)
     {
-        Console.WriteLine("StartUp Arguments:");
-        foreach (var arg in args)
+        if (args.Length == 0)
         {
-            Console.WriteLine($"\t{arg}");
+            Console.WriteLine("The enterprise id is missing!");
+            Environment.Exit(1);
         }
 
         var enterpriseId = Convert.ToInt64(args[0]);
-
-        var enterpriseLogger = LoggerFactory.Create(options => 
-        {
-            options.AddConsole();
-            options.AddDebug();
-        }).CreateLogger<EnterpriseApplication>();
         
         /*const string host = "localhost";
         const string database = "tradingsystem";
@@ -34,34 +48,29 @@ public class StartUpEnterprise
         const string password = "fc1cc9bdc3a621aa753d50896e87f00d2420354242cbd92b20331bf6cc1e16a4";
         
         const string connectionString = $"host={host};database={database};username={username};password={password}";
-        
-        var application = new EnterpriseApplication
-        (
-            new EnterpriseQuery(), 
-            new StoreQuery(), 
-            enterpriseLogger, 
-            enterpriseId, 
-            connectionString
-            );
-        
-        var builder = WebApplication.CreateBuilder(args); 
-        
-        try
-        {
-            var enterprise = application.GetEnterprise();
-            builder.Configuration["ServerInfo:EnterpriseName"] = enterprise.EnterpriseName;
-        }
-        catch (DatabaseNotAvailableException e)
-        {
-            Console.WriteLine(e);
-            Environment.Exit(0);
-        }
 
+        var builder = WebApplication.CreateBuilder(args);
+        
         // Add services to the container.
         builder.Services.AddGrpc();
-        builder.Services.AddSingleton<IEnterpriseApplication>(application);
-        builder.Services.AddSingleton<IReporting>(application);
         builder.Services.AddControllersWithViews();
+        builder.Services.AddSingleton<IEnterpriseQuery, EnterpriseQuery>();
+        builder.Services.AddSingleton<IStoreQuery, StoreQuery>();
+        builder.Services.AddSingleton<EnterpriseApplication>(provider =>
+        {
+            return new EnterpriseApplication(
+                provider.GetRequiredService<IEnterpriseQuery>(),
+                provider.GetRequiredService<IStoreQuery>(),
+                provider.GetRequiredService<ILogger<EnterpriseApplication>>(),
+                enterpriseId,
+                connectionString);
+        });
+        builder.Services.AddSingleton<IEnterpriseApplication>(provider => 
+            provider.GetRequiredService<EnterpriseApplication>());
+        builder.Services.AddSingleton<IReporting>(provider => 
+            provider.GetRequiredService<EnterpriseApplication>());
+
+        GetEnterpriseInfo(builder.Services, builder.Configuration);
 
         var app = builder.Build();
 
