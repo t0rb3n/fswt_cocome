@@ -35,6 +35,6 @@ public class StoreGrpcService : IStoreGrpcService
     /// <param name="sale">The Sale object with all products of this sale</param>
     public void BookSales(SaleRequest sale)
     {
-        _storeClient.BookSalesAsync(sale);
+        _storeClient.BookSales(sale);
     }
 }
