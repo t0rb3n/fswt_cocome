@@ -1,6 +1,10 @@
 # fswt_cocome
-Implementierung des [CoCoME Paper](https://cocome.org/downloads/documentation/cocome.pdf)
-für das Modul Fortgeschrittene Softwaretechnologien
+
+Implementation of the [CoCoME paper](https://cocome.org/downloads/documentation/cocome.pdf) in C# made for the **Advanced Software Technologies** module of my university.
+
+---
+Implementierung des [CoCoME Paper](https://cocome.org/downloads/documentation/cocome.pdf) in C#
+für das Modul **Fortgeschrittene Softwaretechnologien**.
 
 # Dokumentation
 Sämtliche Dokumentation kann in [architecture](https://github.com/t0rb3n/fswt_cocome/tree/master/architecture) gefunden werden.
